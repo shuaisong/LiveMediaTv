@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="8dp"
+    android:paddingEnd="0dp">
+
+    <RadioGroup
+        android:id="@+id/radio_collect"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:layout_marginTop="46dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/video_collect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/history_check_select"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/collect_video"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/book_collect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/history_check_select"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/collect_book"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/dubbing_collect"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/history_check_select"
+            android:button="@null"
+            android:gravity="center"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/collect_dubbing"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </RadioGroup>
+
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

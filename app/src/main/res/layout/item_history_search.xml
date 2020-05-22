@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:layout_width="80dp"
+    android:layout_height="25dp"
+    android:background="@drawable/dp_5_black_corner_bg"
+    android:gravity="center_vertical"
+    android:padding="5dp"
+    android:singleLine="true"
+    android:ellipsize="end"
+    android:text="@string/search_recommend"
+    android:textColor="#EEEFF0"
+    android:textSize="11sp">
+
+</TextView>

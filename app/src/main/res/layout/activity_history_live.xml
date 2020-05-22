@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_bg"
+    android:keepScreenOn="true"
+    android:orientation="vertical"
+    android:paddingTop="26dp"
+    tools:context=".module.live.HistoryLiveActivity">
+
+    <com.tangmu.app.TengKuTV.view.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:layout_marginTop="17dp"
+        android:background="@drawable/setting_divider" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.tencent.liteav.demo.play.SuperPlayerView
+                    android:id="@+id/superPlayer"
+                    android:layout_width="480dp"
+                    android:layout_height="270dp"
+                    android:layout_marginStart="40dp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="33dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/white"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <LinearLayout
+                        android:id="@+id/line2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/dp_15_cornner_black_bg"
+                        android:backgroundTint="@color/bule_bg"
+                        android:minHeight="100dp"
+                        android:orientation="vertical"
+                        android:paddingStart="15dp"
+                        android:paddingTop="20dp"
+                        android:paddingEnd="15dp"
+                        android:paddingBottom="10dp"
+                        app:layout_constraintBottom_toTopOf="@id/line3"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/title"
+                        app:layout_constraintVertical_bias="0">
+
+                        <TextView
+                            android:id="@+id/live_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/introl"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line3"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_below="@id/line2"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:id="@+id/fullscreen"
+                            android:layout_width="55dp"
+                            android:layout_height="match_parent"
+                            android:focusable="true"
+                            android:src="@drawable/blue_screen_select" />
+
+                        <ImageView
+                            android:id="@+id/image"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="20dp"
+                            android:background="@drawable/dp_5_view_bg_focused_select"
+                            android:focusable="true"
+                            android:padding="@dimen/focus_width"
+                            android:visibility="invisible" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/image_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="33dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:layout_marginTop="23dp"
+                android:layout_marginBottom="15dp"
+                android:text="@string/recommend_for_you"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/video_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

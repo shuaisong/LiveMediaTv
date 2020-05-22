@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/head"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/nickName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:text="过门石"
+        android:textColor="@color/normal_text_color"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/head"
+        app:layout_constraintTop_toTopOf="@id/head" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="22dp"
+        android:textColor="@color/normal_text_color"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/nickName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/nickName" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="25dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:lineSpacingMultiplier="1.3"
+        android:textColor="@color/normal_text_color"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/head" />
+
+    <com.tangmu.app.tengkuTV.view.CustomPraiseView
+        android:id="@+id/praise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/content">
+
+        <CheckBox
+            android:layout_width="15dp"
+            android:layout_height="18dp"
+            android:background="@mipmap/ic_praise"
+            android:button="@null" />
+
+        <TextView
+            android:id="@+id/praise_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:button="@null"
+            android:textColor="@color/normal_text_color"
+            android:textSize="12sp" />
+    </com.tangmu.app.tengkuTV.view.CustomPraiseView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

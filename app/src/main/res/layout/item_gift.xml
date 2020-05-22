@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.tangmu.app.tengkuTV.view.GiftCheckView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_gift"
+    android:layout_width="wrap_content"
+    android:layout_height="100dp"
+    android:layout_marginTop="20dp"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="10dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="10dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="2dp"
+            android:textColor="@color/normal_text_color"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/normal_text_color"
+        android:textSize="11sp" />
+</com.tangmu.app.tengkuTV.view.GiftCheckView>

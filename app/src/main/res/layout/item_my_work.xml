@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="153dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+
+        <TextView
+            android:id="@+id/uploadTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="7dp"
+            android:textColor="@color/normal_text_color"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/durationTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="7dp"
+            android:textColor="@color/normal_text_color"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="7dp"
+            android:background="@drawable/live_broadcast"
+            android:gravity="center"
+            android:textColor="@color/normal_text_color"
+            android:textSize="11sp" />
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:lineSpacingMultiplier="1.4"
+        android:maxLines="2"
+        android:minLines="2"
+        android:textColor="@color/normal_text_color"
+        android:textSize="11sp" />
+</LinearLayout>

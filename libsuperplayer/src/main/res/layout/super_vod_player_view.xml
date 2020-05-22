@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.tencent.rtmp.ui.TXCloudVideoView
+        android:id="@+id/cloud_video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <com.tencent.liteav.demo.play.controller.TCControllerWindow
+        android:id="@+id/controller_small"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_bottom_radio_bg_select"
+        android:focusable="true"
+        android:padding="2dp" />
+
+    <com.tencent.liteav.demo.play.controller.TCControllerFullScreen
+        android:id="@+id/controller_large"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.tencent.liteav.demo.play.view.TCDanmuView
+        android:id="@+id/danmaku_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.tencent.liteav.demo.play.controller.TCControllerFloat
+        android:id="@+id/controller_float"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <com.tencent.liteav.demo.play.view.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_bottom_radio_bg_select"
+        android:focusable="true"
+        android:padding="2dp"
+        android:visibility="gone" />
+
+    <com.tencent.liteav.demo.play.view.VipTipView
+        android:id="@+id/vipTipView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_bottom_radio_bg_select"
+        android:focusable="true"
+        android:padding="2dp"
+        android:visibility="gone" />
+
+    <com.tencent.liteav.demo.play.view.BuyAntholgyView
+        android:id="@+id/buyAntholgyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/full_bottom_radio_bg_select"
+        android:focusable="true"
+        android:padding="2dp"
+        android:visibility="gone" />
+</RelativeLayout>

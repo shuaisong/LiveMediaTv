@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/image"
+        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/ad_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:background="@drawable/ad_close_bg"
+        android:drawableEnd="@mipmap/ic_white_close"
+        android:drawablePadding="5dp"
+        android:paddingStart="9dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="13dp"
+        android:text="@string/tv_ad"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+</FrameLayout>

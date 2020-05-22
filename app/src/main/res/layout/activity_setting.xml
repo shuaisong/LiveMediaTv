@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_bg"
+    android:orientation="vertical"
+    tools:context=".module.mine.SettingActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="53.3dp"
+        android:layout_marginTop="53.3dp"
+        android:text="@string/setting"
+        android:textColor="@color/white"
+        android:textSize="27sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/setting_divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="35dp">
+
+        <LinearLayout
+            android:layout_width="124dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="54.3dp"
+            android:divider="@drawable/setting_tran_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/defult_q"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/titletail"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/play_setting"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:visibility="visible" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/cache_clear"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:text="@string/version_update"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/setting_tran_divider"
+            android:orientation="vertical"
+            android:showDividers="middle">
+
+            <RadioGroup
+                android:id="@+id/radio_quality"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:orientation="horizontal">
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality1"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/setting_vip_bg"
+                    android:button="@null"
+                    android:checkMarkTintMode="add"
+                    android:checked="false"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="4K"
+                    android:textAlignment="center"
+                    android:textColor="@color/vip"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality2"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/setting_login_bg"
+                    android:button="@null"
+                    android:checked="false"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="2K"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality3"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/_720p"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality4"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/_480p"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality5"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/_270p"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/quality6"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/_180p"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/radio_jump"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:orientation="horizontal">
+
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/jump"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:checked="true"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/jump"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:id="@+id/no_jump"
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="14dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:text="@string/no_jump"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+            </RadioGroup>
+
+            <RadioGroup
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:orientation="horizontal">
+
+                <com.tangmu.app.TengKuTV.view.CustomRadioButton
+                    android:layout_width="143.67dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:button="@null"
+                    android:checked="true"
+                    android:drawableStart="@drawable/setting_check_select"
+                    android:drawablePadding="8dp"
+                    android:enabled="false"
+                    android:gravity="center"
+                    android:text="@string/decoding"
+                    android:textColor="@color/setting_color_select"
+                    android:textSize="20sp" />
+
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/clear_cache"
+                android:layout_width="143.67dp"
+                android:layout_height="52dp"
+                android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                android:focusable="true"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="52dp">
+
+                <TextView
+                    android:id="@+id/current_version"
+                    android:layout_width="180dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:text="@string/current_version"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/tv_is_new"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:background="#067AF9"
+                    android:padding="2dp"
+                    android:text="@string/last_version"
+                    android:textColor="@color/white"
+                    android:textSize="8sp"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

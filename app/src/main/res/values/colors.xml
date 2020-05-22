@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#111111</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="text_">#D81B60</color>
+    <color name="swip_color">#00574B</color>
+    <color name="navaigtion_bg">#353235</color>
+    <color name="black_bg">#111C25</color>
+    <color name="black_3_bg">#333333</color>
+    <color name="normal_text_color">#E5E5E5</color>
+    <color name="vip">#EAC445</color>
+    <color name="edit_color">#F71919</color>
+    <color name="hint_color">#999999</color>
+    <color name="circleBgColor">#818183</color>
+    <color name="circleProgressColor">#F16026</color>
+    <color name="tab_indicator_color">#F61525</color>
+    <color name="c_color1">#057BD1</color>
+    <color name="c_color2">#01CE9D</color>
+    <color name="c_color3">#FB913E</color>
+    <color name="c_color4">#624A9B</color>
+    <color name="bule_bg">#223449</color>
+    <color name="key_bg">#1786E7</color>
+
+</resources>

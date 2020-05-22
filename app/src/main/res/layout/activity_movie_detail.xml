@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_bg"
+    android:keepScreenOn="true"
+    android:orientation="vertical"
+    tools:context=".module.movie.TVDetailActivity">
+
+    <com.tangmu.app.TengKuTV.view.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:layout_marginTop="17dp"
+        android:background="@drawable/setting_divider" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.tencent.liteav.demo.play.SuperPlayerView
+                    android:id="@+id/superPlayer"
+                    android:layout_width="480dp"
+                    android:layout_height="270dp"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginTop="10dp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="33dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/white"
+                        android:textSize="25sp" />
+
+                    <LinearLayout
+                        android:id="@+id/line1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/title"
+                        android:gravity="bottom">
+
+                        <ImageView
+                            android:id="@+id/ic_vip"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:src="@mipmap/ic_video_vip" />
+
+                        <ImageView
+                            android:id="@+id/ic_hd"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="2dp"
+                            android:src="@mipmap/ic_hd" />
+
+                        <TextView
+                            android:id="@+id/anthogy_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/line1"
+                        android:layout_marginTop="14dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/introl"
+                            android:textColor="@color/normal_text_color"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/introl"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/more"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginStart="17dp"
+                            android:background="@drawable/dp_0_view_bg_focused_selelct"
+                            android:focusable="true"
+                            android:text="@string/more1"
+                            android:textColor="@color/white"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/line2"
+                        android:layout_marginTop="16dp"
+                        android:divider="@drawable/detail_divider"
+                        android:showDividers="middle">
+
+                        <ImageView
+                            android:id="@+id/ad1"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/dp_0_view_bg_red_focused_selelct"
+                            android:focusable="true"
+                            android:visibility="gone" />
+
+                        <ImageView
+                            android:id="@+id/ad2"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/dp_0_view_bg_red_focused_selelct"
+                            android:focusable="true"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/line4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:layout_below="@id/line3"
+                        android:layout_marginTop="20dp">
+
+                        <TextView
+                            android:id="@+id/full_screen"
+                            android:layout_width="wrap_content"
+                            android:minWidth="60dp"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/history4_bg"
+                            android:drawableTop="@mipmap/ic_full_screen"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:text="@string/full_screen"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+
+                        <com.tangmu.app.TengKuTV.view.CustomPraiseView
+                            android:id="@+id/collect"
+                            android:layout_width="59dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="23dp"
+                            android:background="@drawable/history4_bg"
+                            android:focusable="true"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <CheckBox
+                                android:layout_width="21dp"
+                                android:layout_height="19dp"
+                                android:background="@drawable/love_select"
+                                android:button="@null" />
+
+                            <TextView
+                                android:id="@+id/collect_num"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="5dp"
+                                android:text="@string/collect"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+                        </com.tangmu.app.TengKuTV.view.CustomPraiseView>
+
+                        <TextView
+                            android:id="@+id/is_vip"
+                            android:layout_width="59dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="23dp"
+                            android:background="@drawable/history4_bg"
+                            android:drawableTop="@mipmap/ic_is_vip"
+                            android:drawablePadding="4dp"
+                            android:focusable="true"
+                            android:gravity="center_horizontal"
+                            android:padding="5dp"
+                            android:text="@string/member"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_anthogy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/tv_anthogy"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview_anthogy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="33dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview_anthogy1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="33dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="10" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/image_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="33dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="42dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/relactive_video"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/video_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5" />
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <paths xmlns:android="http://schemas.android.com/apk/res/android">
+        <root-path
+            name="qybm"
+            data="" />
+        <external-data
+            name="qybm"
+            data="" />
+
+        <!--代表app 外部存储区域根目录下的文件 Context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)目录下的Pictures目录-->
+        <external-files-path
+            name="qybm_external_files"
+            data="" />
+        <!--代表app 外部存储区域根目录下的文件 Context.getExternalCacheDir目录下的images目录-->
+        <external-cache-path
+            name="qybm_external_cache"
+            data="" />
+        <cache-path
+            name="qybm_cache"
+            data="" />
+
+        <files-path
+            name="qybm_private_files"
+            data="" />
+    </paths>
+</resources>

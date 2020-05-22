@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_bg"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".module.login.ThirdBindActivity">
+
+
+    <ImageView
+        android:layout_width="101dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="80dp"
+        android:src="@mipmap/theme_logo"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="36dp"
+        android:text="@string/bind_phone"
+        android:textColor="@color/white"
+        android:textSize="26sp" />
+
+    <FrameLayout
+        android:layout_width="300dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="39dp">
+
+        <ImageView
+            android:layout_width="17dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="2dp"
+            android:src="@mipmap/ic_phone_black" />
+
+        <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:cursorVisible="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:hint="@string/account_tip"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:maxLength="11"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="#666666"
+            android:textSize="@dimen/textSize_13" />
+    </FrameLayout>
+
+    <View
+        android:layout_width="300dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="46dp"
+        android:background="#4D4C4F" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="300dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="18dp">
+
+        <ImageView
+            android:layout_width="19dp"
+            android:layout_height="25dp"
+            android:src="@mipmap/ic_secur"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/verify_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="6dp"
+            android:background="@android:color/transparent"
+            android:gravity="center_vertical"
+            android:hint="@string/input_verify_tip"
+            android:imeOptions="actionNext"
+            android:inputType="number"
+            android:maxLength="6"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textColorHint="#666666"
+            android:textSize="@dimen/textSize_13"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/get_verify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/verify_bg"
+            android:gravity="center"
+            android:text="@string/get_verify"
+            android:textColor="#E6E6E6"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@id/verify_code"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/verify_code" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#4D4C4F"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/bt_register"
+        android:layout_width="80dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/submit_focus_select"
+        android:gravity="center"
+        android:text="@string/submit"
+        android:textColor="@color/white"
+        android:textSize="13sp" />
+
+</LinearLayout>

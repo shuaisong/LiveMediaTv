@@ -1,0 +1,41 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    腾讯播放器
+//    implementation(name: 'libsuperplayer', ext: 'aar')
+    api(name: 'LiteAVSDK_Player', ext: 'aar')
+    implementation 'com.github.ctiao:DanmakuFlameMaster:0.5.3'
+    api 'androidx.recyclerview:recyclerview:1.1.0'
+    //列表适配框架
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
+    //屏幕适配
+    api 'me.jessyan:autosize:1.1.2'
+
+}

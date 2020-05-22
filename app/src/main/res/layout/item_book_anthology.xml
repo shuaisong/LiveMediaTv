@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="303.33dp"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="24dp" />
+
+    <TextView
+        android:id="@+id/index"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckedTextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="34dp"
+        android:background="@drawable/book_select_bg"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:paddingStart="45dp"
+        android:paddingEnd="11dp"
+        android:singleLine="true"
+        android:text="了不起的盖茨比（1925）——假如我们都是主，你会"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

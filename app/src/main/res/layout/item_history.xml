@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="167dp"
+    android:layout_marginTop="18dp"
+    android:padding="@dimen/focus_width"
+    android:focusable="true"
+    android:background="@drawable/dp_0_view_bg_focused_selelct"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="255dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title"
+        style="@style/half_white_text"
+        android:layout_width="match_parent"
+        android:layout_marginTop="11dp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/image" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:max="100"
+        android:progressDrawable="@drawable/history_progress_bg"
+        app:layout_constraintBottom_toBottomOf="@id/image" />
+
+    <TextView
+        android:id="@+id/tv_progress"
+        style="@style/half_white_text"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/image"
+        app:layout_constraintEnd_toEndOf="@id/image" />
+</androidx.constraintlayout.widget.ConstraintLayout>

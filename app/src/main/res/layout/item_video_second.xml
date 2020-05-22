@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/check_second"
+    android:layout_width="match_parent"
+    android:layout_height="42dp"
+    android:background="@drawable/video_second_bg_select"
+    android:checkMark="@null"
+    android:focusable="true"
+    android:gravity="center"
+    android:textAlignment="center"
+    android:textColor="@color/white"
+    android:textSize="20sp" />

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical"
+    tools:context=".module.movie.MovieListActivity">
+
+    <com.tangmu.app.TengKuTV.view.TitleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="26dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:layout_marginTop="17dp"
+        android:background="@drawable/setting_divider" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/showP"
+                    android:layout_width="24dp"
+                    android:layout_height="15dp"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_margin="6dp"
+                    android:src="@mipmap/double_left" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/category1"
+                    android:layout_width="140dp"
+                    android:layout_height="match_parent"
+                    android:background="#1A252F"
+                    android:visibility="gone"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            </FrameLayout>
+
+
+            <LinearLayout
+                android:layout_width="160dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:background="#1F2935"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="39dp"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <CheckBox
+                    android:id="@+id/screen"
+                    android:layout_width="105dp"
+                    android:layout_height="42dp"
+                    android:layout_marginTop="9dp"
+                    android:background="@drawable/screen_bg_select"
+                    android:button="@null"
+                    android:drawableStart="@mipmap/ic_screen"
+                    android:drawablePadding="15dp"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/tv_screen"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="3dp"
+                    android:background="#323D4B" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/category2"
+                    android:layout_width="105dp"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RadioGroup
+                    android:id="@+id/movie_is_pay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="47dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:background="@drawable/dp_3_view_bg_focused_select"
+                        android:button="@null"
+                        android:checked="true"
+                        android:focusable="true"
+                        android:text="@string/all"
+                        android:textColor="@color/movie_screen_tv_color_select"
+                        android:textSize="20sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_free"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:background="@drawable/dp_3_view_bg_focused_select"
+                        android:button="@null"
+                        android:focusable="true"
+                        android:text="@string/free"
+                        android:textColor="@color/movie_screen_tv_color_select"
+                        android:textSize="20sp" />
+
+                    <RadioButton
+                        android:id="@+id/radio_pay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/dp_3_view_bg_focused_select"
+                        android:button="@null"
+                        android:focusable="true"
+                        android:text="@string/need_pay"
+                        android:textColor="@color/movie_screen_tv_color_select"
+                        android:textSize="20sp" />
+                </RadioGroup>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/years_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="17dp"
+                    android:layout_marginBottom="9dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/movie_recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="25dp"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="5" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</LinearLayout>
