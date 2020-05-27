@@ -415,7 +415,7 @@ public class BookSearchActivity extends BaseActivity implements BookSearchContac
             if (v.getId() == R.id.radio_full) {
                 radioFull.setChecked(true);
             }
-            LogUtil.e(v.getTransitionName() + v.getId() + v.toString());
+            LogUtil.e(v.getClass().getSimpleName() + v.getId() + v.toString());
             if (v.getId() == R.id.item_t9_key) {
                 View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
                 View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);

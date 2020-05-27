@@ -341,9 +341,12 @@ public class MineFragment extends BaseFragment {
         }
     }
 
-    @OnClick({R.id.collect, R.id.setting, R.id.login_tv, R.id.open_vip})
+    @OnClick({R.id.history, R.id.collect, R.id.setting, R.id.login_tv, R.id.open_vip})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.history:
+                startActivity(new Intent(getActivity(), PlayHistoryActivity.class));
+                break;
             case R.id.open_vip:
                 startActivityForResult(new Intent(getActivity(), VIPActivity.class), 1001);
                 break;

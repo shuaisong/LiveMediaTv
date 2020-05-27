@@ -11,7 +11,7 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="130dp" />
+        android:layout_height="255dp" />
 
     <TextView
         android:id="@+id/title"

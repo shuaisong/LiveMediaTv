@@ -1,5 +1,7 @@
 package com.tangmu.app.TengKuTV.module.main;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -16,6 +18,7 @@ import com.tangmu.app.TengKuTV.module.home.HomeFragment;
 import com.tangmu.app.TengKuTV.presenter.MainPresenter;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
+import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.TitleView;
 
@@ -58,6 +61,13 @@ public class MainActivity extends BaseActivity implements MainContact.View {
         presenter.attachView(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager.getMemoryInfo(memoryInfo);
+        ToastUtil.showText(memoryInfo.totalMem / (1024 * 1024) + "\n" + memoryInfo.availMem / (1024 * 1024));
+    }
 
     @Override
     protected void onDestroy() {
@@ -97,12 +107,4 @@ public class MainActivity extends BaseActivity implements MainContact.View {
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            LogUtil.e(currentFocus.toString());
-        }
-        return super.onKeyDown(keyCode, event);
-    }
 }

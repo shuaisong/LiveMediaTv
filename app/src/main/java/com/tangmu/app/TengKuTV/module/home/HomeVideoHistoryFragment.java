@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -32,6 +33,8 @@ import butterknife.BindView;
 public class HomeVideoHistoryFragment extends BaseFragment {
     @BindView(R.id.recyclerview)
     RecyclerView recyclerview;
+    private BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder> videoHistoryAdapter;
+    private int clickPosition;
 
     @Override
     protected void initData() {
@@ -39,24 +42,24 @@ public class HomeVideoHistoryFragment extends BaseFragment {
 
     @Override
     protected void initView() {
-        BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder> videoHistoryAdapter =
-                new BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder>(R.layout.item_history, getData()) {
-                    @Override
-                    protected void convert(BaseViewHolder helper, PlayHistoryInfo playHistoryInfo) {
-                        helper.setText(R.id.title, Util.showText(playHistoryInfo.getB_title(), playHistoryInfo.getB_title_z()))
-                                .setText(R.id.tv_progress, String.format(Locale.CHINA, mContext.getResources().getString(R.string.Watched),
-                                        playHistoryInfo.getB_progress()))
-                                .setProgress(R.id.progress, playHistoryInfo.getB_progress());
-                        GlideUtils.getRequest(mContext, Util.convertImgPath(playHistoryInfo.getB_img()))
-                                .centerCrop()
-                                .into((ImageView) helper.getView(R.id.image));
-                    }
-                };
+        videoHistoryAdapter = new BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder>(R.layout.item_history, getData()) {
+            @Override
+            protected void convert(BaseViewHolder helper, PlayHistoryInfo playHistoryInfo) {
+                helper.setText(R.id.title, Util.showText(playHistoryInfo.getB_title(), playHistoryInfo.getB_title_z()))
+                        .setText(R.id.tv_progress, String.format(Locale.CHINA, mContext.getResources().getString(R.string.Watched),
+                                playHistoryInfo.getB_progress()))
+                        .setProgress(R.id.progress, playHistoryInfo.getB_progress());
+                GlideUtils.getRequest(mContext, Util.convertImgPath(playHistoryInfo.getB_img()))
+                        .centerCrop()
+                        .into((ImageView) helper.getView(R.id.image));
+            }
+        };
         videoHistoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 PlayHistoryInfo item = videoHistoryAdapter.getItem(position);
                 if (item == null) return;
+                clickPosition = position;
                 Intent intent;
                 if (item.getB_type() == 1) {
                     if (item.getVm_type() == 2) {
@@ -69,7 +72,7 @@ public class HomeVideoHistoryFragment extends BaseFragment {
                     intent = new Intent(getActivity(), PlayBookActivity.class);
                     intent.putExtra("id", item.getB_id());
                 }
-                startActivity(intent);
+                startActivityForResult(intent, 100);
             }
         });
         TextView textView = new TextView(this.getContext());
@@ -82,6 +85,28 @@ public class HomeVideoHistoryFragment extends BaseFragment {
         videoHistoryAdapter.setEmptyView(textView);
         videoHistoryAdapter.isUseEmpty(true);
         recyclerview.setAdapter(videoHistoryAdapter);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            PlayHistoryInfo item = videoHistoryAdapter.getItem(clickPosition);
+            if (item != null) {
+                PlayHistoryInfo history = PlayHistoryManager.getHistory(item.getB_id(), item.getB_type());
+                if (clickPosition == 0) {
+                    videoHistoryAdapter.getData().set(clickPosition, history);
+                    videoHistoryAdapter.notifyItemChanged(0, "");
+                    return;
+                }
+                videoHistoryAdapter.getData().remove(clickPosition);
+                videoHistoryAdapter.getData().add(0, item);
+                videoHistoryAdapter.notifyItemRemoved(clickPosition);
+                videoHistoryAdapter.notifyItemInserted(0);
+                recyclerview.scrollToPosition(0);
+            }
+
+        }
     }
 
     private List<PlayHistoryInfo> getData() {

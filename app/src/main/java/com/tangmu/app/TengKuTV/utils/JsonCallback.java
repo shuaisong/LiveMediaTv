@@ -1,5 +1,7 @@
 package com.tangmu.app.TengKuTV.utils;
 
+import android.content.Intent;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
@@ -7,8 +9,10 @@ import com.lzy.okgo.callback.AbsCallback;
 import com.lzy.okgo.exception.HttpException;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.base.Request;
+import com.tangmu.app.TengKuTV.CustomApp;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
+import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -94,6 +98,7 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
 
     private void goLogin(String msg) {
         ToastUtil.showText(msg);
+        PreferenceManager.getInstance().exit();
        /* Intent intent = new Intent(CustomApp.getApp(), LoginActivity.class);
         PreferenceManager.getInstance().removeUid();
         PreferenceManager.getInstance().removeToken();

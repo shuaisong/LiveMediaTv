@@ -32,7 +32,7 @@ public class DisableScrollViewPager extends ViewPager {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER)
             return super.dispatchKeyEvent(event);
         else
             return false;

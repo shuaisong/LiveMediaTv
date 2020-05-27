@@ -5,6 +5,6 @@
     android:layout_height="wrap_content"
     android:text="@string/recommend"
     android:focusable="false"
-    android:paddingBottom="13dp"
+    android:paddingBottom="7dp"
     android:textColor="@color/normal_text_color"
     android:textSize="22sp" />

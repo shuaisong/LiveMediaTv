@@ -70,6 +70,7 @@
 
                 <CheckBox
                     android:id="@+id/screen"
+                    style="@style/CheckBox_no"
                     android:layout_width="105dp"
                     android:layout_height="42dp"
                     android:layout_marginTop="9dp"
@@ -112,6 +113,7 @@
                     android:orientation="horizontal">
 
                     <RadioButton
+                        style="@style/RadioButton_no"
                         android:id="@+id/radio_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -125,6 +127,7 @@
                         android:textSize="20sp" />
 
                     <RadioButton
+                        style="@style/RadioButton_no"
                         android:id="@+id/radio_free"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -137,6 +140,7 @@
                         android:textSize="20sp" />
 
                     <RadioButton
+                        style="@style/RadioButton_no"
                         android:id="@+id/radio_pay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

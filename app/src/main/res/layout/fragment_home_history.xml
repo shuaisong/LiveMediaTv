@@ -12,6 +12,7 @@
 
         <RadioButton
             android:id="@+id/play_record"
+            style="@style/RadioButton_no"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="46dp"
@@ -28,6 +29,7 @@
             android:textSize="20sp" />
 
         <RadioButton
+            style="@style/RadioButton_no"
             android:id="@+id/play_collect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

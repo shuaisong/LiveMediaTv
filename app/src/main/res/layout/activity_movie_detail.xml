@@ -165,12 +165,12 @@
                         <TextView
                             android:id="@+id/full_screen"
                             android:layout_width="wrap_content"
-                            android:minWidth="60dp"
                             android:layout_height="match_parent"
                             android:background="@drawable/history4_bg"
                             android:drawableTop="@mipmap/ic_full_screen"
                             android:focusable="true"
                             android:gravity="center"
+                            android:minWidth="60dp"
                             android:padding="5dp"
                             android:text="@string/full_screen"
                             android:textColor="@color/white"
@@ -189,6 +189,7 @@
                             android:orientation="vertical">
 
                             <CheckBox
+                                style="@style/CheckBox_no"
                                 android:layout_width="21dp"
                                 android:layout_height="19dp"
                                 android:background="@drawable/love_select"
@@ -280,8 +281,8 @@
                 android:id="@+id/video_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="30dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5" />
         </LinearLayout>

@@ -111,11 +111,11 @@
 
             <RadioButton
                 android:id="@+id/radio_full"
+                style="@style/RadioButton_no"
                 android:layout_width="132.67dp"
                 android:layout_height="48dp"
                 android:layout_marginEnd="45dp"
-                android:background="@drawable/anthology_bg"
-                android:backgroundTint="@color/anthology_select"
+                android:background="@drawable/key_type_focus_select"
                 android:button="@null"
                 android:checked="true"
                 android:gravity="center"
@@ -125,11 +125,11 @@
 
             <RadioButton
                 android:id="@+id/radio_t9"
+                style="@style/RadioButton_no"
                 android:layout_width="132.67dp"
                 android:layout_height="48dp"
                 android:layout_gravity="end"
-                android:background="@drawable/anthology_bg"
-                android:backgroundTint="@color/anthology_select"
+                android:background="@drawable/key_type_focus_select"
                 android:button="@null"
                 android:gravity="center"
                 android:text="@string/key_t9"

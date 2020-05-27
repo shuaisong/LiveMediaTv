@@ -444,7 +444,7 @@ public class TCControllerWindow extends RelativeLayout implements IController, V
         if (fromUser) {
             float percentage = ((float) progress) / seekBar.getMax();
             float currentTime = (mDuration * percentage);
-            mTvCurrent.setText(String.valueOf(currentTime));
+            mTvCurrent.setText(TCTimeUtil.formattedTime((long) currentTime));
         }
     }
 

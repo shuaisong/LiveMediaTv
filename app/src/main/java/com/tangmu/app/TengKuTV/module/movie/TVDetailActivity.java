@@ -1,15 +1,10 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,23 +37,22 @@ import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
 import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.presenter.VideoDetailPresenter;
-import com.tangmu.app.TengKuTV.utils.NetWorkSpeedUtils;
-import com.tangmu.app.TengKuTV.view.CustomPraiseView;
-import com.tangmu.app.TengKuTV.view.TitleView;
-import com.tencent.liteav.demo.play.bean.TCVideoQuality;
-import com.tencent.liteav.demo.play.utils.AnthologyItemDecoration;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
+import com.tangmu.app.TengKuTV.view.CustomPraiseView;
+import com.tangmu.app.TengKuTV.view.TitleView;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerVideoId;
 import com.tencent.liteav.demo.play.SuperPlayerView;
+import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.bean.VideoBean;
 import com.tencent.liteav.demo.play.bean.VideoSortBean;
+import com.tencent.liteav.demo.play.utils.AnthologyItemDecoration;
 import com.tencent.liteav.demo.play.view.TCVodAnthologyView;
 import com.tencent.liteav.demo.play.view.TCVodQualityView;
 
@@ -174,7 +168,9 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public void finish() {
         if (videoDetailBean != null) {
-            videoDetailBean.setProgress(superPlayer.getProgress());
+            if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+                videoDetailBean.setProgress(superPlayer.getProgress());
+            }
             PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
         }
         super.finish();
@@ -208,6 +204,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                     currentPosition = position;
                     VideoBean item = anthologyAdapter.getItem(position);
                     v_fileid = item.getV_fileid();
+                    videoDetailBean.setProgress(0);
                     startPlay();
                 }
             }
@@ -219,6 +216,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                     currentPosition = position;
                     VideoBean item = anthologyAdapter.getItem(position);
                     v_fileid = item.getV_fileid();
+                    videoDetailBean.setProgress(0);
                     startPlay();
                 }
             }
@@ -335,6 +333,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 VideoBean item = anthologyAdapter.getItem(position);
                 if (item == null) return;
                 v_fileid = item.getV_fileid();
+                videoDetailBean.setProgress(0);
                 startPlay();
                 anthologyAdapter.notifyDataSetChanged();
                 anthologyAdapter1.notifyDataSetChanged();
@@ -426,7 +425,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
@@ -435,7 +434,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 superPlayer.showMenu();
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
                     if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
@@ -474,7 +473,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         }
         if (currentFocus != null)
             LogUtil.e(currentFocus.toString());
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
@@ -483,7 +482,9 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
         } else {
             if (videoDetailBean != null) {
-                videoDetailBean.setProgress(superPlayer.getProgress());
+                if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+                    videoDetailBean.setProgress(superPlayer.getProgress());
+                }
                 PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
             }
             super.onBackPressed();
@@ -555,6 +556,10 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public void showDetail(VideoDetailBean videoDetailBean) {
         PlayHistoryInfo videoHistoryInfo = PlayHistoryManager.getHistory(videoDetailBean.getVm_id(), 1);
+        if (videoHistoryInfo != null) {
+            superPlayer.setCurrent(videoHistoryInfo.getB_progress());
+            videoDetailBean.setProgress(videoHistoryInfo.getB_progress());
+        }
         currentPosition = videoHistoryInfo == null ? 0 : videoHistoryInfo.getB_position();
         //不开防盗链
         this.videoDetailBean = videoDetailBean;

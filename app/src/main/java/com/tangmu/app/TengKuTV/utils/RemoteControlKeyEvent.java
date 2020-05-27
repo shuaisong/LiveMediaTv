@@ -3,6 +3,8 @@ package com.tangmu.app.TengKuTV.utils;
 import android.util.ArrayMap;
 import android.view.KeyEvent;
 
+import java.util.HashMap;
+
 public class RemoteControlKeyEvent {
     /**
      * 直播
@@ -56,11 +58,11 @@ public class RemoteControlKeyEvent {
 
     private static RemoteControlKeyEvent mKeyEvent;
 
-    private ArrayMap<Integer, Integer> mBaseKeyCodeValue = new ArrayMap<>();
+    private HashMap<Integer, Integer> mBaseKeyCodeValue = new HashMap<>();
 
-    private ArrayMap<Integer, Integer> mVODKeyCodeValue = new ArrayMap<>();
+    private HashMap<Integer, Integer> mVODKeyCodeValue = new HashMap<>();
 
-    private ArrayMap<Integer, Integer> mBTVKeyCodeValue = new ArrayMap<>();
+    private HashMap<Integer, Integer> mBTVKeyCodeValue = new HashMap<>();
 
     public int getKeyCodeValue(int code) {
         if (mBaseKeyCodeValue.containsKey(code)) {

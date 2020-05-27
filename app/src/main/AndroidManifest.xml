@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tangmu.app.TengKuTV">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />-->
+
     <application
         android:name=".CustomApp"
         android:allowBackup="true"
@@ -65,6 +70,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".module.login.LoginActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="landscape" />
         <activity
             android:name=".module.login.ThirdBindActivity"
@@ -87,6 +93,7 @@
         <activity
             android:name=".module.live.LivingActivity"
             android:screenOrientation="landscape" />
+        <activity android:name=".module.LogActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -97,6 +104,11 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+        <!--        <receiver android:name=".BootReceiver">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
     </application>
 
 </manifest>

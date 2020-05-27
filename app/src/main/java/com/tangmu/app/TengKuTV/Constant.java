@@ -30,7 +30,7 @@ public class Constant {
     //    视频分类接口
     public static final String videoType = "/Homepage/videoType";
     //    获取首页推荐栏目视频接口
-    public static final String homevideoLists = "/Homepage/videoLists";
+    public static final String homevideoLists = "/Homepage/tvVideoLists";
     //    栏目更换视频接口
     public static final String change = "/Homepage/change";
 

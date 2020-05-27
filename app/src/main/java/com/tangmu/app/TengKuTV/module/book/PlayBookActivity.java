@@ -3,11 +3,8 @@ package com.tangmu.app.TengKuTV.module.book;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewParent;
 import android.widget.CheckedTextView;
-import android.widget.TextView;
 
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -19,7 +16,9 @@ import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
+import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.BookDetailDataBean;
+import com.tangmu.app.TengKuTV.bean.LoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
@@ -49,6 +48,8 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
     private BookDetailDataBean bookDetailDataBean;
     private SuperPlayerModel superPlayerModel;
     private int currentPosition = 0;
+    private AdBean adBean;
+    private boolean showAd = true;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -60,11 +61,37 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
         getDetail(getIntent().getIntExtra("id", 0));
     }
 
+    private void getAd(int p_id) {
+        OkGo.<BaseResponse<AdBean>>post(Constant.IP + Constant.videoAd)
+                .tag(this)
+                .params("type", 2)
+                .params("p1_id", p_id)
+                .execute(new JsonCallback<BaseResponse<AdBean>>() {
+                    @Override
+                    public void onSuccess(Response<BaseResponse<AdBean>> response) {
+                        if (response.body().getStatus() == 0) {
+                            adBean = response.body().getResult();
+                            superPlayer.setBookAd(adBean.getVa_url());
+                        } else {
+                            showAd = false;
+                        }
+                        startPlay();
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<AdBean>> response) {
+                        super.onError(response);
+                        showAd = false;
+                        startPlay();
+                    }
+                });
+    }
+
     @Override
     public void finish() {
         if (bookDetailDataBean != null) {
             bookDetailDataBean.setProgress(superPlayer.getProgress());
-            PlayHistoryManager.save(bookDetailDataBean, superPlayer.getPosition());
+            PlayHistoryManager.save(bookDetailDataBean, currentPosition);
         }
         super.finish();
     }
@@ -109,7 +136,12 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
                 BookDetailDataBean.BookDetailBean item = anthologyAdapter.getItem(position);
                 if (item == null) return;
-                superPlayerModel.videoId.fileId = item.getBd_fileid(); // 配置 FileId
+                if (showAd && adBean != null) {
+                    superPlayerModel.url = Util.convertVideoPath(adBean.getVa_url());
+                } else {
+                    superPlayerModel.videoId = new SuperPlayerVideoId();
+                    superPlayerModel.videoId.fileId = item.getBd_fileid(); // 配置 FileId
+                }
                 superPlayer.playWithModel(superPlayerModel);
                 int prePosition = currentPosition;
                 currentPosition = position;
@@ -151,7 +183,15 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
                     @Override
                     public void onSuccess(Response<BaseResponse<BookDetailDataBean>> response) {
                         if (response.body().getStatus() == 0) {
-                            showBook(response.body().getResult());
+                            BookDetailDataBean result = response.body().getResult();
+                            showBook(result);
+                            LoginBean login = PreferenceManager.getInstance().getLogin();
+                            if (login != null && login.getU_vip_status() == 1) {
+                                showAd = false;
+                                startPlay();
+                            } else {
+                                getAd(result.getVt_id_one());
+                            }
                         } else {
                             ToastUtil.showText(response.body().getMsg());
                         }
@@ -166,18 +206,23 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
                 });
     }
 
+    @Override
+    public void onBackPressed() {
+        if (bookDetailDataBean != null) {
+            bookDetailDataBean.setProgress(superPlayer.getProgress());
+            PlayHistoryManager.save(bookDetailDataBean, currentPosition);
+        }
+        super.onBackPressed();
+    }
+
     private void showBook(BookDetailDataBean bookDetailDataBean) {
         this.bookDetailDataBean = bookDetailDataBean;
         PlayHistoryInfo book = PlayHistoryManager.getHistory(bookDetailDataBean.getB_id(), 2);
         if (book != null) {
+            int b_progress = book.getB_progress();
+            superPlayer.setCurrent(b_progress);
             currentPosition = book.getB_position();
         }
-        superPlayerModel = new SuperPlayerModel();
-        superPlayerModel.appId = Constant.PLAYID;// 配置 AppId
-        superPlayerModel.videoId = new SuperPlayerVideoId();
-        superPlayerModel.title = Util.showText(bookDetailDataBean.getB_title(), bookDetailDataBean.getB_title_z());
-        superPlayerModel.videoId.fileId = bookDetailDataBean.getBook_detail().get(currentPosition).getBd_fileid(); // 配置 FileId
-        superPlayer.playWithModel(superPlayerModel);
         superPlayer.setInfo(Util.showText(bookDetailDataBean.getB_title(), bookDetailDataBean.getB_title_z()),
                 Util.showText(bookDetailDataBean.getB_author(), bookDetailDataBean.getB_author())
                 , Util.showText(bookDetailDataBean.getB_des(), bookDetailDataBean.getB_des_z()));
@@ -186,13 +231,27 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
         anthologyAdapter.setNewData(bookDetailDataBean.getBook_detail());
     }
 
+    private void startPlay() {
+        if (superPlayerModel == null)
+            superPlayerModel = new SuperPlayerModel();
+        superPlayerModel.appId = Constant.PLAYID;// 配置 AppId
+        superPlayerModel.title = Util.showText(bookDetailDataBean.getB_title(), bookDetailDataBean.getB_title_z());
+        if (showAd && adBean != null) {
+            superPlayerModel.url = Util.convertVideoPath(adBean.getVa_url());
+        } else {
+            superPlayerModel.videoId = new SuperPlayerVideoId();
+            superPlayerModel.videoId.fileId = bookDetailDataBean.getBook_detail().get(currentPosition).getBd_fileid(); // 配置 FileId
+        }
+        superPlayer.playWithModel(superPlayerModel);
+    }
+
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         View currentFocus = getCurrentFocus();
         if (currentFocus != null) {
             LogUtil.e(currentFocus.toString());
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

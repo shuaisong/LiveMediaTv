@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/dp_5_view_bg_focused_select"
-    android:orientation="vertical"
     android:focusable="true"
+    android:orientation="vertical"
     android:padding="2dp">
 
     <FrameLayout
@@ -15,7 +15,7 @@
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
-            android:layout_height="108dp"
+            android:layout_height="307dp"
             tools:ignore="ContentDescription" />
 
         <TextView

@@ -8,8 +8,8 @@
         android:id="@+id/videoType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="44dp"
         android:layout_alignParentEnd="true"
+        android:layout_margin="44dp"
         android:textColor="@color/white"
         android:textSize="36sp"
         android:textStyle="bold" />
@@ -27,6 +27,7 @@
 
         <RadioButton
             android:id="@+id/tv_anthology"
+            style="@style/RadioButton_no"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="70dp"
@@ -41,6 +42,7 @@
 
         <RadioButton
             android:id="@+id/tv_quality"
+            style="@style/RadioButton_no"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="70dp"
@@ -55,6 +57,7 @@
 
         <RadioButton
             android:id="@+id/tv_more"
+            style="@style/RadioButton_no"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginEnd="70dp"
@@ -132,6 +135,7 @@
 
             <RadioButton
                 android:id="@+id/tv_quality1"
+                style="@style/RadioButton_no"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="70dp"

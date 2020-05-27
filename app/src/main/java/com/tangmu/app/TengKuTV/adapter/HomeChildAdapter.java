@@ -40,7 +40,7 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
      */
     public HomeChildAdapter(List<HomeChildBean> data) {
         super(data);
-        addItemType(HomeChildBean.MOVIE, R.layout.item_movie);
+        addItemType(HomeChildBean.MOVIE, R.layout.item_home_movie_list);
         addItemType(HomeChildBean.TITLE, R.layout.item_home_title);
         CustomApp app = CustomApp.getApp();
         radius = AutoSizeUtils.dp2px(app, 5);
@@ -66,16 +66,11 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
                 } else {
                     helper.setVisible(R.id.vip, false);
                 }
-                if (movieBean.getVm_update_status() == 2) {
-                    helper.setText(R.id.endTime, mContext.getResources().getString(R.string.update_done));
-                } else
-                    helper.setText(R.id.endTime, String.format(mContext.getResources().getString(R.string.update_status), movieBean.getCount()));
-                String des = Util.showText(movieBean.getVm_des().trim(), movieBean.getVm_des_z().trim());
-                if (isellipsis(des, (TextView) helper.getView(R.id.des))) {
-                    helper.setGone(R.id.ellipsis, true);
-                } else helper.setGone(R.id.ellipsis, false);
-                helper.setText(R.id.title, Util.showText(movieBean.getVm_title(), movieBean.getVm_title_z()))
-                        .setText(R.id.des, des);
+//                if (movieBean.getVm_update_status() == 2) {
+//                    helper.setText(R.id.endTime, mContext.getResources().getString(R.string.update_done));
+//                } else
+//                    helper.setText(R.id.endTime, String.format(mContext.getResources().getString(R.string.update_status), movieBean.getCount()));
+                helper.setText(R.id.title, Util.showText(movieBean.getVm_title(), movieBean.getVm_title_z())) ;
                 break;
         }
     }

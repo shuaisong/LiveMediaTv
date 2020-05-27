@@ -36,7 +36,7 @@ public class CustomApp extends MultiDexApplication {
         PreferenceManager.init(this);
         AutoSizeConfig.getInstance().setCustomFragment(true);
         initOKGO();
-//        CrashHandler.getInstance().init(this);
+        CrashHandler.getInstance().init(this);
         canCache = PreferenceManager.getInstance().getCanCache();
     }
 

@@ -254,6 +254,12 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         mControllerWindow.disableBottom();
     }
 
+    private int startProgress = 0;
+
+    public void setCurrent(int progress) {
+        startProgress = progress;
+    }
+
     private enum PLAYER_TYPE {
         PLAYER_TYPE_NULL,
         PLAYER_TYPE_VOD,
@@ -1368,6 +1374,13 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             case TXLiveConstants.PLAY_EVT_PLAY_PROGRESS:
                 int progress = param.getInt(TXLiveConstants.EVT_PLAY_PROGRESS_MS);
                 int duration = param.getInt(TXLiveConstants.EVT_PLAY_DURATION_MS);
+                if (adView.getVisibility() != VISIBLE && startProgress != 0) {
+                    int startPosition = duration * startProgress / 100;
+                    if (progress < startPosition) {
+                        mVodPlayer.seek(startPosition / 1000);
+                        startProgress = 0;
+                    }
+                }
                 updateVideoProgress(progress / 1000, duration / 1000);
                 break;
             case TXLiveConstants.PLAY_EVT_PLAY_BEGIN: {

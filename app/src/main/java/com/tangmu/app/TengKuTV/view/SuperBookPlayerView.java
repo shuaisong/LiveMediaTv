@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.bean.BookDetailDataBean;
+import com.tangmu.app.TengKuTV.utils.Util;
 import com.tencent.liteav.basic.log.TXCLog;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerGlobalConfig;
@@ -101,6 +102,19 @@ public class SuperBookPlayerView extends RelativeLayout implements ITXVodPlayLis
 
     public void setCover(String coverImgPath) {
         mControllerWindow.setCover(coverImgPath);
+    }
+
+    private int startProgress = 0;
+
+    public void setCurrent(int progress) {
+        startProgress = progress;
+    }
+
+    private String adUrl;
+
+    public void setBookAd(String adUrl) {
+        if (!TextUtils.isEmpty(adUrl))
+            this.adUrl = Util.convertVideoPath(adUrl);
     }
 
 
@@ -213,11 +227,20 @@ public class SuperBookPlayerView extends RelativeLayout implements ITXVodPlayLis
                 position -= 1;
             }
         }
-
         SuperPlayerModel model = new SuperPlayerModel();
         model.appId = Constant.PLAYID;// 配置 AppId
-        model.videoId = new SuperPlayerVideoId();
-        model.videoId.fileId = data.get(position).getBd_fileid();
+        if (TextUtils.isEmpty(adUrl)) {
+            model.videoId = new SuperPlayerVideoId();
+            model.videoId.fileId = data.get(position).getBd_fileid();
+        } else {
+            if (!TextUtils.isEmpty(mCurrentPlayVideoURL) && mCurrentPlayVideoURL.equals(adUrl)) {
+                model.videoId = new SuperPlayerVideoId();
+                model.videoId.fileId = data.get(position).getBd_fileid();
+            } else {
+                model.url = adUrl;
+            }
+        }
+
         playWithModel(model);
         if (bookSelectedCallback != null) {
             bookSelectedCallback.onBookSelected(position);
@@ -730,11 +753,19 @@ public class SuperBookPlayerView extends RelativeLayout implements ITXVodPlayLis
                 }
                 break;
             case TXLiveConstants.PLAY_EVT_PLAY_END:
-                updatePlayState(SuperPlayerConst.PLAYSTATE_END);
+                selectBook(true);
+                updatePlayState(SuperPlayerConst.PLAYSTATE_PLAYING);
                 break;
             case TXLiveConstants.PLAY_EVT_PLAY_PROGRESS:
                 int progress = param.getInt(TXLiveConstants.EVT_PLAY_PROGRESS_MS);
                 int duration = param.getInt(TXLiveConstants.EVT_PLAY_DURATION_MS);
+                if (!mCurrentPlayVideoURL.equals(adUrl) && startProgress != 0) {
+                    int startPosition = duration * startProgress / 100;
+                    if (progress < startPosition) {
+                        mVodPlayer.seek(startPosition / 1000);
+                        startProgress = 0;
+                    }
+                }
                 updateVideoProgress(progress / 1000, duration / 1000);
                 break;
             case TXLiveConstants.PLAY_EVT_PLAY_BEGIN: {

@@ -21,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.tangmu.app.TengKuTV.CustomApp;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.module.LogActivity;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
 import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.main.MainActivity;
@@ -68,7 +69,7 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
         switchL.setOnClickListener(this);
         ImageView wifi = findViewById(R.id.wifi);
         time = findViewById(R.id.time);
-        tvSwitchL.setText(getResources().getString(R.string.switchL));
+//        tvSwitchL.setText(getResources().getString(R.string.switchL));
         if (context instanceof BookActivity) {
             ImageView imageView = findViewById(R.id.logo);
             imageView.setImageResource(R.mipmap.ic_book_logo);
@@ -101,9 +102,10 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
                 }
                 break;
             case R.id.switchL:
-                if (context instanceof Activity) {
+                context.startActivity(new Intent(context, LogActivity.class));
+               /* if (context instanceof Activity) {
                     selectLanguage();
-                }
+                }*/
                 break;
         }
     }

@@ -16,6 +16,7 @@
 
         <RadioButton
             android:id="@+id/video_collect"
+            style="@style/RadioButton_no"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/history_check_select"
@@ -29,6 +30,7 @@
 
         <RadioButton
             android:id="@+id/book_collect"
+            style="@style/RadioButton_no"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/history_check_select"
@@ -42,6 +44,7 @@
 
         <RadioButton
             android:id="@+id/dubbing_collect"
+            style="@style/RadioButton_no"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/history_check_select"

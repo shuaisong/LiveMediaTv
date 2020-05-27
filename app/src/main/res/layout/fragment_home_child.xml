@@ -249,12 +249,12 @@
                 android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="23dp"
+                android:layout_marginStart="18dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="23dp"
+                android:layout_marginEnd="18dp"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="4" />
+                app:spanCount="5" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

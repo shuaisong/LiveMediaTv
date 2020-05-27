@@ -281,10 +281,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:overScrollMode="never"
-                android:paddingStart="23dp"
-                android:paddingEnd="23dp"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="4" />
+                app:spanCount="5" />
         </LinearLayout>
 
 

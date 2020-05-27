@@ -317,7 +317,7 @@ public class MovieListActivity extends BaseActivity {
     }
 
     private void initMovies() {
-//        movieRecyclerView.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 18), AutoSizeUtils.dp2px(this, 19)));
+        movieRecyclerView.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 18), AutoSizeUtils.dp2px(this, 19)));
         quickAdapter = new BaseQuickAdapter<HomeChildRecommendBean.VideoBean, BaseViewHolder>(R.layout.item_movie_list) {
             @Override
             protected void convert(BaseViewHolder helper, HomeChildRecommendBean.VideoBean item) {
@@ -371,7 +371,7 @@ public class MovieListActivity extends BaseActivity {
 
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
         if (currentFocus != null) {
@@ -389,7 +389,7 @@ public class MovieListActivity extends BaseActivity {
         } else {
             LogUtil.e("currentFocus is null");
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     @OnClick({R.id.showP, R.id.radio_all, R.id.radio_free, R.id.radio_pay, R.id.screen})

@@ -190,7 +190,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         View currentFocus = getCurrentFocus();
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
                 || keyCode == KeyEvent.KEYCODE_MENU) {
@@ -198,7 +198,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
                 superPlayer.showMenu();
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER||keyCode==KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
                     if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
@@ -237,7 +237,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
         }
         if (currentFocus != null)
             LogUtil.e(currentFocus.toString());
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

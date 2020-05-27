@@ -32,6 +32,7 @@ import com.tangmu.app.TengKuTV.bean.TitleBean;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -568,8 +569,30 @@ public class Util {
         }
         return "00:00";
     }
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm",Locale.CHINA);
+
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm", Locale.CHINA);
+
     public static String convertSystemTime(long currentTimeMillis) {
         return simpleDateFormat.format(currentTimeMillis);
+    }
+
+    public static void saveLog(int keyCode, String s) throws IOException {
+        String path;
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            path = Environment.getExternalStorageDirectory() + "/errorLog";
+        } else {
+            path = CustomApp.getApp().getCacheDir().getPath() + "/errorLog";
+        }
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File file = new File(path + File.separator + "errorLog.txt");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        FileWriter fileWriter = new FileWriter(file, true);
+        fileWriter.write("keyCode:" + keyCode + " currentFocus:" + s);
+        fileWriter.close();
     }
 }

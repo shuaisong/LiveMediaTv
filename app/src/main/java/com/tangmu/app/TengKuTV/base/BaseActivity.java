@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -31,7 +32,10 @@ import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.StatusBarUtil;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
+import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.GlideCircleWithBorder;
+
+import java.io.IOException;
 
 import butterknife.ButterKnife;
 import me.jessyan.autosize.internal.CustomAdapt;
@@ -153,7 +157,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     @Override
     protected void onResume() {
         super.onResume();
-        if (isDefaultLanguage!=PreferenceManager.getInstance().isDefaultLanguage())
+        if (isDefaultLanguage != PreferenceManager.getInstance().isDefaultLanguage())
             recreate();
     }
 
@@ -193,5 +197,28 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     @Override
     public float getSizeInDp() {
         return 648;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        View currentFocus = getCurrentFocus();
+        if (currentFocus != null) {
+            LogUtil.e(event.getKeyCode() + currentFocus.toString());
+            ToastUtil.showText(event.getKeyCode() + currentFocus.toString());
+        } else {
+            ToastUtil.showText(event.getKeyCode() + "currentFocus = null");
+        }
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            event = new KeyEvent(event.getDownTime(), event.getEventTime(), event.getAction(),
+                    KeyEvent.KEYCODE_DPAD_CENTER, event.getMetaState(),
+                    event.getDeviceId(), event.getScanCode(), event.getFlags(), event.getSource());
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        System.gc();
     }
 }

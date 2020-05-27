@@ -44,12 +44,12 @@ public class PlayHistoryActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
         View currentFocus = getCurrentFocus();
         if (currentFocus != null) {
             LogUtil.e(currentFocus.toString());
         }
-        return super.onKeyDown(keyCode, event);
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

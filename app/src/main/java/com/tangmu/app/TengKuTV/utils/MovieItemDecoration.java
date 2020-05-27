@@ -21,7 +21,7 @@ public class MovieItemDecoration extends RecyclerView.ItemDecoration {
     private final int bottom;
 
     public MovieItemDecoration(Context context) {
-        bottom = AutoSizeUtils.dp2px(context, 10);
+        bottom = AutoSizeUtils.dp2px(context, 11);
         space = AutoSizeUtils.dp2px(context, 8);
     }
 

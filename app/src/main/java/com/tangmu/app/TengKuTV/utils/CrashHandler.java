@@ -1,12 +1,16 @@
 package com.tangmu.app.TengKuTV.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+
+import com.tangmu.app.TengKuTV.CustomApp;
+import com.tangmu.app.TengKuTV.module.LogActivity;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -72,14 +76,15 @@ public class CrashHandler implements UncaughtExceptionHandler {
             // 如果用户没有处理则让系统默认的异常处理器来处理
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-//                Log.e(TAG, "error : " + e);
-            }
+//            try {
+//                Thread.sleep(300);
+//            } catch (InterruptedException e) {
+////                Log.e(TAG, "error : " + e);
+//            }
             // 退出程序
-            android.os.Process.killProcess(android.os.Process.myPid());
-            System.exit(1);
+//            CustomApp.getApp().startActivity(new Intent(CustomApp.getApp(), LogActivity.class));
+//            android.os.Process.killProcess(android.os.Process.myPid());
+//            System.exit(1);
         }
     }
 
@@ -171,24 +176,26 @@ public class CrashHandler implements UncaughtExceptionHandler {
         sb.append(result);
         try {
             String fileName = "errorLog.txt";
+            String path;
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-                String path = Environment.getExternalStorageDirectory() + "/errorLog";
-                Log.e(TAG, path);
-                File dir = new File(path);
-                if (!dir.exists()) {
-                    dir.mkdir();
-                }
-                File file = new File(path + File.separator + fileName);
-                if (!file.exists()) {
-                    file.createNewFile();
-                }
-                FileWriter fileWriter = new FileWriter(file, true);
-                fileWriter.write(sb.toString());
-                fileWriter.close();
-                Log.e(TAG, file.getPath());
-                return file.getPath();
+                path = Environment.getExternalStorageDirectory() + "/errorLog";
+            } else {
+                path = CustomApp.getApp().getCacheDir().getPath() + "/errorLog";
             }
-            return fileName;
+            Log.e(TAG, path);
+            File dir = new File(path);
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            File file = new File(path + File.separator + fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWriter = new FileWriter(file, true);
+            fileWriter.write(sb.toString());
+            fileWriter.close();
+            Log.e(TAG, file.getPath());
+            return file.getPath();
         } catch (Exception e) {
             return null;
         }
