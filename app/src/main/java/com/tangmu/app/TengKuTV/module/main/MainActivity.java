@@ -63,10 +63,7 @@ public class MainActivity extends BaseActivity implements MainContact.View {
 
     @Override
     public void onBackPressed() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
-        activityManager.getMemoryInfo(memoryInfo);
-        ToastUtil.showText(memoryInfo.totalMem / (1024 * 1024) + "\n" + memoryInfo.availMem / (1024 * 1024));
+
     }
 
     @Override
