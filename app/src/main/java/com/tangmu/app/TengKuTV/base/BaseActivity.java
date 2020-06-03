@@ -201,13 +201,13 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            LogUtil.e(event.getKeyCode() + currentFocus.toString());
-            ToastUtil.showText(event.getKeyCode() + currentFocus.toString());
-        } else {
-            ToastUtil.showText(event.getKeyCode() + "currentFocus = null");
-        }
+//        View currentFocus = getCurrentFocus();
+//        if (currentFocus != null) {
+//            LogUtil.e(event.getKeyCode() + currentFocus.toString());
+//            ToastUtil.showText(event.getKeyCode() + currentFocus.toString());
+//        } else {
+//            ToastUtil.showText(event.getKeyCode() + "currentFocus = null");
+//        }
         if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             event = new KeyEvent(event.getDownTime(), event.getEventTime(), event.getAction(),
                     KeyEvent.KEYCODE_DPAD_CENTER, event.getMetaState(),

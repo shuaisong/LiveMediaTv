@@ -26,12 +26,9 @@ public class CheckableVipLinearLayout extends LinearLayout implements Checkable 
     private boolean isChecked;
     private OnCheckedChangeListener mOnCheckedChangeWidgetListener;
     private ImageView imgIndicator;
-    private TextView textView0;
-    private TextView textView1;
     private ImageView imageView2;
     private ImageView imageView1;
     private ImageView imageView0;
-    private int uncheckColor;
 
     public CheckableVipLinearLayout(@NonNull Context context) {
         this(context, null);
@@ -53,7 +50,6 @@ public class CheckableVipLinearLayout extends LinearLayout implements Checkable 
                     setChecked(hasFocus);
             }
         });
-        uncheckColor = Color.parseColor("#E0B954");
     }
 
     @Override
@@ -73,11 +69,6 @@ public class CheckableVipLinearLayout extends LinearLayout implements Checkable 
         imageView0 = (ImageView) linearLayout.getChildAt(0);
         imageView1 = (ImageView) linearLayout.getChildAt(1);
         imageView2 = (ImageView) linearLayout.getChildAt(2);
-
-        linearLayout = (LinearLayout) frameLayout.getChildAt(1);
-        textView0 = (TextView) linearLayout.getChildAt(0);
-        textView1 = (TextView) linearLayout.getChildAt(1);
-
 
         imgIndicator = (ImageView) getChildAt(1);
         setChecked(isChecked);
@@ -100,17 +91,11 @@ public class CheckableVipLinearLayout extends LinearLayout implements Checkable 
             imageView1.setBackgroundResource(R.mipmap.buy_vip_checked2);
             imageView2.setBackgroundResource(R.mipmap.buy_vip_checked3);
 
-            textView0.setTextColor(Color.WHITE);
-            textView1.setTextColor(Color.WHITE);
-
             imgIndicator.setVisibility(VISIBLE);
         } else {
             imageView0.setBackgroundResource(R.mipmap.buy_vip_unchecked1);
             imageView1.setBackgroundResource(R.mipmap.buy_vip_unchecked2);
             imageView2.setBackgroundResource(R.mipmap.buy_vip_unchecked3);
-
-            textView0.setTextColor(uncheckColor);
-            textView1.setTextColor(uncheckColor);
 
             imgIndicator.setVisibility(INVISIBLE);
         }

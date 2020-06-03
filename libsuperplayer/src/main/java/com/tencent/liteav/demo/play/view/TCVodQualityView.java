@@ -123,6 +123,15 @@ public class TCVodQualityView extends FrameLayout {
         }
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
+            View viewByPosition = mAdapter.getViewByPosition(mListView, mClickPos, R.id.item_quality);
+            if (viewByPosition != null) {
+                viewByPosition.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewByPosition.requestFocus();
+                    }
+                }, 200);
+            }
         }
     }
 
@@ -151,6 +160,14 @@ public class TCVodQualityView extends FrameLayout {
      */
     public void setDefaultSelectedQuality(int index) {
         defaultQualityIndex = index;
+    }
+
+    public void show() {
+        setVisibility(VISIBLE);
+    }
+
+    public void hide() {
+        setVisibility(GONE);
     }
 
     class QualityAdapter extends BaseQuickAdapter<TCVideoQuality, BaseViewHolder> {

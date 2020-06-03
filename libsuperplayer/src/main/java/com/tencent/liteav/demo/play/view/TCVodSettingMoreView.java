@@ -53,4 +53,13 @@ public class TCVodSettingMoreView extends LinearLayout implements RadioGroup.OnC
             callback.fullScale(true);
         }
     }
+
+    public void show() {
+        setVisibility(VISIBLE);
+        findViewById(R.id.jump).requestFocus();
+    }
+
+    public void hide() {
+        setVisibility(GONE);
+    }
 }

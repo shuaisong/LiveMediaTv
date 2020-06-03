@@ -3,6 +3,7 @@ package com.tangmu.app.TengKuTV.module.book;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +20,7 @@ import com.tangmu.app.TengKuTV.base.BaseFragment;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
+import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
 import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
@@ -40,7 +42,7 @@ import butterknife.OnClick;
  * auther:lenovo
  * Date：2020/2/21
  */
-public class BookActivity extends BaseActivity {
+public class BookActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     @BindView(R.id.titleView)
     TitleView titleView;
@@ -58,14 +60,6 @@ public class BookActivity extends BaseActivity {
 
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            LogUtil.e(currentFocus.toString());
-        }
-        return super.onKeyUp(keyCode, event);
-    }
 
     /**
      * 初始化数据
@@ -127,6 +121,7 @@ public class BookActivity extends BaseActivity {
                             }
                             tablayout.setupWithViewPager(mViewPager);
                             setTabView();
+                            tablayout.getTabAt(0).view.requestFocus();
                         } else {
                             ToastUtil.showText(response.body().getMsg());
                         }
@@ -166,6 +161,7 @@ public class BookActivity extends BaseActivity {
             TabLayout.Tab tab = tablayout.getTabAt(i);
             //为每个标签设置布局
             tab.setCustomView(R.layout.tab_item);
+            tab.view.setOnFocusChangeListener(this);
             holder = new ViewHolder(tab.getCustomView());
             //为标签填充数据
             CategoryBean categoryBean = categories.get(i);
@@ -194,6 +190,32 @@ public class BookActivity extends BaseActivity {
         });
     }
 
+    private int keyCode;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        this.keyCode = keyCode;
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (v instanceof TabLayout.TabView && v.hasFocus()) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                TabLayout.Tab tabAt = tablayout.getTabAt(mViewPager.getCurrentItem());
+                if (tabAt != null) {
+                    tabAt.view.requestFocus();
+                }
+            } else {
+                ViewGroup parent = (ViewGroup) v.getParent();
+                int index = parent.indexOfChild(v);
+                TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                if (tabAt != null)
+                    tabAt.select();
+            }
+        }
+    }
+
 
     class ViewHolder {
         TextView tvTabName;
@@ -203,6 +225,7 @@ public class BookActivity extends BaseActivity {
             tvTabName = (TextView) tabView.findViewById(R.id.tv_tab_name);
             ivTab = (ImageView) tabView.findViewById(R.id.iv_tab);
         }
+
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.tangmu.app.TengKuTV.module.search;
 import android.content.Intent;
 import android.graphics.Color;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -13,6 +14,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -127,6 +129,7 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
         initT9Key();
         initHotList();
         initResult();
+        tvSearch.setInputType(InputType.TYPE_NULL);
         radioKey.setOnCheckedChangeListener(this);
         radioT9.setOnFocusChangeListener(this);
         radioFull.setOnFocusChangeListener(this);
@@ -237,6 +240,7 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
             protected void convert(BaseViewHolder helper, T9KeyBean item) {
                 helper.getView(R.id.line_uncheck).setOnFocusChangeListener(VideoSearchActivity.this);
                 helper.getView(R.id.item_t9_key).setOnFocusChangeListener(VideoSearchActivity.this);
+                helper.getView(R.id.line1).setOnFocusChangeListener(VideoSearchActivity.this);
                 if (item.getNum2() == 0) {
                     helper.setVisible(R.id.line1, false)
                             .setVisible(R.id.line_uncheck, true)
@@ -270,112 +274,110 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
                             .setGone(R.id.letter3, false)
                             .setGone(R.id.letter4, false);
                 }
-                helper.setNestView(R.id.letter1, R.id.letter2, R.id.letter3, R.id.letter4, R.id.tv_top, R.id.line_uncheck);
+                helper.setNestView(R.id.letter1, R.id.letter2, R.id.letter3, R.id.letter4, R.id.tv_top, R.id.line_uncheck, R.id.line1);
             }
         };
-        t9KeyAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
-            @Override
-            public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
-                if (view.getId() == R.id.line_uncheck) {
-                    View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
-                    View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);
-                    View line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_uncheck);
-                    if (line1 != null) {
-                        if (currentT9KeyPosition == 0)
-                            line1.setVisibility(View.VISIBLE);
-                        else {
-                            line1.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                    if (line_uncheck != null) {
-                        if (currentT9KeyPosition == 0)
-                            line_uncheck.setVisibility(View.INVISIBLE);
-                        else {
-                            line_uncheck.setVisibility(View.VISIBLE);
-                        }
-                    }
-                    if (line_checked != null) {
-                        line_checked.setVisibility(View.INVISIBLE);
-                    }
-                    View tv_top = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.tv_top);
-                    View letter1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.letter1);
-                    line_checked = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_checked);
-                    line1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line1);
-                    line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_uncheck);
-                    if (line1 != null) {
-                        line1.setVisibility(View.INVISIBLE);
-                    }
-                    if (line_uncheck != null) {
-                        line_uncheck.setVisibility(View.INVISIBLE);
-                    }
-                    if (line_checked != null) {
-                        line_checked.setVisibility(View.VISIBLE);
-                    }
-                    if (position != 0) {
-                        if (tv_top != null) {
-                            tv_top.requestFocus();
-                        }
-                    } else {
-                        if (letter1 != null) {
-                            letter1.requestFocus();
-                        }
-                    }
-                    currentT9KeyPosition = position;
-                    return true;
-                }
-                return false;
-            }
-        });
-        t9KeyAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
-                View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
-                View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);
-                View line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_uncheck);
-                if (line1 != null) {
-                    if (currentT9KeyPosition == 0)
-                        line1.setVisibility(View.VISIBLE);
-                    else {
-                        line1.setVisibility(View.INVISIBLE);
-                    }
-                }
-                if (line_uncheck != null) {
-                    if (currentT9KeyPosition == 0)
-                        line_uncheck.setVisibility(View.INVISIBLE);
-                    else {
-                        line_uncheck.setVisibility(View.VISIBLE);
-                    }
-                }
-                if (line_checked != null) {
-                    line_checked.setVisibility(View.INVISIBLE);
-                }
-                View tv_top = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.tv_top);
-                View letter1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.letter1);
-                line_checked = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_checked);
-                line1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line1);
-                line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_uncheck);
-                if (line1 != null) {
-                    line1.setVisibility(View.INVISIBLE);
-                }
-                if (line_uncheck != null) {
-                    line_uncheck.setVisibility(View.INVISIBLE);
-                }
-                if (line_checked != null) {
-                    line_checked.setVisibility(View.VISIBLE);
-                }
-                if (position != 0) {
-                    if (tv_top != null) {
-                        tv_top.requestFocus();
-                    }
-                } else {
-                    if (letter1 != null) {
-                        letter1.requestFocus();
-                    }
-                }
-                currentT9KeyPosition = position;
-                return true;
-            }
-        });
+//        t9KeyAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
+//            @Override
+//            public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+//                View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
+//                View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);
+//                View line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_uncheck);
+//                if (line1 != null) {
+//                    if (currentT9KeyPosition == 0)
+//                        line1.setVisibility(View.VISIBLE);
+//                    else {
+//                        line1.setVisibility(View.INVISIBLE);
+//                    }
+//                }
+//                if (line_uncheck != null) {
+//                    if (currentT9KeyPosition == 0)
+//                        line_uncheck.setVisibility(View.INVISIBLE);
+//                    else {
+//                        line_uncheck.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//                if (line_checked != null) {
+//                    line_checked.setVisibility(View.INVISIBLE);
+//                }
+//                View tv_top = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.tv_top);
+//                View letter1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.letter1);
+//                line_checked = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_checked);
+//                line1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line1);
+//                line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_uncheck);
+//                if (line1 != null) {
+//                    line1.setVisibility(View.INVISIBLE);
+//                }
+//                if (line_uncheck != null) {
+//                    line_uncheck.setVisibility(View.INVISIBLE);
+//                }
+//                if (line_checked != null) {
+//                    line_checked.setVisibility(View.VISIBLE);
+//                }
+//                if (position != 0) {
+//                    if (tv_top != null) {
+//                        tv_top.requestFocus();
+//                    }
+//                } else {
+//                    if (letter1 != null) {
+//                        letter1.setVisibility(View.VISIBLE);
+//                        letter1.requestFocus();
+//                    }
+//                }
+//                currentT9KeyPosition = position;
+//                return true;
+//            }
+//        });
+//        t9KeyAdapter.setOnItemLongClickListener(new BaseQuickAdapter.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(BaseQuickAdapter adapter, View view, int position) {
+//                View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
+//                View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);
+//                View line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_uncheck);
+//                if (line1 != null) {
+//                    if (currentT9KeyPosition == 0)
+//                        line1.setVisibility(View.VISIBLE);
+//                    else {
+//                        line1.setVisibility(View.INVISIBLE);
+//                    }
+//                }
+//                if (line_uncheck != null) {
+//                    if (currentT9KeyPosition == 0)
+//                        line_uncheck.setVisibility(View.INVISIBLE);
+//                    else {
+//                        line_uncheck.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//                if (line_checked != null) {
+//                    line_checked.setVisibility(View.INVISIBLE);
+//                }
+//                View tv_top = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.tv_top);
+//                View letter1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.letter1);
+//                line_checked = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_checked);
+//                line1 = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line1);
+//                line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, position, R.id.line_uncheck);
+//                if (line1 != null) {
+//                    line1.setVisibility(View.INVISIBLE);
+//                }
+//                if (line_uncheck != null) {
+//                    line_uncheck.setVisibility(View.INVISIBLE);
+//                }
+//                if (line_checked != null) {
+//                    line_checked.setVisibility(View.VISIBLE);
+//                }
+//                if (position != 0) {
+//                    if (tv_top != null) {
+//                        tv_top.requestFocus();
+//                    }
+//                } else {
+//                    if (letter1 != null) {
+//                        letter1.requestFocus();
+//                    }
+//                }
+//                currentT9KeyPosition = position;
+//                return true;
+//            }
+//        });
         t9KeyAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter adapter, View view, int position) {
@@ -491,7 +493,7 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
                 radioFull.setChecked(true);
             }
             LogUtil.e(v.getClass().getSimpleName() + v.getId() + v.toString());
-            if (v.getId() == R.id.item_t9_key || v.getId() == R.id.line_uncheck) {
+            if (v.getId() == R.id.item_t9_key || v.getId() == R.id.line_uncheck || v.getId() == R.id.line1) {
                 View line_checked = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_checked);
                 View line1 = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line1);
                 View line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, currentT9KeyPosition, R.id.line_uncheck);
@@ -512,6 +514,32 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
                 if (line_checked != null) {
                     line_checked.setVisibility(View.INVISIBLE);
                 }
+                ViewParent parent = v.getParent();
+                int childAdapterPosition = t9Key.getChildAdapterPosition((View) parent);
+                View tv_top = t9KeyAdapter.getViewByPosition(t9Key, childAdapterPosition, R.id.tv_top);
+                View letter1 = t9KeyAdapter.getViewByPosition(t9Key, childAdapterPosition, R.id.letter1);
+                line_checked = t9KeyAdapter.getViewByPosition(t9Key, childAdapterPosition, R.id.line_checked);
+                line1 = t9KeyAdapter.getViewByPosition(t9Key, childAdapterPosition, R.id.line1);
+                line_uncheck = t9KeyAdapter.getViewByPosition(t9Key, childAdapterPosition, R.id.line_uncheck);
+                if (line1 != null) {
+                    line1.setVisibility(View.INVISIBLE);
+                }
+                if (line_uncheck != null) {
+                    line_uncheck.setVisibility(View.INVISIBLE);
+                }
+                if (line_checked != null) {
+                    line_checked.setVisibility(View.VISIBLE);
+                }
+                if (childAdapterPosition != 0) {
+                    if (tv_top != null) {
+                        tv_top.requestFocus();
+                    }
+                } else {
+                    if (letter1 != null) {
+                        letter1.requestFocus();
+                    }
+                }
+                currentT9KeyPosition = childAdapterPosition;
             }
         }
     }

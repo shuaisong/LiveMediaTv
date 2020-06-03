@@ -1,9 +1,8 @@
 package com.tangmu.app.TengKuTV.module.main;
 
-import android.app.ActivityManager;
-import android.content.Context;
+import android.content.Intent;
 import android.view.KeyEvent;
-import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -11,15 +10,16 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
+import com.tangmu.app.TengKuTV.bean.LoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerActivityComponent;
 import com.tangmu.app.TengKuTV.contact.MainContact;
 import com.tangmu.app.TengKuTV.module.home.HomeFragment;
+import com.tangmu.app.TengKuTV.module.vip.FreeVipActivity;
 import com.tangmu.app.TengKuTV.presenter.MainPresenter;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
-import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
+import com.tangmu.app.TengKuTV.view.FreeVIPTip;
 import com.tangmu.app.TengKuTV.view.TitleView;
 
 import java.util.Timer;
@@ -35,7 +35,10 @@ public class MainActivity extends BaseActivity implements MainContact.View {
     MainPresenter presenter;
     @BindView(R.id.titleView)
     TitleView titleView;
+    @BindView(R.id.content)
+    FrameLayout content;
     private Timer timer;
+    private FreeVIPTip freeVIPTip;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -95,13 +98,39 @@ public class MainActivity extends BaseActivity implements MainContact.View {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            LoginBean login = PreferenceManager.getInstance().getLogin();
+                            if (login != null && login.getIs_receive() != 2) {
+                                initReceiveVIP();
+                            }
                             long currentTimeMillis = System.currentTimeMillis();
                             titleView.setTime(Util.convertSystemTime(currentTimeMillis));
                         }
                     });
                 }
-            }, 0, 1000);
+            }, 1000, 1000);
         }
+
     }
 
+    private void initReceiveVIP() {
+        if (freeVIPTip == null) {
+            freeVIPTip = new FreeVIPTip(MainActivity.this);
+            freeVIPTip.show(content);
+        }
+
+    }
+
+    public int keyCode;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        this.keyCode = keyCode;
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            if (freeVIPTip != null && freeVIPTip.isShowing()) {
+                startActivity(new Intent(this, FreeVipActivity.class));
+                freeVIPTip.dismiss();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

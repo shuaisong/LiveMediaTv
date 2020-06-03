@@ -8,11 +8,11 @@
     android:background="@color/black_bg"
     android:keepScreenOn="true"
     android:orientation="vertical"
-    android:paddingTop="26dp"
     tools:context=".module.dubbing.ShowDubbingVideoActivity">
 
     <com.tangmu.app.TengKuTV.view.TitleView
         android:id="@+id/titleView"
+        android:layout_marginTop="26dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -125,9 +125,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="20dp"
-                            android:background="@drawable/dp_0_view_bg_focused_selelct"
-                            android:focusable="true"
-                            android:padding="@dimen/focus_width"
                             android:visibility="invisible" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -169,8 +166,8 @@
                 android:id="@+id/video_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
         </LinearLayout>

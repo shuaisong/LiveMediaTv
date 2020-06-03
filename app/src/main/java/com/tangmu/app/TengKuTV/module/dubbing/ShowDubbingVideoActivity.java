@@ -30,7 +30,6 @@ import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerActivityComponent;
 import com.tangmu.app.TengKuTV.contact.DubbingDetailContact;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
-import com.tangmu.app.TengKuTV.module.live.HistoryLiveActivity;
 import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
@@ -48,8 +47,6 @@ import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
 import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.view.TCVodQualityView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 import java.util.Timer;
@@ -134,7 +131,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
                 superPlayer.showMenu();
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER||keyCode==KeyEvent.KEYCODE_DPAD_CENTER) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
                     if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
@@ -148,24 +145,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
             if (currentFocus != null) {
                 switch (currentFocus.getId()) {
                     case R.id.controller_small:
-                        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE || superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_END) {
-                            superPlayer.onResume();
-                        } else {
-                            superPlayer.onPause();
-                        }
-                        break;
-                    case R.id.adView:
-                    case R.id.vipTipView:
-                    case R.id.buyAntholgyView:
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(ShowDubbingVideoActivity.this, VIPActivity.class), 101);
-                        else {
-                            startActivityForResult(new Intent(ShowDubbingVideoActivity.this, LoginActivity.class), 101);
-                            EventBus.getDefault().register(ShowDubbingVideoActivity.this);
-                        }
-                        break;
-                    case R.id.pause_ad_view:
-                        superPlayer.findViewById(R.id.pause_ad_view).setVisibility(View.GONE);
+                        superPlayer.requestFullMode();
                         break;
                 }
             }
@@ -395,8 +375,8 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
                 superPlayer.requestFullMode();
                 break;
             case R.id.collect:
-                if (dubbingBean != null)
-                    if (isClickLogin())
+                if (dubbingBean != null && isClickLogin())
+                    if (dubbingBean.getUc_id() == 0)
                         presenter.collect(id);
                     else presenter.unCollect(dubbingBean.getUc_id());
                 break;
@@ -489,5 +469,25 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
         if (intent != null) {
             startActivity(intent);
         }
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

@@ -6,26 +6,31 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.tencent.liteav.demo.play.R;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
+import com.tencent.liteav.demo.play.bean.ImgFrameBean;
 import com.tencent.liteav.demo.play.bean.TCPlayImageSpriteInfo;
 import com.tencent.liteav.demo.play.bean.TCPlayKeyFrameDescInfo;
+import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.bean.VideoBean;
 import com.tencent.liteav.demo.play.net.TCLogReport;
 import com.tencent.liteav.demo.play.utils.TCTimeUtil;
@@ -33,7 +38,6 @@ import com.tencent.liteav.demo.play.utils.TCVideoGestureUtil;
 import com.tencent.liteav.demo.play.view.PauseAdView;
 import com.tencent.liteav.demo.play.view.TCPointSeekBar;
 import com.tencent.liteav.demo.play.view.TCVideoProgressLayout;
-import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.view.TCVodAnthologyView;
 import com.tencent.liteav.demo.play.view.TCVodMoreView;
 import com.tencent.liteav.demo.play.view.TCVodQualityView;
@@ -46,6 +50,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
+import me.jessyan.autosize.utils.LogUtils;
+import me.jessyan.autosize.utils.ScreenUtils;
 
 /**
  * 全屏模式播放控件
@@ -71,7 +77,7 @@ import me.jessyan.autosize.utils.AutoSizeUtils;
  * 8、硬件加速监听{@link #onHWAcceleration(boolean)}
  */
 public class TCControllerFullScreen extends RelativeLayout implements IController, View.OnClickListener,
-        TCVodMoreView.Callback, TCVodQualityView.Callback, TCPointSeekBar.OnSeekBarChangeListener, TCPointSeekBar.OnSeekBarPointClickListener, TCVodAnthologyView.Callback {
+        TCVodMoreView.Callback, TCVodQualityView.Callback, TCPointSeekBar.OnSeekBarChangeListener, TCPointSeekBar.OnSeekBarPointClickListener, TCVodAnthologyView.Callback, View.OnFocusChangeListener {
 
     // UI控件
     private LinearLayout mLayoutBottom;                          // 底部进度条所在布局
@@ -96,6 +102,9 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
     private GestureDetector mGestureDetector;                       // 手势检测监听器
     private TCVideoGestureUtil mVideoGestureUtil;                      // 手势控制工具
     private boolean isSetPausedImg;
+    private BaseQuickAdapter<ImgFrameBean, BaseViewHolder> imgFrameAdapter;
+    private RecyclerView imgFrames;
+    private boolean haveImgFrame;//是否有缩略图
 
     public void setVideoQualityCallback(TCVodQualityView.VideoQualityCallback videoQualityCallback) {
         mVodQualityView.setVideoQualityCallback(videoQualityCallback);
@@ -300,6 +309,34 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
         mGestureVolumeBrightnessProgressLayout = (TCVolumeBrightnessProgressLayout) findViewById(R.id.gesture_progress);
         mGestureVideoProgressLayout = (TCVideoProgressLayout) findViewById(R.id.video_progress_layout);
         mIvWatermark = findViewById(R.id.large_iv_water_mark);
+        initImgFrames();
+        mDefaultVideoQuality = new TCVideoQuality();
+        mDefaultVideoQuality.index = 2;
+    }
+
+    private void initImgFrames() {
+        imgFrames = findViewById(R.id.imgFrames);
+        imgFrameAdapter = new BaseQuickAdapter<ImgFrameBean, BaseViewHolder>(R.layout.item_img_frame) {
+            @Override
+            protected void convert(BaseViewHolder helper, ImgFrameBean item) {
+                helper.itemView.setOnFocusChangeListener(TCControllerFullScreen.this);
+                helper.setText(R.id.time, TCTimeUtil.formattedTime(item.getTime()));
+                if (item.getBitmap() != null) {
+                    helper.setImageBitmap(R.id.image, item.getBitmap());
+                }
+            }
+        };
+        imgFrameAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                ImgFrameBean item = imgFrameAdapter.getItem(position);
+                if (item != null) {
+                    mControllerCallback.onSeekTo(item.getTime());
+                    hide();
+                }
+            }
+        });
+        imgFrames.setAdapter(imgFrameAdapter);
     }
 
     /**
@@ -391,6 +428,7 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
     public void show() {
         isShowing = true;
         mLayoutBottom.setVisibility(View.VISIBLE);
+        mFullLayoutBottom.setVisibility(VISIBLE);
         if (mPlayType != SuperPlayerConst.PLAYTYPE_LIVE) {
             mFullLayoutBottom.setVisibility(VISIBLE);
             mTvQuality1.setVisibility(GONE);
@@ -428,6 +466,9 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
     @Override
     public void hide() {
         isShowing = false;
+        isShowingMenu = false;
+        mIsChangingSeekBarProgress = false;
+        imgFrames.setVisibility(GONE);
         mLayoutBottom.setVisibility(View.GONE);
         mFullLayoutBottom.setVisibility(GONE);
         mFullLayoutBottom.check(-1);
@@ -656,7 +697,9 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
                 // 雪碧图ELK上报
                 TCLogReport.getInstance().uploadLogs(TCLogReport.ELK_ACTION_IMAGE_SPRITE, 0, 0);
                 mTXImageSprite.setVTTUrlAndImageUrls(info.webVttUrl, info.imageUrls);
+                haveImgFrame = true;
             } else {
+                haveImgFrame = false;
                 mTXImageSprite.setVTTUrlAndImageUrls(null, null);
             }
         }
@@ -748,21 +791,21 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
         } else if (i == R.id.large_tv_vtt_text) { //关键帧打点信息按钮
             seekToKeyFramePos();
         } else if (i == R.id.tv_anthology) {
-            mVodQualityView.setVisibility(GONE);
-            tcVodSettingMoreView.setVisibility(GONE);
-            anthologyView.setVisibility(VISIBLE);
+            mVodQualityView.hide();
+            tcVodSettingMoreView.hide();
+            anthologyView.show();
         } else if (i == R.id.tv_quality) {
+            anthologyView.hide();
+            tcVodSettingMoreView.hide();
+            mVodQualityView.show();
             showQualityView();
-            anthologyView.setVisibility(GONE);
-            tcVodSettingMoreView.setVisibility(GONE);
-            mVodQualityView.setVisibility(VISIBLE);
         } else if (i == R.id.tv_more) {
-            anthologyView.setVisibility(GONE);
-            mVodQualityView.setVisibility(GONE);
-            tcVodSettingMoreView.setVisibility(VISIBLE);
+            anthologyView.hide();
+            mVodQualityView.hide();
+            tcVodSettingMoreView.show();
         } else if (i == R.id.tv_quality1) {
+            mVodQualityView.show();
             showQualityView();
-            mVodQualityView.setVisibility(VISIBLE);
         }
     }
 
@@ -1082,8 +1125,106 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
     }
 
     public void setDefaultQuality(int defaultQualityIndex) {
-        mDefaultVideoQuality = new TCVideoQuality();
         mDefaultVideoQuality.index = defaultQualityIndex;
+    }
+
+    boolean isShowingMenu;
+
+    public void showMenu() {
+        isShowingMenu = true;
+        if (!isShowing)
+            show();
+    }
+
+    private void showProgress(int keyCode, long duration) {
+        if (duration != 0) {
+            int progress = mSeekBarProgress.getProgress();
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (progress > 0)
+                    progress = progress - 1;
+            } else {
+                if (progress < mSeekBarProgress.getMax())
+                    progress = progress + 1;
+            }
+            float percentage = progress * 1.0f / mSeekBarProgress.getMax();
+            long l = (long) (percentage * duration);
+            mControllerCallback.onSeekTo((int) l);
+            mSeekBarProgress.setmIsOnDrag(false);
+            mSeekBarProgress.setProgress(progress);
+        }
+    }
+
+    public void showProgress(int keyCode, long current, long duration) {
+        if (isShowingMenu) return;
+        mIsChangingSeekBarProgress = true;
+        if (!haveImgFrame) {//没有缩略图
+            showProgress(keyCode, duration);
+            if (!isShowing)
+                show();
+            if (mFullLayoutBottom.getVisibility() != GONE)
+                mFullLayoutBottom.setVisibility(GONE);
+            return;
+        }
+        if (imgFrames.getVisibility() != VISIBLE)
+            imgFrames.setVisibility(VISIBLE);
+        if (imgFrameAdapter.getData().isEmpty()) {
+            for (int i = 0; i < duration; i += 10) {
+                Bitmap thumbnail = mTXImageSprite.getThumbnail(i);
+                imgFrameAdapter.getData().add(new ImgFrameBean(i, thumbnail));
+            }
+            imgFrameAdapter.notifyDataSetChanged();
+        }
+        if (!isShowing) {
+            show();
+            int i = (int) (current / 10);
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) imgFrames.getLayoutManager();
+            if (linearLayoutManager != null) {
+                linearLayoutManager.scrollToPositionWithOffset(i, 0);
+                imgFrames.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        View viewByPosition = imgFrameAdapter.getViewByPosition(imgFrames, i, R.id.item_img_frame);
+                        if (viewByPosition != null) {
+                            viewByPosition.requestFocus();
+                            imgFrames.scrollBy(getScrollAmount(viewByPosition)[0], 0);
+                        } else {
+                            LogUtils.e("viewByPosition = null");
+                        }
+                    }
+                }, 100);
+            }
+
+        }
+        if (mFullLayoutBottom.getVisibility() != GONE)
+            mFullLayoutBottom.setVisibility(GONE);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            int childAdapterPosition = imgFrames.getChildAdapterPosition(v);
+            ImgFrameBean item = imgFrameAdapter.getItem(childAdapterPosition);
+            imgFrames.scrollBy(getScrollAmount(v)[0], 0);
+            if (item != null && mDuration != 0) {
+                mSeekBarProgress.setProgress((int) (item.getTime() * 100 / mDuration));
+            }
+            if (mHideViewRunnable != null) {
+                TCControllerFullScreen.this.getHandler().removeCallbacks(mHideViewRunnable);
+                TCControllerFullScreen.this.getHandler().postDelayed(mHideViewRunnable, 3000);
+            }
+        }
+    }
+
+    /**
+     * 计算需要滑动的距离,使焦点在滑动中始终居中
+     *
+     * @param view
+     */
+    private int[] getScrollAmount(View view) {
+        int[] out = new int[2];
+        view.getLocationOnScreen(out);
+        out[0] = out[0] - ScreenUtils.getScreenSize(getContext())[0] / 2;
+        return out;
     }
 
 

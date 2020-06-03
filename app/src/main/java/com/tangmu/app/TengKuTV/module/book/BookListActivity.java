@@ -1,8 +1,10 @@
 package com.tangmu.app.TengKuTV.module.book;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -37,7 +39,7 @@ import java.util.List;
 import butterknife.BindView;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 
-public class BookListActivity extends BaseActivity {
+public class BookListActivity extends BaseActivity implements View.OnFocusChangeListener {
     @BindView(R.id.title)
     TitleView title;
     @BindView(R.id.recyclerview)
@@ -71,6 +73,7 @@ public class BookListActivity extends BaseActivity {
         position = getIntent().getIntExtra("position", 0);
         categoryBean = categories.get(index);
         setTabView();
+        tablayout.getTabAt(index).view.requestFocus();
         bookSecondChoiceAdapter.setNewData(categoryBean.getSecond());
         secondBean = categoryBean.getSecond().get(position);
         assert categoryBean != null;
@@ -217,6 +220,7 @@ public class BookListActivity extends BaseActivity {
             TabLayout.Tab tab = tablayout.newTab();
             //为每个标签设置布局
             tab.setCustomView(R.layout.tab_item);
+            tab.view.setOnFocusChangeListener(this);
             holder = new ViewHolder(tab.getCustomView());
             //为标签填充数据
             CategoryBean categoryBean = categories.get(i);
@@ -250,6 +254,31 @@ public class BookListActivity extends BaseActivity {
     }
 
 
+    private int keyCode;
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        this.keyCode = keyCode;
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (v instanceof TabLayout.TabView && v.hasFocus()) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                if (tabAt != null) {
+                    tabAt.view.requestFocus();
+                }
+            } else {
+                ViewGroup parent = (ViewGroup) v.getParent();
+                int index = parent.indexOfChild(v);
+                TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                if (tabAt != null)
+                    tabAt.select();
+            }
+        }
+    }
     class ViewHolder {
         TextView tvTabName;
         ImageView ivTab;

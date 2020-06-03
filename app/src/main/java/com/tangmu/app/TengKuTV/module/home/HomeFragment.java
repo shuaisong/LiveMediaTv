@@ -1,10 +1,14 @@
 package com.tangmu.app.TengKuTV.module.home;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -17,6 +21,7 @@ import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerFragmentComponent;
 import com.tangmu.app.TengKuTV.contact.HomeContact;
 import com.tangmu.app.TengKuTV.module.live.LiveFragment;
+import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.presenter.HomePresenter;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
@@ -29,7 +34,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 
-public class HomeFragment extends BaseFragment implements HomeContact.View {
+public class HomeFragment extends BaseFragment implements HomeContact.View, View.OnFocusChangeListener {
     @Inject
     HomePresenter presenter;
     @BindView(R.id.viewPager)
@@ -102,6 +107,7 @@ public class HomeFragment extends BaseFragment implements HomeContact.View {
         } else homePageAdapter.notifyDataSetChanged();
         tablayout.setupWithViewPager(mViewPager);
         setTabView();
+        tablayout.getTabAt(0).view.requestFocus();
     }
 
     @Override
@@ -124,6 +130,8 @@ public class HomeFragment extends BaseFragment implements HomeContact.View {
             //为每个标签设置布局
 
             tab.setCustomView(R.layout.tab_item);
+            tab.view.setFocusableInTouchMode(true);
+            tab.view.setOnFocusChangeListener(this);
             holder = new ViewHolder(tab.getCustomView());
             //为标签填充数据
             CategoryBean categoryBean = categories.get(i);
@@ -131,7 +139,6 @@ public class HomeFragment extends BaseFragment implements HomeContact.View {
                 holder.tvTabName.setVisibility(View.GONE);
                 holder.ivTab.setVisibility(View.VISIBLE);
                 holder.ivTab.setImageResource(R.mipmap.ic_vip_title);
-                holder.tabView.setBackground(getResources().getDrawable(R.drawable.vip_bg_focus));
             } else
                 holder.tvTabName.setText(Util.showText(categoryBean.getVt_title(), categoryBean.getVt_title_z()));
 
@@ -179,6 +186,31 @@ public class HomeFragment extends BaseFragment implements HomeContact.View {
         int itemPosition = homePageAdapter.getItemPosition(HomeDubbingFragment.class);
         if (itemPosition != PagerAdapter.POSITION_UNCHANGED) {
             mViewPager.setCurrentItem(itemPosition);
+        }
+    }
+
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            if (v instanceof TabLayout.TabView) {
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    if (activity.keyCode == KeyEvent.KEYCODE_DPAD_UP || activity.keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                        TabLayout.Tab tabAt = tablayout.getTabAt(mViewPager.getCurrentItem());
+                        if (tabAt != null) {
+                            tabAt.view.requestFocus();
+                        }
+                    } else {
+                        ViewGroup parent = (ViewGroup) v.getParent();
+                        int index = parent.indexOfChild(v);
+                        TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                        if (tabAt != null)
+                            tabAt.select();
+                    }
+                }
+
+            }
         }
     }
 

@@ -1,22 +1,16 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
@@ -107,8 +101,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     RecyclerView recyclerviewAnthogy;
     @BindView(R.id.recyclerview_anthogy1)
     RecyclerView recyclerviewAnthogy1;
-    @BindView(R.id.image_recycler)
-    RecyclerView imageRecycler;
     @BindView(R.id.video_recycler)
     RecyclerView videoRecycler;
     private BaseQuickAdapter<HomeChildRecommendBean.VideoBean, BaseViewHolder> recommendMovieAdapter;
@@ -124,8 +116,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     private Timer timer;
 
     private BaseQuickAdapter<VideoSortBean, BaseViewHolder> anthologyAdapter1;
-    private List<VideoAdBean> tvAdBeans;
-    private BaseQuickAdapter<VideoAdBean, BaseViewHolder> tVAdAdapter;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -182,21 +172,9 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         screenWidth = ScreenUtils.getScreenSize(this)[0];
         initRecommendList();
         initAnthologyList();
-        initTVAdView();
         ivAd1.setOnFocusChangeListener(this);
         ivAd2.setOnFocusChangeListener(this);
         superPlayer.setRootId(R.id.rootView);
-        superPlayer.setAdFreeClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (PreferenceManager.getInstance().getLogin() != null)
-                    startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 100);
-                else {
-                    EventBus.getDefault().register(TVDetailActivity.this);
-                    startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 100);
-                }
-            }
-        });
         superPlayer.setOnAnthologySelect(new TCVodAnthologyView.Callback() {
             @Override
             public void onAnthologySelect(int position) {
@@ -222,17 +200,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
             }
         });
 
-        superPlayer.setLoginClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (PreferenceManager.getInstance().getLogin() != null)
-                    startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 101);
-                else {
-                    EventBus.getDefault().register(TVDetailActivity.this);
-                    startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 101);
-                }
-            }
-        });
         superPlayer.setVideoQualityCallback(new TCVodQualityView.VideoQualityCallback() {
             @Override
             public boolean onQualitySelect(TCVideoQuality quality) {
@@ -276,28 +243,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         }
     }
 
-    private void initTVAdView() {
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
-        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.transparent_img_diverder));
-        imageRecycler.addItemDecoration(dividerItemDecoration);
-        tVAdAdapter = new BaseQuickAdapter<VideoAdBean, BaseViewHolder>(R.layout.item_img) {
-            @Override
-            protected void convert(BaseViewHolder helper, VideoAdBean item) {
-                helper.getView(R.id.iv_tv_ad).setOnFocusChangeListener(TVDetailActivity.this);
-                GlideUtils.getRequest(TVDetailActivity.this, Util.convertImgPath(item.getTa_img()))
-                        .centerCrop().into((ImageView) helper.getView(R.id.iv_tv_ad));
-            }
-        };
-        tVAdAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                VideoAdBean item = tVAdAdapter.getItem(position);
-                if (item == null) return;
-                tvAdClick(item);
-            }
-        });
-        imageRecycler.setAdapter(tVAdAdapter);
-    }
 
     private void initAnthologyList() {
         int leftDivider = AutoSizeUtils.dp2px(this, 12);
@@ -329,16 +274,20 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         anthologyAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                int prePosition = currentPosition;
                 currentPosition = position;
                 VideoBean item = anthologyAdapter.getItem(position);
                 if (item == null) return;
                 v_fileid = item.getV_fileid();
                 videoDetailBean.setProgress(0);
                 startPlay();
-                anthologyAdapter.notifyDataSetChanged();
+                anthologyAdapter.notifyItemChanged(prePosition, "");
+                anthologyAdapter.notifyItemChanged(currentPosition, "");
                 anthologyAdapter1.notifyDataSetChanged();
             }
         });
+        anthologyAdapter.setHasStableIds(true);
+        recyclerviewAnthogy.setItemAnimator(null);
         recyclerviewAnthogy.setAdapter(anthologyAdapter);
 
         recyclerviewAnthogy1.addItemDecoration(new AnthologyItemDecoration(leftDivider, itemDivider / 2, leftDivider));
@@ -425,6 +374,26 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
@@ -444,29 +413,59 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 else {
                     superPlayer.onPause();
                 }
+                return true;
             }
             if (currentFocus != null) {
                 switch (currentFocus.getId()) {
                     case R.id.controller_small:
-                        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE || superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_END) {
-                            superPlayer.onResume();
-                        } else {
-                            superPlayer.onPause();
-                        }
-                        break;
+                        superPlayer.requestFullMode();
+                        return true;
                     case R.id.adView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
+                        if (PreferenceManager.getInstance().getLogin() != null)
+                            startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 100);
+                        else {
+                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
+                                EventBus.getDefault().register(TVDetailActivity.this);
+                            startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 100);
+                        }
+                        return true;
                     case R.id.vipTipView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
+                        if (PreferenceManager.getInstance().getLogin() != null)
+                            startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 101);
+                        else {
+                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
+                                EventBus.getDefault().register(TVDetailActivity.this);
+                            startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 101);
+                        }
+                        return true;
                     case R.id.buyAntholgyView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
                         if (PreferenceManager.getInstance().getLogin() != null)
                             startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 101);
                         else {
                             startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 101);
-                            EventBus.getDefault().register(TVDetailActivity.this);
+                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
+                                EventBus.getDefault().register(TVDetailActivity.this);
                         }
-                        break;
+                        return true;
                     case R.id.pause_ad_view:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
                         superPlayer.findViewById(R.id.pause_ad_view).setVisibility(View.GONE);
-                        break;
+                        return true;
                 }
             }
 
@@ -652,39 +651,12 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
 
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
-        tvAdBeans = videoAdBeans;
-        if (tvAdBeans.size() > 1) {
-            ivAd1.setVisibility(View.VISIBLE);
-            ivAd2.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(1).getTa_img()))
-                    .centerCrop().into(ivAd2);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
-        } else if (tvAdBeans.size() > 0) {
-            ivAd1.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
-        }
         if (!videoAdBeans.isEmpty()) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) imageRecycler.getLayoutManager();
-            gridLayoutManager.setSpanCount(videoAdBeans.size());
-            imageRecycler.setLayoutManager(gridLayoutManager);
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .centerCrop().into(ivAd1);
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .centerCrop().into(ivAd2);
         }
-        tVAdAdapter.setNewData(videoAdBeans);
     }
 
     @Override
@@ -696,6 +668,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ToastUtil.showText("openVipSuccess");
         if (requestCode == 100) {
             if (PreferenceManager.getInstance().getLogin() != null && PreferenceManager.getInstance().getLogin().getU_vip_status() == 1) {
                 openVipSuccess();
@@ -714,7 +687,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     private void openVipSuccess() {
-        LogUtil.e("");
         showAd = false;
         superPlayer.setShowAd(false);
         SuperPlayerModel superPlayerModel = new SuperPlayerModel();
@@ -735,15 +707,9 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         }
     }
 
-    @OnClick({R.id.more, R.id.full_screen, R.id.collect, R.id.ad1, R.id.ad2})
+    @OnClick({R.id.more, R.id.full_screen, R.id.collect})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.ad1:
-                tvAdClick(tvAdBeans.get(0));
-                break;
-            case R.id.ad2:
-                tvAdClick(tvAdBeans.get(1));
-                break;
             case R.id.more:
                 if (introl.getMaxLines() == 2) {
                     more.setText(getString(R.string.fold));

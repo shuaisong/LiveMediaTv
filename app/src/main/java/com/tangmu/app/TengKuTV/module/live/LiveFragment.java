@@ -106,12 +106,15 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     private List<PlayHistoryInfo> allVideo;
     private ArrayList<LiveBean> liveBeans = new ArrayList<>();
     private int page = 1;
-
+    private int itemHeight;
+    private int topTitleHeight;
     /**
      * 初始化数据
      */
     @Override
     protected void initData() {
+        itemHeight = AutoSizeUtils.dp2px(getActivity(), 300);
+        topTitleHeight = AutoSizeUtils.dp2px(getActivity(), 84);
         swipeRefreshLayout.setRefreshing(true);
         presenter.getLiveReply(page);
     }
@@ -123,8 +126,20 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     }
 
     @Override
+    public void onPause() {
+        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PLAYING) {
+            superPlayer.onPause();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
+        if (!liveBeans.isEmpty()) {
+            if (liveBeans.get(0).getL_live_type() == 1 && superPlayer.getPlayState() != SuperPlayerConst.PLAYSTATE_PLAYING)
+                superPlayer.onResume();
+        }
         presenter.getTopLive();
         initHistory();
     }
@@ -423,8 +438,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     private int[] getScrollAmount(View view) {
         int[] out = new int[2];
         view.getLocationOnScreen(out);
-        int i = ScreenUtils.getScreenSize(view.getContext())[1];
-        out[1] = out[1] - i / 2;
+        out[1] = out[1] - itemHeight / 2 - topTitleHeight;
         return out;
     }
 }

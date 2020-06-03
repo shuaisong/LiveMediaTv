@@ -54,6 +54,10 @@ public class TCPointSeekBar extends RelativeLayout {
     private float mThumbBottom;           // thumb的marginBottom值
 
 
+    public void setmIsOnDrag(boolean mIsOnDrag) {
+        this.mIsOnDrag = mIsOnDrag;
+    }
+
     private boolean mIsOnDrag;              // 是否处于拖动状态
     private float mCurrentLeftOffset = 0; // thumb距离打点view的偏移量
     private float mLastX;                 // 上一次点击事件的横坐标，用于计算偏移量

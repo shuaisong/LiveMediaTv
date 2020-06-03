@@ -5,6 +5,14 @@ import java.io.Serializable;
 public class LoginBean implements Serializable {
 
 
+    public int getIs_receive() {
+        return is_receive;
+    }
+
+    public void setIs_receive(int is_receive) {
+        this.is_receive = is_receive;
+    }
+
     /**
      * u_id : 9
      * u_phone : 18410416985
@@ -28,7 +36,7 @@ public class LoginBean implements Serializable {
      * u_wxbind_status : 0
      * token : 2PSRScsNhJnI/JH5p/y/UReHeTOEmvco4sEozyJKrkee93YEixy3uA==
      */
-
+    private int is_receive;//1：未领取免费Vip
     private int u_id;
     private String u_phone;
     private String u_nick_name;

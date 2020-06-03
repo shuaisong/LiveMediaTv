@@ -1,5 +1,10 @@
 package com.tangmu.app.TengKuTV.presenter;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 
 import com.lzy.okgo.OkGo;
@@ -176,13 +181,16 @@ public class LoginPresenter extends RxPresenter<LoginContact.View> implements Lo
                 });
     }
 
+    @SuppressLint("MissingPermission")
     private void thirdLogin(String openid, String u_nick_name, String u_img, int type) {
+        TelephonyManager telephonyManager = (TelephonyManager) ((Activity) view).getSystemService(Context.TELEPHONY_SERVICE);
         OkGo.<BaseResponse<LoginBean>>post(Constant.IP + Constant.authCallback)
                 .params("u_nick_name", u_nick_name)
                 .params("type", type)
                 .params("u_img", u_img)
                 .params("openid", openid)
                 .params("type1", 1)
+                .params("device_no", telephonyManager.getDeviceId())
                 .execute(new JsonCallback<BaseResponse<LoginBean>>() {
                     @Override
                     public void onSuccess(Response<BaseResponse<LoginBean>> response) {

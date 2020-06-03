@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="42dp"
     android:focusable="true"
-    android:background="@drawable/video_second_bg_select"
+    android:background="@drawable/video_first_bg_select"
     android:checkMark="@null"
      android:gravity="center_vertical|end"
     android:paddingStart="10dp"

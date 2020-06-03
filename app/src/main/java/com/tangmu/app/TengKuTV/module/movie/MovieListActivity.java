@@ -55,7 +55,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 
-public class MovieListActivity extends BaseActivity {
+public class MovieListActivity extends BaseActivity implements View.OnFocusChangeListener {
 
     TextView noData;
     RelativeLayout noNet;
@@ -287,37 +287,34 @@ public class MovieListActivity extends BaseActivity {
         videoFirstChoiceAdapter = new BaseQuickAdapter<CategoryBean, BaseViewHolder>(R.layout.item_video_first) {
             @Override
             protected void convert(BaseViewHolder helper, CategoryBean item) {
+                helper.itemView.setOnFocusChangeListener(MovieListActivity.this);
                 helper.setText(R.id.check_first, Util.showText(item.getVt_title(), item.getVt_title_z()));
-                if (index == videoFirstChoiceAdapter.getData().indexOf(item)) {
-                    helper.setChecked(R.id.check_first, true);
-                } else
-                    helper.setChecked(R.id.check_first, false);
             }
         };
-        videoFirstChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                int preIndex = index;
-                index = position;
-                videoFirstChoiceAdapter.notifyItemChanged(preIndex, "");
-                videoFirstChoiceAdapter.notifyItemChanged(index, "");
-                CategoryBean item = videoFirstChoiceAdapter.getItem(position);
-                if (item == null) {
-                    videoSecondChoiceAdapter.getData().clear();
-                    videoSecondChoiceAdapter.notifyDataSetChanged();
-                } else {
-                    List<CategoryBean.SecondBean> second = item.getSecond();
-                    removeDubbing(second);
-                    MovieListActivity.this.position = 0;
-                    videoSecondChoiceAdapter.setNewData(second);
-                }
-            }
-        });
+//        videoFirstChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+//                int preIndex = index;
+//                index = position;
+//                videoFirstChoiceAdapter.notifyItemChanged(preIndex, "");
+//                videoFirstChoiceAdapter.notifyItemChanged(index, "");
+//                CategoryBean item = videoFirstChoiceAdapter.getItem(position);
+//                if (item == null) {
+//                    videoSecondChoiceAdapter.getData().clear();
+//                    videoSecondChoiceAdapter.notifyDataSetChanged();
+//                } else {
+//                    List<CategoryBean.SecondBean> second = item.getSecond();
+//                    removeDubbing(second);
+//                    MovieListActivity.this.position = 0;
+//                    videoSecondChoiceAdapter.setNewData(second);
+//                }
+//            }
+//        });
         category1.setAdapter(videoFirstChoiceAdapter);
     }
 
     private void initMovies() {
-        movieRecyclerView.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 18), AutoSizeUtils.dp2px(this, 19)));
+        movieRecyclerView.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 9), AutoSizeUtils.dp2px(this, 19)));
         quickAdapter = new BaseQuickAdapter<HomeChildRecommendBean.VideoBean, BaseViewHolder>(R.layout.item_movie_list) {
             @Override
             protected void convert(BaseViewHolder helper, HomeChildRecommendBean.VideoBean item) {
@@ -371,7 +368,7 @@ public class MovieListActivity extends BaseActivity {
 
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
         LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
         if (currentFocus != null) {
@@ -389,7 +386,7 @@ public class MovieListActivity extends BaseActivity {
         } else {
             LogUtil.e("currentFocus is null");
         }
-        return super.onKeyUp(keyCode, event);
+        return super.onKeyDown(keyCode, event);
     }
 
     @OnClick({R.id.showP, R.id.radio_all, R.id.radio_free, R.id.radio_pay, R.id.screen})
@@ -446,4 +443,27 @@ public class MovieListActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            if (v.getId() == R.id.check_first) {
+                int childAdapterPosition = category1.getChildAdapterPosition(v);
+                if (index != childAdapterPosition) {
+                    index = childAdapterPosition;
+                    CategoryBean item = videoFirstChoiceAdapter.getItem(index);
+                    if (item == null) {
+                        videoSecondChoiceAdapter.getData().clear();
+                        videoSecondChoiceAdapter.notifyDataSetChanged();
+                    } else {
+                        List<CategoryBean.SecondBean> second = item.getSecond();
+                        removeDubbing(second);
+                        MovieListActivity.this.position = 0;
+                        videoSecondChoiceAdapter.setNewData(second);
+                        screen.setText(Util.showText(second.get(0).getVt_title(), item.getVt_title_z()));
+                    }
+                }
+
+            }
+        }
+    }
 }

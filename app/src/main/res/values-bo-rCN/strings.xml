@@ -390,4 +390,11 @@
     <string name="version_update">དཔར་མ་གསར་སྒྱུར།</string>
     <string name="scan_login_tip">གཤམ་གྱི་APPཡི་རྟགས་རིས་བཤེར་ནས་ཐོ་འཇུག་བྱ།</string>
     <string name="hot_work">དགའ་བསུ་ཆེན་པོ་ཐོབ་པའི་སྒྲ་སྦྱོར་བརྩམས་ཆོས།</string>
+    <string name="vip_receive">领取会员</string>
+    <string name="vip_receive_success">领取成功</string>
+    <string name="receive_vip_tp_1">您可在本机领取一年腾酷TV影视会员服务</string>
+    <string name="receive_vip_tp_2">本设备腾酷TV影视会员时长（一年）已成功领取至您的账号</string>
+    <string name="receive_vip_tip_3">说明：该服务已与您所登录的账号(%s)绑定，您可以使用该账号在本设备上享有腾酷视频的会员服务</string>
+    <string name="receive_vip">立即领取</string>
+    <string name="recieve_vip_tip">您有一张腾酷TV影视会员卡未绑定</string>
 </resources>

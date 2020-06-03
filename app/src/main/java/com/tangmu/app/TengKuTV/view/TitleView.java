@@ -3,11 +3,8 @@ package com.tangmu.app.TengKuTV.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -24,7 +21,6 @@ import com.tangmu.app.TengKuTV.bean.LoginBean;
 import com.tangmu.app.TengKuTV.module.LogActivity;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
 import com.tangmu.app.TengKuTV.module.login.LoginActivity;
-import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.module.mine.MineActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
 import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
@@ -32,8 +28,6 @@ import com.tangmu.app.TengKuTV.module.search.VideoSearchActivity;
 import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.utils.AppLanguageUtils;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
-
-import java.util.Locale;
 
 public class TitleView extends ConstraintLayout implements View.OnClickListener {
 
@@ -69,7 +63,6 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
         switchL.setOnClickListener(this);
         ImageView wifi = findViewById(R.id.wifi);
         time = findViewById(R.id.time);
-//        tvSwitchL.setText(getResources().getString(R.string.switchL));
         if (context instanceof BookActivity) {
             ImageView imageView = findViewById(R.id.logo);
             imageView.setImageResource(R.mipmap.ic_book_logo);
@@ -102,10 +95,9 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
                 }
                 break;
             case R.id.switchL:
-                context.startActivity(new Intent(context, LogActivity.class));
-               /* if (context instanceof Activity) {
+                if (context instanceof Activity) {
                     selectLanguage();
-                }*/
+                }
                 break;
         }
     }

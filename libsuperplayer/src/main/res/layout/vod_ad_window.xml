@@ -13,7 +13,6 @@
         android:background="@drawable/ad_bg"
         android:gravity="center"
         android:paddingStart="15dp"
-        android:focusable="true"
         android:paddingEnd="15dp"
         android:text="@string/free_ad1"
         android:textColor="@color/white" />

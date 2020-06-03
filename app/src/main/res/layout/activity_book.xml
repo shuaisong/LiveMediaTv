@@ -23,12 +23,12 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tablayout"
         android:layout_width="match_parent"
-        android:layout_height="27dp"
+        android:layout_height="35dp"
         android:layout_marginTop="12dp"
         app:tabIndicatorColor="#F61525"
         app:tabIndicatorFullWidth="false"
-        app:tabIndicatorHeight="3dp"
-        app:tabMinWidth="100dp"
+        app:tabIndicatorHeight="2dp"
+        app:tabMinWidth="105dp"
         app:tabMode="scrollable"
         app:tabTextColor="@color/white" />
 

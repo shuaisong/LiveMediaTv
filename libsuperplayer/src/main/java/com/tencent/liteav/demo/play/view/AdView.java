@@ -134,6 +134,6 @@ public class AdView extends FrameLayout implements IController {
 
 
     public void setAdClickListener(OnClickListener onClickListener) {
-        findViewById(R.id.free_ad).setOnClickListener(onClickListener);
+       // findViewById(R.id.free_ad).setOnClickListener(onClickListener);
     }
 }

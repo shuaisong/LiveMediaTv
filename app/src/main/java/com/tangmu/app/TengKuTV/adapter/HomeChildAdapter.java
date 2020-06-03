@@ -31,6 +31,8 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
 
     private final int radius;
     private boolean isVip;
+    private int itemHeight;
+    private int topTitleHeight;
 
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
@@ -44,6 +46,8 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
         addItemType(HomeChildBean.TITLE, R.layout.item_home_title);
         CustomApp app = CustomApp.getApp();
         radius = AutoSizeUtils.dp2px(app, 5);
+        itemHeight = AutoSizeUtils.dp2px(app, 300);
+        topTitleHeight = AutoSizeUtils.dp2px(app, 84);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
 //                    helper.setText(R.id.endTime, mContext.getResources().getString(R.string.update_done));
 //                } else
 //                    helper.setText(R.id.endTime, String.format(mContext.getResources().getString(R.string.update_status), movieBean.getCount()));
-                helper.setText(R.id.title, Util.showText(movieBean.getVm_title(), movieBean.getVm_title_z())) ;
+                helper.setText(R.id.title, Util.showText(movieBean.getVm_title(), movieBean.getVm_title_z()));
                 break;
         }
     }
@@ -113,8 +117,7 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
     private int[] getScrollAmount(View view) {
         int[] out = new int[2];
         view.getLocationOnScreen(out);
-        int i = ScreenUtils.getScreenSize(view.getContext())[1];
-        out[1] = out[1] - i / 2;
+        out[1] = out[1] - itemHeight / 2 - topTitleHeight;
         return out;
     }
 

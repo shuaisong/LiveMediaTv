@@ -127,39 +127,20 @@
                             android:textSize="10sp" />
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/line3"
+                    <ImageView
+                        android:id="@+id/ad1"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="50dp"
                         android:layout_below="@id/line2"
                         android:layout_marginTop="16dp"
-                        android:divider="@drawable/detail_divider"
-                        android:showDividers="middle">
-
-                        <ImageView
-                            android:id="@+id/ad1"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/dp_0_view_bg_red_focused_selelct"
-                            android:focusable="true"
-                            android:visibility="gone" />
-
-                        <ImageView
-                            android:id="@+id/ad2"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/dp_0_view_bg_red_focused_selelct"
-                            android:focusable="true"
-                            android:visibility="gone" />
-                    </LinearLayout>
+                        android:background="@drawable/dp_0_view_bg_red_focused_selelct"
+                        android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/line4"
                         android:layout_width="wrap_content"
                         android:layout_height="56dp"
-                        android:layout_below="@id/line3"
+                        android:layout_below="@id/ad1"
                         android:layout_marginTop="20dp">
 
                         <TextView
@@ -257,14 +238,11 @@
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="10" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/image_recycler"
+            <ImageView
+                android:id="@+id/ad2"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginEnd="33dp"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
+                android:layout_height="70dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -281,8 +259,8 @@
                 android:id="@+id/video_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="30dp"
-                android:layout_marginEnd="30dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5" />
         </LinearLayout>

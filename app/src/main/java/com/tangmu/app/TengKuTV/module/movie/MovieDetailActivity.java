@@ -1,23 +1,16 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
@@ -101,8 +94,6 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     RecyclerView recyclerviewAnthogy;
     @BindView(R.id.recyclerview_anthogy1)
     RecyclerView recyclerviewAnthogy1;
-    @BindView(R.id.image_recycler)
-    RecyclerView imageRecycler;
     @BindView(R.id.video_recycler)
     RecyclerView videoRecycler;
     @BindView(R.id.ad1)
@@ -117,9 +108,6 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     private AdBean adBean;
     private boolean showAd;
     private Timer timer;
-    private List<VideoAdBean> tvAdBeans;
-    private BaseQuickAdapter<VideoAdBean, BaseViewHolder> tVAdAdapter;
-
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -159,15 +147,9 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         superPlayer.onPause();
     }
 
-    @OnClick({R.id.more, R.id.full_screen, R.id.collect, R.id.ad1, R.id.ad2})
+    @OnClick({R.id.more, R.id.full_screen, R.id.collect})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.ad1:
-                tvAdClick(tvAdBeans.get(0));
-                break;
-            case R.id.ad2:
-                tvAdClick(tvAdBeans.get(1));
-                break;
             case R.id.more:
                 if (introl.getMaxLines() == 2) {
                     more.setText(getString(R.string.fold));
@@ -212,32 +194,33 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     protected void initView() {
         presenter.attachView(this);
         initRecommendList();
-        initTVAdView();
         ivAd1.setOnFocusChangeListener(this);
         ivAd2.setOnFocusChangeListener(this);
         superPlayer.setRootId(R.id.rootView);
         recyclerviewAnthogy.setVisibility(View.GONE);
         recyclerviewAnthogy1.setVisibility(View.GONE);
-        superPlayer.setAdFreeClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (PreferenceManager.getInstance().getLogin() != null)
-                    startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
-                else {
-                    EventBus.getDefault().register(MovieDetailActivity.this);
-                }
-            }
-        });
-        superPlayer.setLoginClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (PreferenceManager.getInstance().getLogin() != null)
-                    startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
-                else {
-                    EventBus.getDefault().register(MovieDetailActivity.this);
-                }
-            }
-        });
+//        superPlayer.setAdFreeClick(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (PreferenceManager.getInstance().getLogin() != null)
+//                    startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
+//                else {
+//                    if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
+//                        EventBus.getDefault().register(MovieDetailActivity.this);
+//                }
+//            }
+//        });
+//        superPlayer.setLoginClick(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (PreferenceManager.getInstance().getLogin() != null)
+//                    startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
+//                else {
+//                    if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
+//                        EventBus.getDefault().register(MovieDetailActivity.this);
+//                }
+//            }
+//        });
         superPlayer.setVideoQualityCallback(new TCVodQualityView.VideoQualityCallback() {
             @Override
             public boolean onQualitySelect(TCVideoQuality quality) {
@@ -279,29 +262,6 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
-    }
-
-    private void initTVAdView() {
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, LinearLayoutManager.HORIZONTAL);
-        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.transparent_img_diverder));
-        imageRecycler.addItemDecoration(dividerItemDecoration);
-        tVAdAdapter = new BaseQuickAdapter<VideoAdBean, BaseViewHolder>(R.layout.item_img) {
-            @Override
-            protected void convert(BaseViewHolder helper, VideoAdBean item) {
-                helper.getView(R.id.iv_tv_ad).setOnFocusChangeListener(MovieDetailActivity.this);
-                GlideUtils.getRequest(MovieDetailActivity.this, Util.convertImgPath(item.getTa_img()))
-                        .centerCrop().into((ImageView) helper.getView(R.id.iv_tv_ad));
-            }
-        };
-        tVAdAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                VideoAdBean item = tVAdAdapter.getItem(position);
-                if (item == null) return;
-                tvAdClick(item);
-            }
-        });
-        imageRecycler.setAdapter(tVAdAdapter);
     }
 
     private void initRecommendList() {
@@ -359,11 +319,9 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     protected void onResume() {
         super.onResume();
-        if (superPlayer != null && superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE) {
-            if (superPlayer != null && superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE) {
-                if (superPlayer.getBuyAntholgyView().getVisibility() != View.VISIBLE)
-                    superPlayer.onResume();
-            }
+        if (superPlayer != null) {
+            if (superPlayer.getBuyAntholgyView().getVisibility() != View.VISIBLE)
+                superPlayer.onResume();
         }
         if (timer == null) {
             timer = new Timer();
@@ -485,39 +443,12 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
 
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
-        tvAdBeans = videoAdBeans;
-        if (tvAdBeans.size() > 1) {
-            ivAd1.setVisibility(View.VISIBLE);
-            ivAd2.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(1).getTa_img()))
-                    .centerCrop().into(ivAd2);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
-        } else if (tvAdBeans.size() > 0) {
-            ivAd1.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(tvAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
-        }
         if (!videoAdBeans.isEmpty()) {
-            GridLayoutManager gridLayoutManager = (GridLayoutManager) imageRecycler.getLayoutManager();
-            gridLayoutManager.setSpanCount(videoAdBeans.size());
-            imageRecycler.setLayoutManager(gridLayoutManager);
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .centerCrop().into(ivAd1);
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .centerCrop().into(ivAd2);
         }
-        tVAdAdapter.setNewData(videoAdBeans);
     }
 
     @Override
@@ -587,7 +518,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                 superPlayer.showMenu();
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER||keyCode==KeyEvent.KEYCODE_DPAD_CENTER) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
                     if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
@@ -601,25 +532,54 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             if (currentFocus != null) {
                 switch (currentFocus.getId()) {
                     case R.id.controller_small:
-                        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE || superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_END) {
-                            superPlayer.onResume();
-                        } else {
-                            superPlayer.onPause();
-                        }
-                        break;
+                        superPlayer.requestFullMode();
+                        return true;
                     case R.id.adView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
+                        if (PreferenceManager.getInstance().getLogin() != null)
+                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
+                        else {
+                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
+                                EventBus.getDefault().register(MovieDetailActivity.this);
+                            startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 100);
+                        }
+                        return true;
                     case R.id.vipTipView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
+                        if (PreferenceManager.getInstance().getLogin() != null)
+                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
+                        else {
+                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
+                                EventBus.getDefault().register(MovieDetailActivity.this);
+                            startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 101);
+                        }
+                        return true;
                     case R.id.buyAntholgyView:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
                         if (PreferenceManager.getInstance().getLogin() != null)
                             startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
                         else {
                             startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 101);
-                            EventBus.getDefault().register(MovieDetailActivity.this);
+                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
+                                EventBus.getDefault().register(MovieDetailActivity.this);
                         }
-                        break;
+                        return true;
                     case R.id.pause_ad_view:
+                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
+                            superPlayer.requestFullMode();
+                            return true;
+                        }
                         superPlayer.findViewById(R.id.pause_ad_view).setVisibility(View.GONE);
-                        break;
+                        return true;
                 }
             }
 
@@ -661,5 +621,25 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         } else {
             v.setPadding(0, 0, 0, 0);
         }
+    }
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+                superPlayer.showProgress(keyCode);
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

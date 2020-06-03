@@ -28,6 +28,9 @@ import me.jessyan.autosize.utils.ScreenUtils;
 public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBean, BaseViewHolder> implements View.OnFocusChangeListener {
 
     private final int radius;
+    private final int itemHeight;
+    private final int topTitleHeight;
+
     /**
      * Same as QuickAdapter#QuickAdapter(Context,int) but with
      * some initialization data.
@@ -39,6 +42,8 @@ public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBea
         addItemType(HomeDubbingBean.MOVIE, R.layout.item_dubbing);
         addItemType(HomeDubbingBean.TITLE, R.layout.item_dubbing_title);
         radius = AutoSizeUtils.dp2px(CustomApp.getApp(), 5);
+        itemHeight = AutoSizeUtils.dp2px(CustomApp.getApp(), 300);
+        topTitleHeight = AutoSizeUtils.dp2px(CustomApp.getApp(), 84);
     }
 
     @Override
@@ -97,8 +102,7 @@ public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBea
     private int[] getScrollAmount(View view) {
         int[] out = new int[2];
         view.getLocationOnScreen(out);
-        int i = ScreenUtils.getScreenSize(view.getContext())[1];
-        out[1] = out[1] - i / 2;
+        out[1] = out[1] - itemHeight / 2 - topTitleHeight;
         return out;
     }
 }

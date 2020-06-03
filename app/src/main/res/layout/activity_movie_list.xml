@@ -45,7 +45,7 @@
                     android:id="@+id/category1"
                     android:layout_width="140dp"
                     android:layout_height="match_parent"
-                    android:background="#1A252F"
+                    android:background="#1D2532"
                     android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
             </FrameLayout>
@@ -55,7 +55,7 @@
                 android:layout_width="160dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:background="#1F2935"
+                android:background="#222A37"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
@@ -71,8 +71,8 @@
                 <CheckBox
                     android:id="@+id/screen"
                     style="@style/CheckBox_no"
-                    android:layout_width="105dp"
-                    android:layout_height="42dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="9dp"
                     android:background="@drawable/screen_bg_select"
                     android:button="@null"
@@ -80,6 +80,9 @@
                     android:drawablePadding="15dp"
                     android:focusable="true"
                     android:gravity="center_vertical"
+                    android:minWidth="105dp"
+                    android:minHeight="42dp"
+                    android:padding="5dp"
                     android:paddingStart="14dp"
                     android:paddingEnd="14dp"
                     android:text="@string/tv_screen"
@@ -113,8 +116,8 @@
                     android:orientation="horizontal">
 
                     <RadioButton
-                        style="@style/RadioButton_no"
                         android:id="@+id/radio_all"
+                        style="@style/RadioButton_no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="25dp"
@@ -127,8 +130,8 @@
                         android:textSize="20sp" />
 
                     <RadioButton
-                        style="@style/RadioButton_no"
                         android:id="@+id/radio_free"
+                        style="@style/RadioButton_no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="25dp"
@@ -140,8 +143,8 @@
                         android:textSize="20sp" />
 
                     <RadioButton
-                        style="@style/RadioButton_no"
                         android:id="@+id/radio_pay"
+                        style="@style/RadioButton_no"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/dp_3_view_bg_focused_select"
@@ -166,7 +169,7 @@
                     android:id="@+id/movie_recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginStart="11dp"
                     android:layout_marginTop="25dp"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="5" />

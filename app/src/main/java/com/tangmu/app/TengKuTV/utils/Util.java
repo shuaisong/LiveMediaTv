@@ -570,7 +570,7 @@ public class Util {
         return "00:00";
     }
 
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm", Locale.CHINA);
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.CHINA);
 
     public static String convertSystemTime(long currentTimeMillis) {
         return simpleDateFormat.format(currentTimeMillis);

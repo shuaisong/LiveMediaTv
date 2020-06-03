@@ -6,5 +6,6 @@
     android:text="@string/recommend"
     android:focusable="false"
     android:paddingBottom="7dp"
+    android:textStyle="bold"
     android:textColor="@color/normal_text_color"
     android:textSize="22sp" />

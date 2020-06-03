@@ -196,6 +196,8 @@ public class Constant {
     public static final String liveReplyRecommend = "/Live/liveReplyRecommend";
     //   检测新版本
     public static final String detectionNewVersion = "/Configuration/detectionNewVersion";
+    //   用户领取会员接口
+    public static final String userVipReceive = "/Configuration/userVipReceive";
 
 
     public static final int changeTheme = 100;

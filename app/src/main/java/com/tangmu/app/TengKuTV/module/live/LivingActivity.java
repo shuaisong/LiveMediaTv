@@ -39,6 +39,7 @@ import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.presenter.LivingPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
+import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -140,6 +141,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     }
 
     private void initRecyclerView() {
+        videoRecycler.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 20), AutoSizeUtils.dp2px(this, 10)));
         recommendMovieAdapter = new BaseQuickAdapter<LiveReplayBean, BaseViewHolder>(R.layout.item_live_rec) {
             @Override
             protected void convert(BaseViewHolder helper, LiveReplayBean item) {
@@ -198,7 +200,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
                 superPlayer.showMenu();
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ENTER||keyCode==KeyEvent.KEYCODE_DPAD_CENTER) {
+        if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
                     if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
@@ -212,25 +214,9 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
             if (currentFocus != null) {
                 switch (currentFocus.getId()) {
                     case R.id.controller_small:
-                        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE) {
-                            superPlayer.onResume();
-                        } else {
-                            superPlayer.onPause();
-                        }
+                        superPlayer.requestFullMode();
                         break;
-                    case R.id.adView:
-                    case R.id.vipTipView:
-                    case R.id.buyAntholgyView:
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(LivingActivity.this, VIPActivity.class), 101);
-                        else {
-                            startActivityForResult(new Intent(LivingActivity.this, LoginActivity.class), 101);
-                            EventBus.getDefault().register(LivingActivity.this);
-                        }
-                        break;
-                    case R.id.pause_ad_view:
-                        superPlayer.findViewById(R.id.pause_ad_view).setVisibility(View.GONE);
-                        break;
+
                 }
             }
 

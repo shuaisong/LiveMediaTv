@@ -23,11 +23,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -71,7 +69,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by liyuejiao on 2018/7/3.
@@ -224,15 +221,23 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     }
 
     public void showMenu() {
-        if (!mControllerFullScreen.isShowing())
-            mControllerFullScreen.show();
+        if (!mControllerFullScreen.isShowing()) {
+            mControllerFullScreen.showMenu();
+        } else {
+            mControllerFullScreen.hide();
+        }
+    }
+
+    public void showProgress(int keyCode) {
+        if (duration == 0) return;
+        mControllerFullScreen.showProgress(keyCode, current, duration);
     }
 
     public View getBuyAntholgyView() {
         return buyAntholgyView;
     }
 
-    private int defaultQualityIndex;
+    private int defaultQualityIndex = 2;
 
     public void setDefaultQualitySet(int defaultQualityIndex) {
         mDefaultQualitySet = true;
@@ -258,6 +263,11 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
     public void setCurrent(int progress) {
         startProgress = progress;
+    }
+
+    public void setRenderMode(int renderModeFullFillScreen) {
+        if (mVodPlayer != null)
+            mVodPlayer.setRenderMode(renderModeFullFillScreen);
     }
 
     private enum PLAYER_TYPE {
@@ -300,7 +310,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private boolean mIsPlayWithFileId;              // 是否是腾讯云fileId播放
     private long mReportLiveStartTime = -1;      // 直播开始时间，用于上报使用时长
     private long mReportVodStartTime = -1;       // 点播开始时间，用于上报使用时长
-    private boolean mDefaultQualitySet;             // 标记播放多码流url时是否设置过默认画质
+    private boolean mDefaultQualitySet = true;             // 标记播放多码流url时是否设置过默认画质
     private boolean mLockScreen = false;            // 是否锁定屏幕
     private boolean mChangeHWAcceleration;          // 切换硬解后接收到第一个关键帧前的标记位
     private int mSeekPos;                       // 记录切换硬解时的播放时间
@@ -408,6 +418,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         File sdcardDir = context.getExternalFilesDir(null);
         if (sdcardDir != null) {
             mVodPlayConfig.setCacheFolderPath(sdcardDir.getPath() + "/txcache");
+        } else {
+            mVodPlayConfig.setCacheFolderPath(context.getFilesDir().getPath() + "/txcache");
         }
         mVodPlayConfig.setMaxCacheItems(config.maxCacheItem);
         mVodPlayer.setConfig(mVodPlayConfig);
@@ -587,6 +599,12 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         }
     }
 
+    private boolean autoPlay = true;
+
+    public void setAutoPlay(boolean autoPlay) {
+        this.autoPlay = autoPlay;
+    }
+
     /**
      * 播放点播url
      */
@@ -599,7 +617,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         if (mVodPlayer != null) {
             mDefaultQualitySet = false;
             mVodPlayer.setStartTime(0);
-            mVodPlayer.setAutoPlay(true);
+            mVodPlayer.setAutoPlay(autoPlay);
             mVodPlayer.setVodListener(this);
             int ret = mVodPlayer.startPlay(url);
             if (ret == 0) {
@@ -684,7 +702,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         if (adView.getVisibility() == VISIBLE) {
             adView.setDuration((int) (duration - current));
         }
-        if (balanceTimeCallBack != null) {
+        if (balanceTimeCallBack != null && duration != 0) {
             balanceTimeCallBack.showBalance((int) (duration - current));
         }
         if (buyAntholgyView.getVisibility() == VISIBLE) {

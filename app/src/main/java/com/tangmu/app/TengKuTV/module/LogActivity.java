@@ -38,17 +38,17 @@ public class LogActivity extends BaseActivity {
             content.setText("file not exist");
             return;
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    readLog(path);
-                } catch (IOException e) {
-                    content.setText(e.getMessage());
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    readLog(path);
+//                } catch (IOException e) {
+//                    content.setText(e.getMessage());
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
     }
 
     private void readLog(String path) throws IOException {
@@ -72,6 +72,8 @@ public class LogActivity extends BaseActivity {
             }
         });
         fileInputStream.close();
+        inputreader.close();
+        buffreader.close();
     }
 
     @Override

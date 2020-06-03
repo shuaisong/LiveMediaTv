@@ -104,11 +104,15 @@ public class TCVodAnthologyView extends LinearLayout {
                         }
                     }
                 }
+                int prePos = mClickPos;
                 mClickPos = position;
-                anthologyAdapter.notifyDataSetChanged();
+                anthologyAdapter.notifyItemChanged(prePos, "");
+                anthologyAdapter.notifyItemChanged(mClickPos, "");
                 anthologyAdapter1.notifyDataSetChanged();
             }
         });
+        anthologyAdapter.setHasStableIds(true);
+        anthologyView.setItemAnimator(null);
         anthologyView.setAdapter(anthologyAdapter);
 
         anthologyAdapter1 = new BaseQuickAdapter<VideoSortBean, BaseViewHolder>(R.layout.item_anthology) {
@@ -195,6 +199,24 @@ public class TCVodAnthologyView extends LinearLayout {
 
     public void setIsNeedVip(boolean b) {
         isNeedVip = b;
+    }
+
+    public void hide() {
+        setVisibility(GONE);
+    }
+
+    public void show() {
+        setVisibility(VISIBLE);
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View viewByPosition = anthologyAdapter.getViewByPosition(anthologyView, mClickPos, R.id.item_anthology);
+                if (viewByPosition != null) {
+                    viewByPosition.requestFocus();
+                }
+            }
+        }, 200);
+
     }
 
 

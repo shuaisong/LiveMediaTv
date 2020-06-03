@@ -23,29 +23,29 @@ import java.util.List;
 
 /**
  * V2视频信息协议解析实现类
- *
+ * <p>
  * 负责解析V2视频信息协议请求响应的Json数据
  */
-public class TCPlayInfoParserV2 implements IPlayInfoParser{
+public class TCPlayInfoParserV2 implements IPlayInfoParser {
     private static final String TAG = "TCPlayInfoParserV2";
 
-    private JSONObject                                  mResponse;                      // 协议请求返回的Json数据
+    private JSONObject mResponse;                      // 协议请求返回的Json数据
 
     //播放器配置信息
-    private String                                      mDefaultVideoClassification;    // 默认视频清晰度名称
-    private List<TCVideoClassification>                 mVideoClassificationList;       // 视频清晰度信息列表
+    private String mDefaultVideoClassification;    // 默认视频清晰度名称
+    private List<TCVideoClassification> mVideoClassificationList;       // 视频清晰度信息列表
 
-    private TCPlayImageSpriteInfo                       mImageSpriteInfo;               // 雪碧图信息
-    private List<TCPlayKeyFrameDescInfo>                mKeyFrameDescInfo;              // 关键帧打点信息
+    private TCPlayImageSpriteInfo mImageSpriteInfo;               // 雪碧图信息
+    private List<TCPlayKeyFrameDescInfo> mKeyFrameDescInfo;              // 关键帧打点信息
     //视频信息
-    private String                                      mName;                          // 视频名称
-    private TCPlayInfoStream                            mSourceStream;                  // 源视频流信息
-    private TCPlayInfoStream                            mMasterPlayList;                // 主播放视频流信息
-    private LinkedHashMap<String, TCPlayInfoStream>     mTranscodePlayList;             // 转码视频信息列表
+    private String mName;                          // 视频名称
+    private TCPlayInfoStream mSourceStream;                  // 源视频流信息
+    private TCPlayInfoStream mMasterPlayList;                // 主播放视频流信息
+    private LinkedHashMap<String, TCPlayInfoStream> mTranscodePlayList;             // 转码视频信息列表
 
-    private String                                      mUrl;                           // 视频播放url
-    private List<TCVideoQuality>                        mVideoQualityList;              // 视频画质信息列表
-    private TCVideoQuality                              mDefaultVideoQuality;           // 默认视频画质
+    private String mUrl;                           // 视频播放url
+    private List<TCVideoQuality> mVideoQualityList;              // 视频画质信息列表
+    private TCVideoQuality mDefaultVideoQuality;           // 默认视频画质
 
     public TCPlayInfoParserV2(JSONObject response) {
         mResponse = response;
@@ -54,18 +54,18 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
 
     /**
      * 从视频信息协议请求响应的Json数据中解析出视频信息
-     *
+     * <p>
      * 解析流程：
-     *
+     * <p>
      * 1、解析播放器信息(playerInfo)字段，获取视频清晰度列表{@link #mVideoClassificationList}以及默认清晰度{@link #mDefaultVideoClassification}
-     *
+     * <p>
      * 2、解析雪碧图信息(imageSpriteInfo)字段，获取雪碧图信息{@link #mImageSpriteInfo}
-     *
+     * <p>
      * 3、解析关键帧信息(keyFrameDescInfo)字段，获取关键帧信息{@link #mKeyFrameDescInfo}
-     *
+     * <p>
      * 4、解析视频信息(videoInfo)字段，获取视频名称{@link #mName}、源视频信息{@link #mSourceStream}、
      * 主视频列表{@link #mMasterPlayList}、转码视频列表{@link #mTranscodePlayList}
-     *
+     * <p>
      * 5、从主视频列表、转码视频列表、源视频信息中解析出视频播放url{@link #mUrl}、画质信息{@link #mVideoQualityList}、
      * 默认画质{@link #mDefaultVideoQuality}
      */
@@ -73,7 +73,8 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
         try {
             JSONObject playerInfo = mResponse.optJSONObject("playerInfo");
             if (playerInfo != null) {
-                mDefaultVideoClassification = parseDefaultVideoClassification(playerInfo);
+//                mDefaultVideoClassification = parseDefaultVideoClassification(playerInfo);
+                mDefaultVideoClassification = "HD";
                 mVideoClassificationList = parseVideoClassificationList(playerInfo);
             }
             JSONObject imageSpriteInfo = mResponse.optJSONObject("imageSpriteInfo");
@@ -147,8 +148,8 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
      */
     private TCPlayImageSpriteInfo parseImageSpriteInfo(JSONObject imageSpriteInfo) throws JSONException {
         JSONArray imageSpriteList = imageSpriteInfo.getJSONArray("imageSpriteList");
-        if (imageSpriteList!=null) {
-            JSONObject spriteJSONObject = imageSpriteList.getJSONObject(imageSpriteList.length() -1); //获取最后一个来解析
+        if (imageSpriteList != null) {
+            JSONObject spriteJSONObject = imageSpriteList.getJSONObject(imageSpriteList.length() - 1); //获取最后一个来解析
             TCPlayImageSpriteInfo info = new TCPlayImageSpriteInfo();
             info.webVttUrl = spriteJSONObject.getString("webVttUrl");
             JSONArray jsonArray = spriteJSONObject.getJSONArray("imageUrls");
@@ -164,7 +165,7 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
     }
 
     /**
-     *解析关键帧打点信息
+     * 解析关键帧打点信息
      *
      * @param keyFrameDescInfo 包含关键帧信息的Json对象
      * @return 关键帧信息数组
@@ -179,7 +180,7 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
                 float timeS = (float) (time / 1000.0);//转换为秒
                 TCPlayKeyFrameDescInfo info = new TCPlayKeyFrameDescInfo();
                 try {
-                    info.content = URLDecoder.decode(content,"UTF-8");
+                    info.content = URLDecoder.decode(content, "UTF-8");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                     info.content = "";
@@ -196,7 +197,7 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
      * 解析视频名称
      *
      * @param videoInfo 包含视频名称信息的Json对象
-     * @return  视频名称字符串
+     * @return 视频名称字符串
      * @throws JSONException
      */
     private String parseName(JSONObject videoInfo) throws JSONException {
@@ -248,7 +249,7 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
 
     /**
      * 解析转码视频流信息
-     *
+     * <p>
      * 转码视频流信息{@link #mTranscodePlayList}中不包含清晰度名称，需要与视频清晰度信息{@link #mVideoClassificationList}做匹配
      *
      * @param videoInfo 包含转码视频流信息的Json对象
@@ -320,10 +321,10 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
 
     /**
      * 解析视频播放url、画质列表、默认画质
-     *
+     * <p>
      * V2协议响应Json数据中可能包含多个视频播放信息：主播放视频信息{@link #mMasterPlayList}、转码视频{@link #mTranscodePlayList}、
      * 源视频{@link #mSourceStream}, 播放优先级依次递减
-     *
+     * <p>
      * 从优先级最高的视频信息中解析出播放信息
      */
     private void parseVideoInfo() {
@@ -339,7 +340,7 @@ public class TCPlayInfoParserV2 implements IPlayInfoParser{
             if (stream != null) {
                 videoURL = stream.getUrl();
             } else {
-                for (TCPlayInfoStream stream1: mTranscodePlayList.values()) {
+                for (TCPlayInfoStream stream1 : mTranscodePlayList.values()) {
                     if (stream1 != null && stream1.getUrl() != null) {
                         stream = stream1;
                         videoURL = stream1.getUrl();

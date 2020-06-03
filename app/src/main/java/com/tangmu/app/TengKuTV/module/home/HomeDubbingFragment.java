@@ -102,6 +102,8 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
     private BaseQuickAdapter<DubbingListBean, BaseViewHolder> homeDubbingAdapter;
     private int page = 1;
     private ViewPager bannerViewPager;
+    private int itemHeight;
+    private int topTitleHeight;
 
     public HomeDubbingFragment() {
     }
@@ -119,6 +121,8 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
      */
     @Override
     protected void initData() {
+        itemHeight = AutoSizeUtils.dp2px(getActivity(), 300);
+        topTitleHeight = AutoSizeUtils.dp2px(getActivity(), 84);
         swipeRefreshLayout.setRefreshing(true);
         categoryBean = (CategoryBean) getArguments().getSerializable("Category");
         if (categoryBean != null) {
@@ -371,8 +375,7 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
     private int[] getScrollAmount(View view) {
         int[] out = new int[2];
         view.getLocationOnScreen(out);
-        int i = ScreenUtils.getScreenSize(view.getContext())[1];
-        out[1] = out[1] - i / 2;
+        out[1] = out[1] - itemHeight / 2 - topTitleHeight;
         return out;
     }
 }

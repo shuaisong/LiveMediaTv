@@ -103,6 +103,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="23dp"
                                 android:text="@string/vip_m"
+                                android:textColor="@color/white"
                                 android:textSize="33sp"
                                 android:textStyle="bold" />
 
@@ -111,6 +112,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="39元"
+                                android:textColor="@color/white"
                                 android:textSize="41sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -176,6 +178,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="23dp"
                                 android:text="@string/vip_j"
+                                android:textColor="@color/white"
                                 android:textSize="33sp"
                                 android:textStyle="bold" />
 
@@ -184,6 +187,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="39元"
+                                android:textColor="@color/white"
                                 android:textSize="41sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -247,6 +251,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="23dp"
                                 android:text="@string/vip_y"
+                                android:textColor="@color/white"
                                 android:textSize="33sp"
                                 android:textStyle="bold" />
 
@@ -255,6 +260,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="389元"
+                                android:textColor="@color/white"
                                 android:textSize="41sp"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -276,18 +282,12 @@
                 android:background="@color/white"
                 android:orientation="vertical">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="20dp"
-                    android:background="#E3F7B9" />
-
                 <ImageView
                     android:id="@+id/pay_code"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginStart="18dp"
-                    android:layout_marginTop="13dp"
+                    android:layout_marginTop="33dp"
                     android:layout_marginEnd="18dp"
                     android:layout_marginBottom="40dp"
                     android:layout_weight="1" />

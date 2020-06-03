@@ -1,6 +1,8 @@
 package com.tangmu.app.TengKuTV.bean;
 
-public class LaunchAdBean {
+import java.io.Serializable;
+
+public class LaunchAdBean implements Serializable {
 
     /**
      * pa_id : 1

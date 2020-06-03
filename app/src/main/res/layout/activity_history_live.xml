@@ -8,13 +8,13 @@
     android:background="@color/black_bg"
     android:keepScreenOn="true"
     android:orientation="vertical"
-    android:paddingTop="26dp"
     tools:context=".module.live.HistoryLiveActivity">
 
     <com.tangmu.app.TengKuTV.view.TitleView
         android:id="@+id/titleView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp" />
 
     <View
         android:layout_width="match_parent"
@@ -117,9 +117,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="20dp"
-                            android:background="@drawable/dp_5_view_bg_focused_select"
-                            android:focusable="true"
-                            android:padding="@dimen/focus_width"
                             android:visibility="invisible" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -151,8 +148,8 @@
                 android:id="@+id/video_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5" />
         </LinearLayout>

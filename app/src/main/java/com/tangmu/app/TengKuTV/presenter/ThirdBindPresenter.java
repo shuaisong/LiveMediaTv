@@ -1,5 +1,10 @@
 package com.tangmu.app.TengKuTV.presenter;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.telephony.TelephonyManager;
+
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
 import com.tangmu.app.TengKuTV.Constant;
@@ -16,13 +21,16 @@ public class ThirdBindPresenter extends RxPresenter<ThirdBindContact.View> imple
     public ThirdBindPresenter() {
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void thirdLogin(String openId, String mobile, String head_img, String code, int type) {
+        TelephonyManager telephonyManager = (TelephonyManager) ((Activity) view).getSystemService(Context.TELEPHONY_SERVICE);
         OkGo.<BaseResponse<LoginBean>>post(Constant.IP + Constant.mobileBind)
                 .params("mobile", mobile)
                 .params("type", type)
                 .params("code", code)
                 .params("openid", openId)
+                .params("device_no", telephonyManager.getDeviceId())
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse<LoginBean>>() {
                     @Override

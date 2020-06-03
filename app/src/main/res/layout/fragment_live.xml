@@ -187,7 +187,7 @@
                         android:id="@+id/bannerTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
+                        android:layout_gravity="start"
                         android:layout_margin="20dp"
                         android:textColor="@color/white"
                         android:textSize="20sp" />
@@ -267,6 +267,7 @@
                 android:layout_marginTop="17dp"
                 android:layout_marginBottom="18dp"
                 android:text="@string/live_history"
+                android:textStyle="bold"
                 android:textColor="@color/normal_text_color"
                 android:textSize="22sp" />
 

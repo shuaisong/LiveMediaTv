@@ -3,6 +3,7 @@
     android:id="@+id/item_anthology"
     android:layout_width="75dp"
     android:layout_height="31dp"
+    android:focusable="true"
     android:background="@drawable/history4_bg"
     android:orientation="vertical">
 
