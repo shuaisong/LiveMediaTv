@@ -10,6 +10,7 @@ import com.lzy.okgo.exception.HttpException;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.base.Request;
 import com.tangmu.app.TengKuTV.CustomApp;
+import com.tangmu.app.TengKuTV.TokenFailException;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
 import com.tangmu.app.TengKuTV.module.login.LoginActivity;
@@ -62,15 +63,15 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         if (response.body() instanceof BaseListResponse) {
             if (((BaseListResponse) response.body()).getStatus() == 1001) {
 //                response.setException(new Exception("token错误或者失效"));
-                response.setException(new Exception("请先注册登录后再使用该功能"));
+                response.setException(new TokenFailException("登录信息失效，请重新登录"));
                 onError(response);
-                goLogin("请先注册登录后再使用该功能");
+//                goLogin("登录信息失效，请重新登录");
                 return;
             }
             if (((BaseListResponse) response.body()).getStatus() == 1002) {
-                response.setException(new Exception("未检测到信息或者账号禁用"));
+                response.setException(new TokenFailException("登录信息失效，请重新登录"));
                 onError(response);
-                goLogin("未检测到信息或者账号禁用");
+//                goLogin("登录信息失效，请重新登录");
                 return;
 
             }
@@ -78,15 +79,15 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         if (response.body() instanceof BaseResponse) {
             if (((BaseResponse) response.body()).getStatus() == 1001) {
                 //                response.setException(new Exception("token错误或者失效"));
-                response.setException(new Exception("请先注册登录后再使用该功能"));
+//                goLogin("登录信息失效，请重新登录");
+                response.setException(new TokenFailException("登录信息失效，请重新登录"));
                 onError(response);
-                goLogin("请先注册登录后再使用该功能");
                 return;
             }
             if (((BaseResponse) response.body()).getStatus() == 1002) {
-                response.setException(new Exception("未检测到信息或者账号禁用"));
+                response.setException(new TokenFailException("登录信息失效，请重新登录"));
                 onError(response);
-                goLogin("未检测到信息或者账号禁用");
+//                goLogin("登录信息失效，请重新登录");
                 return;
             }
         }
@@ -98,7 +99,7 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
 
     private void goLogin(String msg) {
         ToastUtil.showText(msg);
-        PreferenceManager.getInstance().exit();
+//        PreferenceManager.getInstance().exit();
        /* Intent intent = new Intent(CustomApp.getApp(), LoginActivity.class);
         PreferenceManager.getInstance().removeUid();
         PreferenceManager.getInstance().removeToken();
@@ -120,6 +121,10 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
         }
         if (exception instanceof JsonParseException) {
             return "数据解析失败";
+        }
+        if (exception instanceof TokenFailException){
+            ToastUtil.showText(exception.getMessage());
+            return exception.getMessage();
         }
         return "未知错误";
     }

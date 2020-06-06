@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
+    android:id="@+id/item_live_history"
     android:orientation="vertical">
 
     <ImageView

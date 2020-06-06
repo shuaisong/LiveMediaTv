@@ -28,6 +28,10 @@ public class PlayHistoryDao {
     public static final String COLUMN_B_TYPE = "b_type";//1 视频 2音频
     public static final String COLUMN_VM_TYPE = "vm_type";//1 电视 2电影
     public static final String COLUMN_ID_ONE = "id_one";//1级分类
+    //    以下为视频专用
+    public static final String COLUMN_IS_VIP = "is_vip";//是否Vip类型
+    public static final String COLUMN_UPDATE_STATUS = "update_status";//更新状态
+    public static final String COLUMN_UPDATE_NUM = "update_num";//更新至多少集
 
     public PlayHistoryDao(Context context) {
     }

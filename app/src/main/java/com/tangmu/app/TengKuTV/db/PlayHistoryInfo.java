@@ -35,6 +35,47 @@ public class PlayHistoryInfo {
     private int b_position;
     @DatabaseField
     private int id_one;//一级分类
+    @DatabaseField
+    private int is_vip;//是否Vip类型
+    @DatabaseField
+    private int update_status;//更新状态
+
+    public int getId_one() {
+        return id_one;
+    }
+
+    public void setId_one(int id_one) {
+        this.id_one = id_one;
+    }
+
+    public int getIs_vip() {
+        return is_vip;
+    }
+
+    public void setIs_vip(int is_vip) {
+        this.is_vip = is_vip;
+    }
+
+    public int getUpdate_status() {
+        return update_status;
+    }
+
+    public void setUpdate_status(int update_status) {
+        this.update_status = update_status;
+    }
+
+    public int getUpdate_num() {
+        return update_num;
+    }
+
+    public void setUpdate_num(int update_num) {
+        this.update_num = update_num;
+    }
+
+    @DatabaseField
+    private int update_num;//更新至多少集
+
+
 
     public int getB_id_one() {
         return id_one;

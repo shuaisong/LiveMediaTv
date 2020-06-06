@@ -3,6 +3,7 @@ package com.tencent.liteav.demo.play.view;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 
@@ -10,7 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.tencent.liteav.demo.play.R;
 
-public class TCVodSettingMoreView extends LinearLayout implements RadioGroup.OnCheckedChangeListener {
+public class TCVodSettingMoreView extends LinearLayout implements RadioGroup.OnCheckedChangeListener, View.OnClickListener {
 
     private TCVodMoreView.Callback callback;
 
@@ -35,6 +36,10 @@ public class TCVodSettingMoreView extends LinearLayout implements RadioGroup.OnC
         RadioGroup radioGroup_scale = findViewById(R.id.radioGroup_scale);
         radioGroup_jump.setOnCheckedChangeListener(this);
         radioGroup_scale.setOnCheckedChangeListener(this);
+        findViewById(R.id.jump).setOnClickListener(this);
+        findViewById(R.id.no_jump).setOnClickListener(this);
+        findViewById(R.id.original_scale).setOnClickListener(this);
+        findViewById(R.id.full_screen).setOnClickListener(this);
     }
 
     public void setCallback(TCVodMoreView.Callback callback) {
@@ -61,5 +66,10 @@ public class TCVodSettingMoreView extends LinearLayout implements RadioGroup.OnC
 
     public void hide() {
         setVisibility(GONE);
+    }
+
+    @Override
+    public void onClick(View v) {
+        callback.hide();
     }
 }

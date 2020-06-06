@@ -28,7 +28,7 @@ public class HomeHistoryFragment extends BaseFragment implements RadioGroup.OnCh
 
     @Override
     protected void initData() {
-        showFragment(0);
+//        showFragment(0);
     }
 
     @Override
@@ -37,10 +37,19 @@ public class HomeHistoryFragment extends BaseFragment implements RadioGroup.OnCh
         int position = 0;
         if (arguments != null)
             position = arguments.getInt("position");
-        if (position == 0)
-            radioHomeHistory.check(R.id.play_record);
-        else radioHomeHistory.check(R.id.play_collect);
         radioHomeHistory.setOnCheckedChangeListener(this);
+        if (position == 0) {
+            radioHomeHistory.check(R.id.play_record);
+            radioHomeHistory.findViewById(R.id.play_record).requestFocus();
+        } else {
+            if (isLogin()) {
+                radioHomeHistory.check(R.id.play_collect);
+                radioHomeHistory.findViewById(R.id.play_collect).requestFocus();
+            } else {
+                radioHomeHistory.check(R.id.play_record);
+                radioHomeHistory.findViewById(R.id.play_record).requestFocus();
+            }
+        }
     }
 
     @Override
@@ -102,13 +111,5 @@ public class HomeHistoryFragment extends BaseFragment implements RadioGroup.OnCh
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (radioHomeHistory.getCheckedRadioButtonId() == R.id.play_collect) {
-            if (isLogin())
-                showFragment(1);
-        }
-    }
 
 }

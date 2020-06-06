@@ -3,21 +3,22 @@
     android:id="@+id/tab_item"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:duplicateParentState="true"
-    android:layout_gravity="center_horizontal">
+    android:layout_gravity="center_horizontal"
+    android:duplicateParentState="true">
 
     <TextView
         android:id="@+id/tv_tab_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="3dp"
-        android:layout_marginEnd="3dp"
+        android:background="@drawable/title_focus_bg"
+        android:duplicateParentState="true"
         android:gravity="center_horizontal"
         android:includeFontPadding="false"
+        android:paddingStart="3dp"
+        android:paddingTop="1dp"
+        android:paddingEnd="3dp"
         android:singleLine="true"
-        android:background="@drawable/dp_3_view_bg_focused_select"
-        android:duplicateParentState="true"
         android:textColor="@color/white"
         android:textSize="22sp" />
 
@@ -29,6 +30,8 @@
         android:background="@drawable/dp_3_view_bg_focused_select"
         android:duplicateParentState="true"
         android:paddingStart="4dp"
+        android:paddingTop="@dimen/focus_width"
         android:paddingEnd="4dp"
+        android:paddingBottom="@dimen/focus_width"
         android:visibility="gone" />
 </FrameLayout>

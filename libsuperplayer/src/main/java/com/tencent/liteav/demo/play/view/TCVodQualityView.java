@@ -87,6 +87,9 @@ public class TCVodQualityView extends FrameLayout {
                         }
                     }
                 }
+                if (mCallback != null) {
+                    mCallback.hide();
+                }
                 int preClick = mClickPos;
                 mClickPos = position;
                 mAdapter.notifyItemChanged(preClick, "");
@@ -263,6 +266,8 @@ public class TCVodQualityView extends FrameLayout {
          * @param quality
          */
         void onQualitySelect(TCVideoQuality quality);
+
+        void hide();
     }
 
     /**

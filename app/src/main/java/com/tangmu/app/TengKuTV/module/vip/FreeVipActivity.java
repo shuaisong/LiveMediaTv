@@ -97,8 +97,7 @@ public class FreeVipActivity extends BaseActivity {
                 .execute(new JsonCallback<BaseResponse<Integer>>() {
 
                     @Override
-                    public void onSuccess(Response<BaseResponse<Integer>> response) {
-                        super.onSuccess(response);
+                    public void onVerifySuccess(Response<BaseResponse<Integer>> response) {
                         if (response.body().getStatus() == 0) {
                             vipReceiveSuccess.setVisibility(View.VISIBLE);
                             isReceived = true;

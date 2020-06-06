@@ -14,12 +14,15 @@
 package com.tangmu.app.TengKuTV.db;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.tangmu.app.TengKuTV.utils.LogUtil;
+
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static DbOpenHelper instance;
 
     private static final String PLAY_TABLE_CREATE = "CREATE TABLE "
@@ -34,6 +37,9 @@ public class DbOpenHelper extends SQLiteOpenHelper {
             + PlayHistoryDao.COLUMN_B_TYPE + " INTEGER, "
             + PlayHistoryDao.COLUMN_ID_ONE + " INTEGER, "
             + PlayHistoryDao.COLUMN_B_ID + " INTEGER, "
+            + PlayHistoryDao.COLUMN_IS_VIP + " INTEGER, "
+            + PlayHistoryDao.COLUMN_UPDATE_NUM + " INTEGER, "
+            + PlayHistoryDao.COLUMN_UPDATE_STATUS + " INTEGER, "
             + PlayHistoryDao.COLUMN_ID + " INTEGER PRIMARY KEY);";
 
     private DbOpenHelper(Context context) {

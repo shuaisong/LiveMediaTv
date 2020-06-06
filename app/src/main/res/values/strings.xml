@@ -398,6 +398,9 @@
     <string name="receive_vip_tip_3">说明：该服务已与您所登录的账号(%s)绑定，您可以使用该账号在本设备上享有腾酷视频的会员服务</string>
     <string name="receive_vip">立即领取</string>
     <string name="recieve_vip_tip">您有一张腾酷TV影视会员卡未绑定</string>
+    <string name="vip_price">V I P 优 惠 价 ：</string>
+    <string name="normal_price">非&#160;会&#160;员&#160;价&#160;：</string>
+    <string name="expre_time">观 看 有 效 期 至：</string>
     <array name="full_key_array">
         <item>A</item>
         <item>B</item>

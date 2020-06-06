@@ -1,6 +1,7 @@
 package com.tangmu.app.TengKuTV.presenter;
 
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.PostRequest;
 import com.tangmu.app.TengKuTV.Constant;
@@ -10,11 +11,13 @@ import com.tangmu.app.TengKuTV.base.RxPresenter;
 import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean.VideoBean;
+import com.tangmu.app.TengKuTV.bean.OrderBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.contact.VideoDetailContact;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
+import com.tangmu.app.TengKuTV.utils.ToastUtil;
 
 import javax.inject.Inject;
 
@@ -65,6 +68,28 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                         super.onError(response);
                     }
                 });
+    }
+
+    @Override
+    public void createOrder(String vm_price, int id) {
+        OkGo.<BaseResponse<OrderBean>>post(Constant.IP + Constant.createOrder)
+                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("price", vm_price)
+                .params("type", 3).params("vm_id", id).execute(new JsonCallback<BaseResponse<OrderBean>>() {
+            @Override
+            protected void onVerifySuccess(Response<BaseResponse<OrderBean>> response) {
+                super.onVerifySuccess(response);
+                if (response.body().getStatus() == 0)
+                    view.showOrder(response.body().getResult());
+                else view.showError(response.body().getMsg());
+            }
+
+            @Override
+            public void onError(Response<BaseResponse<OrderBean>> response) {
+                super.onError(response);
+                view.showError(handleError(response.getException()));
+            }
+        });
     }
 
     @Override
@@ -126,7 +151,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse> response) {
+                    public void onVerifySuccess(Response<BaseResponse> response) {
                         if (response.body().getStatus() == 0) {
                             view.unCollectSuccess();
                         } else {
@@ -152,7 +177,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse<Integer>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<Integer>> response) {
+                    public void onVerifySuccess(Response<BaseResponse<Integer>> response) {
                         if (response.body().getStatus() == 0) {
                             view.collectSuccess(response.body().getResult());
                         } else {
@@ -165,6 +190,52 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                     public void onError(Response<BaseResponse<Integer>> response) {
                         super.onError(response);
                         view.showError(handleError(response.getException()));
+                    }
+                });
+    }
+
+    public void weChatPayInfo(String order_num, String price) {
+        OkGo.<BaseResponse<String>>post(Constant.IP + Constant.pay)
+                .cacheMode(CacheMode.NO_CACHE)
+                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("order_no", order_num)
+                .params("pay_method", 5)
+                .params("price", price).tag(this)
+                .execute(new JsonCallback<BaseResponse<String>>() {
+                    @Override
+                    public void onVerifySuccess(Response<BaseResponse<String>> response) {
+                        if (response.body().getStatus() == 0) {
+                            view.showPayCode(response.body().getResult());
+                        } else view.showError(response.body().getMsg());
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<String>> response) {
+                        super.onError(response);
+                        view.showError(response.body().getMsg());
+                    }
+                });
+    }
+
+    public void getWxPayResult(String order_no) {
+        OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.payCallbacks)
+                .params("order_no", order_no)
+                .execute(new JsonCallback<BaseResponse<Integer>>() {
+                    @Override
+                    public void onSuccess(Response<BaseResponse<Integer>> response) {
+                        super.onSuccess(response);
+                        if (response.body().getStatus() == 0) {
+                            if (response.body().getResult() == 2) {
+                                view.showPayResult(true);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<Integer>> response) {
+                        super.onError(response);
+                        ToastUtil.showText(handleError(response.getException()));
+                        view.showPayResult(false);
                     }
                 });
     }

@@ -195,6 +195,15 @@ public class BookActivity extends BaseActivity implements View.OnFocusChangeList
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         this.keyCode = keyCode;
+        View currentFocus = getCurrentFocus();
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && currentFocus != null) {
+            View view = currentFocus.focusSearch(View.FOCUS_LEFT);
+            if (view != null) {
+                if (view instanceof TabLayout.TabView && !(currentFocus instanceof TabLayout.TabView)) {
+                    return true;
+                }
+            }
+        }
         return super.onKeyDown(keyCode, event);
     }
 

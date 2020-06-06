@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
+    android:background="@color/black_bg"
     android:orientation="vertical"
     tools:context=".module.movie.MovieListActivity">
 
@@ -78,7 +78,8 @@
                     android:button="@null"
                     android:drawableStart="@mipmap/ic_screen"
                     android:drawablePadding="15dp"
-                    android:focusable="true"
+                    android:focusable="false"
+                    android:clickable="false"
                     android:gravity="center_vertical"
                     android:minWidth="105dp"
                     android:minHeight="42dp"

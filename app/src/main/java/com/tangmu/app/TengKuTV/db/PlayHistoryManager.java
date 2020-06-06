@@ -130,6 +130,9 @@ public class PlayHistoryManager {
             contentValues.put(PlayHistoryDao.COLUMN_ID_ONE, videoDetailBean.getVt_id_one());
             contentValues.put(PlayHistoryDao.COLUMN_VM_TYPE, videoDetailBean.getVm_type());
             contentValues.put(PlayHistoryDao.COLUMN_B_UPDATE_TIME, System.currentTimeMillis());
+            contentValues.put(PlayHistoryDao.COLUMN_IS_VIP, videoDetailBean.getVm_is_pay());
+            contentValues.put(PlayHistoryDao.COLUMN_UPDATE_STATUS, videoDetailBean.getVm_update_status());
+            contentValues.put(PlayHistoryDao.COLUMN_UPDATE_NUM, videoDetailBean.getVm_counts());
             DBManager.getInstance().updatePlayHistory(videoDetailBean.getVm_id(), 1, contentValues);
         } else
             DBManager.getInstance().savePlayHistory(videoDetailBean, position);

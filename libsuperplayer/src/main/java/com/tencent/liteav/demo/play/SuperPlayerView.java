@@ -230,6 +230,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
     public void showProgress(int keyCode) {
         if (duration == 0) return;
+        if (buyAntholgyView.findViewById(R.id.buy_line).getVisibility() == VISIBLE) return;
         mControllerFullScreen.showProgress(keyCode, current, duration);
     }
 
@@ -527,6 +528,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
                     videoQualities.add(new TCVideoQuality(i++, superPlayerURL.qualityName, superPlayerURL.url));
                 }
                 defaultVideoQuality = videoQualities.get(model.playDefaultIndex);
+                mControllerFullScreen.setDefaultQuality(defaultQualityIndex);
             } else if (!TextUtils.isEmpty(model.url)) { // 传统URL模式播放
 //                videoQualities.add(new TCVideoQuality(0, "", model.url));
 //                defaultVideoQuality = videoQualities.get(0);
@@ -789,6 +791,12 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             mCurrentPlayState = SuperPlayerConst.PLAYSTATE_PAUSE;
             updatePlayState(mCurrentPlayState);
         }
+        if (mLivePlayer != null) {
+            mLivePlayer.pause();
+            mCurrentPlayState = SuperPlayerConst.PLAYSTATE_PAUSE;
+            updatePlayState(mCurrentPlayState);
+        }
+
 
     }
 
@@ -857,6 +865,10 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private void fullScreen(boolean isFull) {
         Activity activity = (Activity) getContext();
         ViewGroup viewGroup = activity.findViewById(resId);
+        if (vipTipView.getVisibility() == VISIBLE)
+            vipTipView.fullScreen(isFull);
+        if (buyAntholgyView.getVisibility() == VISIBLE)
+            buyAntholgyView.fullScreen(isFull);
         if (isFull) {
             oldParent.removeView(this);
             newParent.addView(this);

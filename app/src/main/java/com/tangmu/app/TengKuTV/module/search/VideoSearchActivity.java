@@ -153,6 +153,10 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
                         .setGone(R.id.vip, item.getVm_is_pay() == 2);
                 GlideUtils.getRequest(VideoSearchActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
                         .centerCrop().into((ImageView) helper.getView(R.id.image));
+                if (item.getVm_update_status() == 2) {
+                    helper.setText(R.id.update_status, getResources().getString(R.string.update_done));
+                } else if (item.getVm_update_status() == 1)
+                    helper.setText(R.id.update_status, String.format(getResources().getString(R.string.update_status), item.getCount()));
             }
         };
         resultAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {

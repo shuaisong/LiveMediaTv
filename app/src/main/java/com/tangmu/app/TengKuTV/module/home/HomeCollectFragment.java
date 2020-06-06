@@ -1,5 +1,7 @@
 package com.tangmu.app.TengKuTV.module.home;
 
+import android.view.View;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.fragment.app.Fragment;
@@ -13,9 +15,15 @@ import com.tangmu.app.TengKuTV.module.mine.collect.CollectFragment;
 
 import butterknife.BindView;
 
-public class HomeCollectFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener {
+public class HomeCollectFragment extends BaseFragment implements RadioGroup.OnCheckedChangeListener, View.OnFocusChangeListener {
     @BindView(R.id.radio_collect)
     RadioGroup radioCollect;
+    @BindView(R.id.video_collect)
+    RadioButton videoCollect;
+    @BindView(R.id.book_collect)
+    RadioButton bookCollect;
+    @BindView(R.id.dubbing_collect)
+    RadioButton dubbingCollect;
     private BaseFragment currentFragment;
 
     @Override
@@ -27,6 +35,9 @@ public class HomeCollectFragment extends BaseFragment implements RadioGroup.OnCh
     protected void initView() {
         radioCollect.setOnCheckedChangeListener(this);
         radioCollect.check(R.id.video_collect);
+        videoCollect.setOnFocusChangeListener(this);
+        bookCollect.setOnFocusChangeListener(this);
+        dubbingCollect.setOnFocusChangeListener(this);
     }
 
     @Override
@@ -84,5 +95,21 @@ public class HomeCollectFragment extends BaseFragment implements RadioGroup.OnCh
                 return CollectFragment.getInstance(4);
         }
         return null;
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus && v instanceof RadioButton) {
+            radioCollect.check(v.getId());
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        View viewById = radioCollect.findViewById(radioCollect.getCheckedRadioButtonId());
+        if (viewById != null) {
+            viewById.requestFocus();
+        }
     }
 }

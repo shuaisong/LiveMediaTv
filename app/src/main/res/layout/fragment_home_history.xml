@@ -18,7 +18,6 @@
             android:layout_marginTop="46dp"
             android:background="@drawable/history_check_select"
             android:button="@null"
-            android:checked="true"
             android:focusable="true"
             android:gravity="center"
             android:minHeight="36dp"

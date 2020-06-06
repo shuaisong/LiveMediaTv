@@ -117,6 +117,11 @@ public class SuperBookPlayerView extends RelativeLayout implements ITXVodPlayLis
             this.adUrl = Util.convertVideoPath(adUrl);
     }
 
+    public void showProgress(int keyCode) {
+        if (duration == 0) return;
+        mControllerWindow.showProgress(keyCode, current, duration);
+    }
+
 
     private enum PLAYER_TYPE {
         PLAYER_TYPE_NULL,

@@ -59,7 +59,7 @@ public class DubbingDetailPresenter extends RxPresenter<DubbingDetailContact.Vie
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse<Integer>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<Integer>> response) {
+                    public void onVerifySuccess(Response<BaseResponse<Integer>> response) {
                         if (response.body().getStatus() == 0) {
                             view.collectSuccess(response.body().getResult());
                         } else {
@@ -84,7 +84,7 @@ public class DubbingDetailPresenter extends RxPresenter<DubbingDetailContact.Vie
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse> response) {
+                    public void onVerifySuccess(Response<BaseResponse> response) {
                         if (response.body().getStatus() == 0) {
                             view.unCollectSuccess();
                         } else {

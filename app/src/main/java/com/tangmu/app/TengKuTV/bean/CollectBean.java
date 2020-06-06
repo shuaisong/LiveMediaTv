@@ -50,6 +50,15 @@ public class CollectBean {
 
     private int vt_id_one;
     private int vt_id_two;
+    /**
+     * count : 42
+     * vm_update_status : 1
+     * vm_is_pay : 2
+     */
+
+    private int count;
+    private int vm_update_status;
+    private int vm_is_pay;
 
     public int getUc_id() {
         return uc_id;
@@ -161,5 +170,29 @@ public class CollectBean {
 
     public void setVt_id_two(int vt_id_two) {
         this.vt_id_two = vt_id_two;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getVm_update_status() {
+        return vm_update_status;
+    }
+
+    public void setVm_update_status(int vm_update_status) {
+        this.vm_update_status = vm_update_status;
+    }
+
+    public int getVm_is_pay() {
+        return vm_is_pay;
+    }
+
+    public void setVm_is_pay(int vm_is_pay) {
+        this.vm_is_pay = vm_is_pay;
     }
 }

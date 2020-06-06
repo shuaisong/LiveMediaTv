@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -471,5 +472,23 @@ public class TCControllerWindow extends RelativeLayout implements IController, V
         GlideUtils.getRequest(getContext(), coverImgPath)
                 .circleCrop().into(mIcCover);
         mIcCover.startAnimation(rotateAnimation);
+    }
+
+    public void showProgress(int keyCode, long current, long duration) {
+        if (duration != 0) {
+            int progress = mSeekBarProgress.getProgress();
+            if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+                if (progress > 0)
+                    progress = progress - 1;
+            } else {
+                if (progress < mSeekBarProgress.getMax())
+                    progress = progress + 1;
+            }
+            float percentage = progress * 1.0f / mSeekBarProgress.getMax();
+            long l = (long) (percentage * duration);
+            mControllerCallback.onSeekTo((int) l);
+            mSeekBarProgress.setmIsOnDrag(false);
+            mSeekBarProgress.setProgress(progress);
+        }
     }
 }

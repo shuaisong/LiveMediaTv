@@ -70,7 +70,7 @@ public class BannerClickListener implements OnBannerListener {
                 if (bannerBean.getB_live_type() == 1) {//直播
                     intent = new Intent(context, LivingActivity.class);
                     intent.putExtra("url", bannerBean.getPull_url());
-                    intent.putExtra("id", bannerBean.getB_url());
+                    intent.putExtra("id", Integer.valueOf(bannerBean.getB_url()));
                 }
                 break;
         }

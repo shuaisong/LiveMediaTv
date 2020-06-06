@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckedTextView;
+import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +38,7 @@ import butterknife.BindView;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import me.jessyan.autosize.utils.ScreenUtils;
 
-public class PlayBookActivity extends BaseActivity implements View.OnFocusChangeListener {
+public class PlayBookActivity extends BaseActivity implements View.OnFocusChangeListener, View.OnClickListener {
 
 
     @BindView(R.id.anthologyList)
@@ -50,6 +51,7 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
     private int currentPosition = 0;
     private AdBean adBean;
     private boolean showAd = true;
+    private ImageView ivCollect;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -108,6 +110,8 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
                 anthologyAdapter.notifyItemChanged(currentPosition, "");
             }
         });
+        ivCollect = superPlayer.findViewById(R.id.collect);
+        ivCollect.setOnClickListener(this);
     }
 
     private void initAnthologyList() {
@@ -229,6 +233,17 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
         superPlayer.setData(bookDetailDataBean.getBook_detail(), currentPosition);
         superPlayer.setCover(Util.convertImgPath(bookDetailDataBean.getB_img()));
         anthologyAdapter.setNewData(bookDetailDataBean.getBook_detail());
+        if (bookDetailDataBean.getIs_collec_status() == 1)
+            ivCollect.setImageResource(R.mipmap.ic_book_clollected);
+
+        anthologyList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View viewByPosition = anthologyAdapter.getViewByPosition(anthologyList, currentPosition, R.id.title);
+                if (viewByPosition != null) viewByPosition.requestFocus();
+            }
+        }, 100);
+        superPlayer.findViewById(R.id.seekbar_progress).setFocusable(true);
     }
 
     private void startPlay() {
@@ -245,14 +260,6 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
         superPlayer.playWithModel(superPlayerModel);
     }
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            LogUtil.e(currentFocus.toString());
-        }
-        return super.onKeyUp(keyCode, event);
-    }
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
@@ -273,5 +280,97 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
         int i = ScreenUtils.getScreenSize(view.getContext())[1];
         out[1] = out[1] - i / 2;
         return out;
+    }
+
+
+    @Override
+    public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            View currentFocus = getCurrentFocus();
+            if (currentFocus != null && currentFocus.getId() == R.id.seekbar_progress) {
+                superPlayer.showProgress(keyCode);
+                return true;
+            }
+        }
+        return super.onKeyLongPress(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            View currentFocus = getCurrentFocus();
+            if (currentFocus != null && currentFocus.getId() == R.id.seekbar_progress) {
+                superPlayer.showProgress(keyCode);
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (bookDetailDataBean != null && isClickLogin()) {
+            if (bookDetailDataBean.getIs_collec_status() == 0) {
+                collectBook(bookDetailDataBean.getB_id());
+            } else unCollectBook(bookDetailDataBean.getUc_id());
+        }
+    }
+
+    private void collectBook(int b_id) {
+        OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
+                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("audio_id", b_id)
+                .params("type", 3)
+                .tag(this)
+                .execute(new JsonCallback<BaseResponse<Integer>>() {
+                    @Override
+                    public void onVerifySuccess(Response<BaseResponse<Integer>> response) {
+                        if (response.body().getStatus() == 0) {
+                            bookDetailDataBean.setIs_collec_status(1);
+                            ivCollect.setImageResource(R.mipmap.ic_book_clollected);
+                            bookDetailDataBean.setUc_id(response.body().getResult());
+                        } else {
+                            ToastUtil.showText(response.body().getMsg());
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<Integer>> response) {
+                        super.onError(response);
+                        ToastUtil.showText(handleError(response.getException()));
+                    }
+                });
+    }
+
+    private void unCollectBook(int uc_id) {
+        OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
+                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("uc_id", uc_id)
+                .tag(this)
+                .execute(new JsonCallback<BaseResponse>() {
+                    @Override
+                    public void onVerifySuccess(Response<BaseResponse> response) {
+                        if (response.body().getStatus() == 0) {
+                            bookDetailDataBean.setIs_collec_status(0);
+                            ivCollect.setImageResource(R.mipmap.ic_book_unclollect);
+                        } else {
+                            ToastUtil.showText(response.body().getMsg());
+                        }
+
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse> response) {
+                        super.onError(response);
+                        ToastUtil.showText(handleError(response.getException()));
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        OkGo.getInstance().cancelTag(this);
+        super.onDestroy();
     }
 }

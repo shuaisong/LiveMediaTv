@@ -5,12 +5,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -26,8 +23,6 @@ import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.PostRequest;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
-import com.tangmu.app.TengKuTV.adapter.VideoFirstChoiceAdapter;
-import com.tangmu.app.TengKuTV.adapter.VideoSecondChoiceAdapter;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
@@ -41,8 +36,6 @@ import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.TopMiddleDecoration;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.CustomLoadMoreView;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -123,21 +116,26 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
         videoSecondChoiceAdapter.setNewData(second);
         CategoryBean.SecondBean currentSecondBean = second.get(position);
         tvCategory.setText(Util.showText(currentSecondBean.getVt_title(), currentSecondBean.getVt_title_z()));
+        category2.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View viewByPosition = videoSecondChoiceAdapter.getViewByPosition(category2, position, R.id.check_second);
+                if (viewByPosition != null) {
+                    viewByPosition.requestFocus();
+                }
+            }
+        }, 100);
+
         swip.setRefreshing(true);
-        getVideoList();
+//        getVideoList();
     }
 
     private void removeDubbing(List<CategoryBean.SecondBean> second) {
-        boolean haveDubbing = false;
         for (int i = 0; i < second.size(); i++) {
             if (second.get(i).getVt_pid() == -2) {
-                haveDubbing = true;
                 second.remove(i);
                 break;
             }
-        }
-        if (haveDubbing) {
-            position = 0;
         }
     }
 
@@ -211,8 +209,7 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
         swip.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                page = 1;
-                getVideoList();
+                freshVideoList();
             }
         });
         initMovies();
@@ -245,6 +242,7 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                     currentSelectYear = position;
                     yearAdapter.notifyItemChanged(pre, "");
                     yearAdapter.notifyItemChanged(currentSelectYear, "");
+                    freshVideoList();
                 }
             }
         });
@@ -259,24 +257,25 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
         videoSecondChoiceAdapter = new BaseQuickAdapter<CategoryBean.SecondBean, BaseViewHolder>(R.layout.item_video_second) {
             @Override
             protected void convert(BaseViewHolder helper, CategoryBean.SecondBean item) {
+                helper.itemView.setOnFocusChangeListener(MovieListActivity.this);
                 helper.setText(R.id.check_second, Util.showText(item.getVt_title(), item.getVt_title_z()));
-                if (position == videoSecondChoiceAdapter.getData().indexOf(item)) {
-                    helper.setChecked(R.id.check_second, true);
-                } else
-                    helper.setChecked(R.id.check_second, false);
+//                if (position == videoSecondChoiceAdapter.getData().indexOf(item)) {
+//                    helper.setChecked(R.id.check_second, true);
+//                } else
+//                    helper.setChecked(R.id.check_second, false);
             }
         };
-        videoSecondChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                int preposition = MovieListActivity.this.position;
-                MovieListActivity.this.position = position;
-                CategoryBean.SecondBean currentSecondBean = videoSecondChoiceAdapter.getItem(position);
-                tvCategory.setText(Util.showText(currentSecondBean.getVt_title(), currentSecondBean.getVt_title_z()));
-                videoSecondChoiceAdapter.notifyItemChanged(position, "");
-                videoSecondChoiceAdapter.notifyItemChanged(preposition, "");
-            }
-        });
+//        videoSecondChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+//                int preposition = MovieListActivity.this.position;
+//                MovieListActivity.this.position = position;
+//                CategoryBean.SecondBean currentSecondBean = videoSecondChoiceAdapter.getItem(position);
+//                tvCategory.setText(Util.showText(currentSecondBean.getVt_title(), currentSecondBean.getVt_title_z()));
+//                videoSecondChoiceAdapter.notifyItemChanged(position, "");
+//                videoSecondChoiceAdapter.notifyItemChanged(preposition, "");
+//            }
+//        });
         category2.setAdapter(videoSecondChoiceAdapter);
     }
 
@@ -322,6 +321,11 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                 helper.setText(R.id.title, titleStr).setVisible(R.id.vip, item.getVm_is_pay() == 2);
                 GlideUtils.getRequest(MovieListActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
                         .centerCrop().into((ImageView) helper.getView(R.id.image));
+                if (item.getVm_update_status() == 2) {
+                    helper.setText(R.id.update_status, getResources().getString(R.string.update_done));
+                } else if (item.getVm_update_status() == 1)
+                    helper.setText(R.id.update_status, String.format(getResources().getString(R.string.update_status), item.getCount()));
+
             }
         };
         quickAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -369,18 +373,41 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
         if (currentFocus != null) {
-            LogUtil.e(currentFocus.toString());
             if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && currentFocus.getId() == R.id.check_first) {
                 category1.setVisibility(View.GONE);
                 showP.setVisibility(View.VISIBLE);
-                screen.requestFocus();
+//                screen.requestFocus();
+                View viewByPosition = videoFirstChoiceAdapter.getViewByPosition(category2, 0, R.id.check_second);
+                if (viewByPosition != null) {
+                    viewByPosition.requestFocus();
+                }
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && (currentFocus.getId() == R.id.check_second || currentFocus.getId() == R.id.screen)) {
-                category1.setVisibility(View.VISIBLE);
+                category1.setVisibility(View.INVISIBLE);
+                List<CategoryBean> data = videoFirstChoiceAdapter.getData();
+                CategoryBean.SecondBean item = videoSecondChoiceAdapter.getItem(position);
+                category1.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (item != null)
+                            for (int i = 0; i < data.size(); i++) {
+                                if (data.get(i).getVt_id() == item.getVt_pid()) {
+                                    index = i;
+                                    break;
+                                }
+                            }
+                        View viewByPosition = videoFirstChoiceAdapter.getViewByPosition(category1, index, R.id.check_first);
+                        category1.setVisibility(View.VISIBLE);
+                        if (viewByPosition != null) {
+                            viewByPosition.requestFocus();
+                        }
+                        category1.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    }
+                });
+
                 showP.setVisibility(View.GONE);
             }
         } else {
@@ -400,17 +427,9 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                 showP.setVisibility(View.GONE);
                 break;
             case R.id.radio_all:
-                break;
             case R.id.radio_free:
-                break;
             case R.id.radio_pay:
-                break;
-            case R.id.screen:
-                page = 1;
-                swip.setRefreshing(true);
-                getPayType();
-                getYears();
-                getVideoList();
+                freshVideoList();
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + view.getId());
@@ -455,15 +474,31 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                         videoSecondChoiceAdapter.getData().clear();
                         videoSecondChoiceAdapter.notifyDataSetChanged();
                     } else {
+                        tvCategory.setText(Util.showText(item.getVt_title(), item.getVt_title_z()));
                         List<CategoryBean.SecondBean> second = item.getSecond();
                         removeDubbing(second);
                         MovieListActivity.this.position = 0;
                         videoSecondChoiceAdapter.setNewData(second);
-                        screen.setText(Util.showText(second.get(0).getVt_title(), item.getVt_title_z()));
                     }
                 }
 
             }
+            if (v.getId() == R.id.check_second) {
+                position = category2.getChildAdapterPosition(v);
+                CategoryBean.SecondBean item = videoSecondChoiceAdapter.getItem(position);
+                if (item != null) {
+                    tvCategory.setText(Util.showText(item.getVt_title(), item.getVt_title_z()));
+                }
+                freshVideoList();
+            }
         }
+    }
+
+    private void freshVideoList() {
+        page = 1;
+        swip.setRefreshing(true);
+        getPayType();
+        getYears();
+        getVideoList();
     }
 }

@@ -114,8 +114,7 @@ public class ChangePasswordActivity extends BaseActivity {
                 .params("confirm_password", new_password64)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse> response) {
-                        super.onSuccess(response);
+                    public void onVerifySuccess(Response<BaseResponse> response) {
                         loadingDialog.dismiss();
                         if (response.body().getStatus() == 0) {
                             if (PreferenceManager.getInstance().isRemember())

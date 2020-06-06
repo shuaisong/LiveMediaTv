@@ -41,6 +41,7 @@ import com.tangmu.app.TengKuTV.module.search.VideoSearchActivity;
 import com.tangmu.app.TengKuTV.presenter.HomeChildPresenter;
 import com.tangmu.app.TengKuTV.utils.BannerClickListener;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.SingleLineItemDecoration;
@@ -440,10 +441,14 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            int[] amount = getScrollAmount(v);//计算需要滑动的距离
             ViewParent parent = mCategory.getParent().getParent();
-            if (parent instanceof NestedScrollView) {
-                ((NestedScrollView) parent).scrollBy(0, amount[1]);
+            if (v.getId() == R.id.item_movie) {
+                int[] amount = getScrollAmount(v);//计算需要滑动的距离
+                if (parent instanceof NestedScrollView) {
+                    ((NestedScrollView) parent).scrollBy(0, amount[1]);
+                }
+            } else {
+                ((NestedScrollView) parent).scrollTo(0, 0);
             }
         }
     }

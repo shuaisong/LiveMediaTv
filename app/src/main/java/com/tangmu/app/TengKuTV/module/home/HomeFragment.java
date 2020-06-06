@@ -45,7 +45,7 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
     private HomePageAdapter homePageAdapter;
 
     @Override
-    protected void initData() {
+    public void initData() {
         presenter.getCategory();
     }
 
@@ -117,6 +117,12 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
 
     public void setFragment(int position) {
         mViewPager.setCurrentItem(position);
+        tablayout.getTabAt(position).view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                tablayout.getTabAt(position).view.requestFocus();
+            }
+        }, 100);
     }
 
     /**
@@ -139,8 +145,16 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
                 holder.tvTabName.setVisibility(View.GONE);
                 holder.ivTab.setVisibility(View.VISIBLE);
                 holder.ivTab.setImageResource(R.mipmap.ic_vip_title);
-            } else
-                holder.tvTabName.setText(Util.showText(categoryBean.getVt_title(), categoryBean.getVt_title_z()));
+            } else {
+                if (categoryBean.getVt_title().equals("推荐")) {
+                    holder.tvTabName.setText(Util.showText("推  荐", categoryBean.getVt_title_z()));
+                } else if (categoryBean.getVt_title().equals("配音")) {
+                    holder.tvTabName.setText(Util.showText("配  音", categoryBean.getVt_title_z()));
+                } else if (categoryBean.getVt_title().equals("直播")) {
+                    holder.tvTabName.setText(Util.showText("直  播", categoryBean.getVt_title_z()));
+                } else
+                    holder.tvTabName.setText(Util.showText(categoryBean.getVt_title(), categoryBean.getVt_title_z()));
+            }
 
         }
 
@@ -178,7 +192,14 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
         int itemPosition = homePageAdapter.getItemPosition(LiveFragment.class);
         if (itemPosition != PagerAdapter.POSITION_UNCHANGED) {
             mViewPager.setCurrentItem(itemPosition);
+            tablayout.getTabAt(itemPosition).view.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tablayout.getTabAt(itemPosition).view.requestFocus();
+                }
+            }, 100);
         }
+
     }
 
     public void showDubbingFrament() {
@@ -186,6 +207,12 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
         int itemPosition = homePageAdapter.getItemPosition(HomeDubbingFragment.class);
         if (itemPosition != PagerAdapter.POSITION_UNCHANGED) {
             mViewPager.setCurrentItem(itemPosition);
+            tablayout.getTabAt(itemPosition).view.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tablayout.getTabAt(itemPosition).view.requestFocus();
+                }
+            }, 100);
         }
     }
 

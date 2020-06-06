@@ -236,11 +236,12 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
+        superPlayer.requestFocus();
     }
 
 
     private void initRecommendList() {
-        videoRecycler.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 20), AutoSizeUtils.dp2px(this, 10)));
+        videoRecycler.addItemDecoration(new MovieItemDecoration(this));
         recommendMovieAdapter = new BaseQuickAdapter<LiveReplayBean, BaseViewHolder>(R.layout.item_live_rec) {
             @Override
             protected void convert(BaseViewHolder helper, LiveReplayBean item) {
@@ -300,6 +301,7 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
     public void onBackPressed() {
         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+            superPlayer.requestFocus();
         } else
             super.onBackPressed();
     }

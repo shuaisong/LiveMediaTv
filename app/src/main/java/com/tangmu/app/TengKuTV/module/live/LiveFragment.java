@@ -1,6 +1,8 @@
 package com.tangmu.app.TengKuTV.module.live;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -41,6 +44,9 @@ import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
 import com.youth.banner.Banner;
+import com.youth.banner.BannerConfig;
+import com.youth.banner.Transformer;
+import com.youth.banner.loader.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,10 +68,10 @@ import me.jessyan.autosize.utils.ScreenUtils;
 public class LiveFragment extends BaseFragment implements LiveContact.View, View.OnFocusChangeListener {
     @Inject
     LivePresenter presenter;
-    @BindView(R.id.bannerTitle)
+    @BindView(R.id.banner_title)
     TextView bannerTitle;
-    @BindView(R.id.banner_img)
-    ImageView bannerImg;
+    @BindView(R.id.banner)
+    Banner banner;
     @BindView(R.id.historyList)
     RecyclerView historyList;
     @BindView(R.id.swip)
@@ -108,6 +114,9 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     private int page = 1;
     private int itemHeight;
     private int topTitleHeight;
+    private BannerClickListener bannerClickListener;
+    private ViewPager bannerViewPager;
+
     /**
      * 初始化数据
      */
@@ -167,8 +176,34 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
         collect.setOnFocusChangeListener(this);
         live1.setOnFocusChangeListener(this);
         live2.setOnFocusChangeListener(this);
-        bannerImg.setOnFocusChangeListener(this);
         superPlayer.findViewById(R.id.controller_small).setOnFocusChangeListener(this);
+        initBanner();
+    }
+
+
+    private void initBanner() {
+        //设置banner样式
+        banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
+        //设置图片加载器
+        banner.setImageLoader(new ImageLoader() {
+            @Override
+            public void displayImage(Context context, Object path, ImageView imageView) {
+                GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
+                        .placeholder(R.mipmap.img_default).into(imageView);
+            }
+        });
+        banner.setBannerTitles(null);
+        //设置banner动画效果
+        banner.setBannerAnimation(Transformer.Default);
+        banner.isAutoPlay(true);
+        //设置轮播时间
+        banner.setDelayTime(1500);
+        //设置指示器位置（当banner模式中有指示器时）
+        banner.setIndicatorGravity(BannerConfig.RIGHT);
+        bannerClickListener = new BannerClickListener(getActivity());
+        banner.setOnBannerListener(bannerClickListener);
+        bannerViewPager = banner.findViewById(R.id.bannerViewPager);
+        banner.setOnFocusChangeListener(this);
     }
 
     private void initLiveHistoryList() {
@@ -237,20 +272,22 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                 }
             }
         }
+        this.liveBeans.clear();
         this.liveBeans.addAll(liveBeans);
         if (!liveBeans.isEmpty()) {
             LiveBean liveBean = liveBeans.get(0);
             if (liveBean.getL_live_type() == 1) {
-                bannerTitle.setText(getString(R.string.live));
+                banner.setVisibility(View.GONE);
+                superPlayer.setVisibility(View.VISIBLE);
+                bannerTitle.setVisibility(View.VISIBLE);
                 SuperPlayerModel superPlayerModel = new SuperPlayerModel();
                 superPlayerModel.url = liveBean.getPull_url();
                 superPlayer.playWithModel(superPlayerModel);
-                bannerImg.setVisibility(View.INVISIBLE);
             } else {
-                bannerImg.setVisibility(View.VISIBLE);
-                bannerTitle.setText(getString(R.string.look_back));
-                GlideUtils.getRequest(this, Util.convertImgPath(liveBean.getL_img()))
-                        .centerCrop().into(bannerImg);
+                banner.setVisibility(View.VISIBLE);
+                bannerTitle.setVisibility(View.GONE);
+                superPlayer.setVisibility(View.GONE);
+                presenter.getBanner();
             }
             if (liveBeans.size() > 2) {
                 liveBean = liveBeans.get(2);
@@ -280,7 +317,16 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
             live2.setVisibility(View.INVISIBLE);
             bannerTitle.setVisibility(View.INVISIBLE);
             superPlayer.setVisibility(View.INVISIBLE);
+            presenter.getBanner();
         }
+    }
+
+
+    @Override
+    public void ShowBanner(List<BannerBean> result) {
+        banner.setImages(result);
+        bannerClickListener.setBannerBeans(result);
+        banner.start();
     }
 
     @Override
@@ -302,12 +348,16 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
         ToastUtil.showText(msg);
     }
 
-    @OnClick({R.id.history1, R.id.history2, R.id.history3, R.id.search, R.id.collect, R.id.live1, R.id.live2, R.id.banner_img, R.id.controller_small})
+    @OnClick({R.id.history1, R.id.history2, R.id.history3, R.id.search, R.id.collect, R.id.live1, R.id.live2, R.id.controller_small, R.id.banner})
     public void onViewClicked(View view) {
         Intent intent;
         PlayHistoryInfo playHistoryInfo;
         LiveBean liveBean;
         switch (view.getId()) {
+            case R.id.banner:
+                if (bannerClickListener != null)
+                    bannerClickListener.OnBannerClick(banner.toRealPosition(bannerViewPager.getCurrentItem()));
+                break;
             case R.id.history1:
                 playHistoryInfo = allVideo.get(0);
                 if (playHistoryInfo.getVm_type() == 2) {
@@ -354,12 +404,6 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                     intent = new Intent(getActivity(), HistoryLiveActivity.class);
                     intent.putExtra("id", liveBean.getLr_id());
                 }
-                startActivity(intent);
-                break;
-            case R.id.banner_img:
-                liveBean = liveBeans.get(0);
-                intent = new Intent(getActivity(), HistoryLiveActivity.class);
-                intent.putExtra("id", liveBean.getLr_id());
                 startActivity(intent);
                 break;
             case R.id.live1:
@@ -422,10 +466,14 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            int[] amount = getScrollAmount(v);//计算需要滑动的距离
             ViewParent parent = historyList.getParent().getParent();
-            if (parent instanceof NestedScrollView) {
-                ((NestedScrollView) parent).scrollBy(0, amount[1]);
+            if (v.getId() == R.id.item_live_history) {
+                int[] amount = getScrollAmount(v);//计算需要滑动的距离
+                if (parent instanceof NestedScrollView) {
+                    ((NestedScrollView) parent).scrollBy(0, amount[1]);
+                }
+            } else {
+                ((NestedScrollView) parent).scrollTo(0, 0);
             }
         }
     }

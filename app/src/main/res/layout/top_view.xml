@@ -43,7 +43,7 @@
         android:layout_width="100dp"
         android:layout_height="38dp"
         android:layout_marginStart="30dp"
-        android:focusable="false"
+        android:focusable="true"
         android:src="@mipmap/theme_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -142,6 +142,18 @@
         app:layout_constraintStart_toEndOf="@id/mine"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/setting"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/top_tv_bg_select"
+        android:focusable="true"
+        android:padding="@dimen/focus_width"
+        android:src="@mipmap/ic_setting"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/time"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/wifi"
@@ -162,6 +174,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:focusable="false"
+        android:text="22:22"
         android:textColor="@color/white"
         android:textSize="28sp"
         android:textStyle="bold"

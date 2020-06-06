@@ -5,13 +5,14 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.tencent.liteav.demo.play.R;
 
 public class BuyAntholgyView extends LinearLayout {
 
 
-    private View to_buy;
+    private TextView to_buy, to_buy1, buy_tip;
     private View buy_line;
 
     public BuyAntholgyView(Context context) {
@@ -34,6 +35,8 @@ public class BuyAntholgyView extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.antholgy_buy_view, this);
         buy_line = findViewById(R.id.buy_line);
         to_buy = findViewById(R.id.to_buy);
+        to_buy1 = findViewById(R.id.to_buy1);
+        buy_tip = findViewById(R.id.buy_tip);
     }
 
 
@@ -60,5 +63,17 @@ public class BuyAntholgyView extends LinearLayout {
 
     public boolean isFullVisible() {
         return getVisibility() == VISIBLE && buy_line.getVisibility() == VISIBLE;
+    }
+
+    public void fullScreen(boolean isFull) {
+        if (isFull) {
+            to_buy1.setTextSize(33);
+            to_buy.setTextSize(20);
+            buy_tip.setTextSize(25);
+        } else {
+            to_buy1.setTextSize(15);
+            to_buy.setTextSize(12);
+            buy_tip.setTextSize(16);
+        }
     }
 }

@@ -53,8 +53,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                 .params("token", PreferenceManager.getInstance().getLogin().getToken())
                 .execute(new JsonCallback<BaseResponse<UserInfoBean>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<UserInfoBean>> response) {
-                        super.onSuccess(response);
+                    public void onVerifySuccess(Response<BaseResponse<UserInfoBean>> response) {
                         if (response.body().getStatus() == 0) {
                             PreferenceManager.getInstance().updateLogin(response.body().getResult());
                             if (view != null)
@@ -134,8 +133,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                 .params("price", price).tag(this)
                 .execute(new JsonCallback<BaseResponse<String>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<String>> response) {
-                        super.onSuccess(response);
+                    public void onVerifySuccess(Response<BaseResponse<String>> response) {
                         if (response.body().getStatus() == 0) {
                             view.showPayCode(response.body().getResult());
                             getPayResult();

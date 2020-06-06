@@ -1,6 +1,7 @@
 package com.tangmu.app.TengKuTV.contact;
 
 import com.tangmu.app.TengKuTV.base.BaseContact;
+import com.tangmu.app.TengKuTV.bean.BannerBean;
 import com.tangmu.app.TengKuTV.bean.LiveBean;
 import com.tangmu.app.TengKuTV.bean.LiveReplayBean;
 
@@ -12,6 +13,8 @@ public class LiveContact {
         void showLiveReply(List<LiveReplayBean> liveBeans);
 
         void showTopLive(List<LiveBean> result);
+
+        void ShowBanner(List<BannerBean> bannerBeans);
     }
 
     public interface Presenter {
@@ -19,5 +22,7 @@ public class LiveContact {
         void getLiveReply(int page);
 
         void getTopLive();
+
+        void getBanner();
     }
 }

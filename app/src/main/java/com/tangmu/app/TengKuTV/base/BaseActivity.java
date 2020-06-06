@@ -1,11 +1,13 @@
 package com.tangmu.app.TengKuTV.base;
 
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -21,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.request.RequestOptions;
 import com.tangmu.app.TengKuTV.CustomApp;
+import com.tangmu.app.TengKuTV.NetReceiver;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.utils.AppLanguageUtils;
@@ -30,12 +33,8 @@ import com.tangmu.app.TengKuTV.utils.GlideRequest;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
-import com.tangmu.app.TengKuTV.utils.StatusBarUtil;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
-import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.GlideCircleWithBorder;
-
-import java.io.IOException;
 
 import butterknife.ButterKnife;
 import me.jessyan.autosize.internal.CustomAdapt;
@@ -45,10 +44,12 @@ import me.jessyan.autosize.internal.CustomAdapt;
  * Created by ysh on 2019/5/25 0025.
  */
 
-public abstract class BaseActivity extends AppCompatActivity implements CustomAdapt {
+public abstract class BaseActivity extends AppCompatActivity implements CustomAdapt, NetReceiver.NetChangeListener {
 
     private long lastClickTime;
     private boolean isDefaultLanguage;
+    private NetReceiver netReceiver;
+    private ImageView wifiImage;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +64,20 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         setupActivityComponent(CustomApp.getApp().getAppComponent());
         initView();
         initData();
-
+        netReceiver = new NetReceiver();
+        netReceiver.setNetChangeListener(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netReceiver, intentFilter);
+        wifiImage = findViewById(R.id.wifi);
+        if (wifiImage != null)
+            if (checkNetAvailable()) {
+                wifiImage.setImageResource(R.mipmap.ic_wifi);
+            } else {
+                wifiImage.setImageResource(R.mipmap.no_net);
+            }
     }
 
     private String getAppLanguage() {
@@ -163,6 +177,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     @Override
     protected void onDestroy() {
+        unregisterReceiver(netReceiver);
         CleanInputLeakUtils.getInstance().fixInputMethodManagerLeak(this);
         super.onDestroy();
     }
@@ -201,13 +216,6 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-//        View currentFocus = getCurrentFocus();
-//        if (currentFocus != null) {
-//            LogUtil.e(event.getKeyCode() + currentFocus.toString());
-//            ToastUtil.showText(event.getKeyCode() + currentFocus.toString());
-//        } else {
-//            ToastUtil.showText(event.getKeyCode() + "currentFocus = null");
-//        }
         if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
             event = new KeyEvent(event.getDownTime(), event.getEventTime(), event.getAction(),
                     KeyEvent.KEYCODE_DPAD_CENTER, event.getMetaState(),
@@ -216,9 +224,32 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         return super.dispatchKeyEvent(event);
     }
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        View currentFocus = getCurrentFocus();
+//        if (currentFocus != null) {
+//            LogUtil.e(event.getKeyCode() + currentFocus.toString());
+//            ToastUtil.showText(event.getKeyCode() + currentFocus.toString());
+//        } else {
+//            ToastUtil.showText(event.getKeyCode() + "currentFocus = null");
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+
     @Override
     public void finish() {
         super.finish();
         System.gc();
+    }
+
+    @Override
+    public void onNetChange(boolean hasNet) {
+        if (wifiImage != null) {
+            if (hasNet) {
+                wifiImage.setImageResource(R.mipmap.ic_wifi);
+            } else {
+                wifiImage.setImageResource(R.mipmap.no_net);
+            }
+        }
     }
 }

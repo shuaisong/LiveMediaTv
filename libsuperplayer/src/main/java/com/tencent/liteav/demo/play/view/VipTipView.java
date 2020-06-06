@@ -26,6 +26,10 @@ import java.util.List;
 public class VipTipView extends LinearLayout {
 
 
+    private TextView openVip;
+    private TextView login_tip;
+    private TextView open_vip_tip;
+
     public VipTipView(Context context) {
         super(context);
         init(context);
@@ -44,6 +48,9 @@ public class VipTipView extends LinearLayout {
 
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.vod_vip_tip_window, this);
+        openVip = (TextView) findViewById(R.id.open_vip);
+        login_tip = (TextView) findViewById(R.id.login_tip);
+        open_vip_tip = (TextView) findViewById(R.id.open_vip_tip);
     }
 
 
@@ -74,6 +81,18 @@ public class VipTipView extends LinearLayout {
         } else {
             textView.setTextColor(Color.WHITE);
             textView.setText(string);
+        }
+    }
+
+    public void fullScreen(boolean isFull) {
+        if (isFull) {
+            openVip.setTextSize(33);
+            login_tip.setTextSize(20);
+            open_vip_tip.setTextSize(25);
+        } else {
+            openVip.setTextSize(15);
+            login_tip.setTextSize(11);
+            open_vip_tip.setTextSize(18);
         }
     }
 }

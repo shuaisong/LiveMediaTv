@@ -52,6 +52,15 @@ public class HomeVideoHistoryFragment extends BaseFragment {
                 GlideUtils.getRequest(mContext, Util.convertImgPath(playHistoryInfo.getB_img()))
                         .centerCrop()
                         .into((ImageView) helper.getView(R.id.image));
+                if (playHistoryInfo.getIs_vip() == 2) {
+                    helper.setVisible(R.id.isVip, true);
+                } else {
+                    helper.setVisible(R.id.isVip, false);
+                }
+                if (playHistoryInfo.getUpdate_status() == 2) {
+                    helper.setText(R.id.update_status, mContext.getResources().getString(R.string.update_done));
+                } else if (playHistoryInfo.getUpdate_status() == 1)
+                    helper.setText(R.id.update_status, String.format(mContext.getResources().getString(R.string.update_status), playHistoryInfo.getUpdate_num()));
             }
         };
         videoHistoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {

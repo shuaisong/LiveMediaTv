@@ -1,8 +1,5 @@
 package com.tangmu.app.TengKuTV.module.playhistory;
 
-import android.view.KeyEvent;
-import android.view.View;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,7 +8,6 @@ import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.module.home.HomeHistoryFragment;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.TitleView;
 
@@ -41,15 +37,7 @@ public class PlayHistoryActivity extends BaseActivity {
             fragmentTransaction.
                     add(R.id.content, homeHistoryFragment, "History").commit();
         }
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        View currentFocus = getCurrentFocus();
-        if (currentFocus != null) {
-            LogUtil.e(currentFocus.toString());
-        }
-        return super.onKeyUp(keyCode, event);
+        titleView.findViewById(R.id.logo).setFocusable(false);
     }
 
     @Override

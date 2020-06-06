@@ -110,7 +110,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
         superPlayerURL.qualityName = getString(R.string.source_quality);
         model.playDefaultIndex = 0;
         superPlayerURLS.add(superPlayerURL);
-
+        superPlayer.setDefaultQualitySet(0);
         if (!TextUtils.isEmpty(flvUrl1)) {
             superPlayerURL = new SuperPlayerModel.SuperPlayerURL();
             superPlayerURL.qualityName = getString(R.string._180p);
@@ -138,10 +138,11 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
         superPlayer.isDefaultLanguage(PreferenceManager.getInstance().isDefaultLanguage());
         superPlayer.setRootId(R.id.rootView);
         initRecyclerView();
+        superPlayer.requestFocus();
     }
 
     private void initRecyclerView() {
-        videoRecycler.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 20), AutoSizeUtils.dp2px(this, 10)));
+        videoRecycler.addItemDecoration(new MovieItemDecoration(this));
         recommendMovieAdapter = new BaseQuickAdapter<LiveReplayBean, BaseViewHolder>(R.layout.item_live_rec) {
             @Override
             protected void convert(BaseViewHolder helper, LiveReplayBean item) {
@@ -230,6 +231,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     public void onBackPressed() {
         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+            superPlayer.requestFocus();
         } else
             super.onBackPressed();
     }

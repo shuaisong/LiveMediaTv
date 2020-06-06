@@ -103,6 +103,16 @@ public class CollectFragment extends BaseFragment implements CollectContact.View
                     GlideUtils.getRequest(CollectFragment.this, Util.convertVideoPath(item.getImg())).centerCrop().into((ImageView) helper.getView(R.id.image));
                 } else
                     GlideUtils.getRequest(CollectFragment.this, Util.convertImgPath(item.getImg())).centerCrop().into((ImageView) helper.getView(R.id.image));
+                if (item.getVm_is_pay() == 2) {
+                    helper.setVisible(R.id.isVip, true);
+                } else {
+                    helper.setVisible(R.id.isVip, false);
+                }
+                if (item.getVm_update_status() == 2) {
+                    helper.setText(R.id.update_status, mContext.getResources().getString(R.string.update_done));
+                } else if (item.getVm_update_status() == 1)
+                    helper.setText(R.id.update_status, String.format(mContext.getResources().getString(R.string.update_status), item.getCount()));
+
             }
         };
         View view = LayoutInflater.from(getContext()).inflate(R.layout.list_no_data, null);

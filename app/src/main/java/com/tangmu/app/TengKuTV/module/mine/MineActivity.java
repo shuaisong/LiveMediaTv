@@ -35,6 +35,7 @@ public class MineActivity extends BaseActivity {
             fragmentTransaction.
                     add(R.id.content, mineFragment, "Mine").commit();
         }
+        titleView.findViewById(R.id.logo).setFocusable(false);
     }
 
     @Override

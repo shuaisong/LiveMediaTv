@@ -103,6 +103,7 @@ public class TCVodAnthologyView extends LinearLayout {
                             mCallback.onAnthologySelect(position);
                         }
                     }
+                    mCallback.hide();
                 }
                 int prePos = mClickPos;
                 mClickPos = position;
@@ -230,5 +231,7 @@ public class TCVodAnthologyView extends LinearLayout {
          * @param position
          */
         void onAnthologySelect(int position);
+
+        void hide();
     }
 }

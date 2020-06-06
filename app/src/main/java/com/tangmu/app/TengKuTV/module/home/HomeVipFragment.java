@@ -333,10 +333,14 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            int[] amount = getScrollAmount(v);//计算需要滑动的距离
             ViewParent parent = mCategory.getParent().getParent();
-            if (parent instanceof NestedScrollView) {
-                ((NestedScrollView) parent).scrollBy(0, amount[1]);
+            if (v.getId() == R.id.item_movie) {
+                int[] amount = getScrollAmount(v);//计算需要滑动的距离
+                if (parent instanceof NestedScrollView) {
+                    ((NestedScrollView) parent).scrollBy(0, amount[1]);
+                }
+            } else {
+                ((NestedScrollView) parent).scrollTo(0, 0);
             }
         }
     }

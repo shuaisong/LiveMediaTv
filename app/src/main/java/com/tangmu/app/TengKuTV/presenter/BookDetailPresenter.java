@@ -53,7 +53,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContact.View> imp
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse> response) {
+                    public void onVerifySuccess(Response<BaseResponse> response) {
                         if (response.body().getStatus() == 0) {
                             view.unCollectSuccess();
                         } else {
@@ -79,7 +79,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContact.View> imp
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse<Integer>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<Integer>> response) {
+                    public void onVerifySuccess(Response<BaseResponse<Integer>> response) {
                         if (response.body().getStatus() == 0) {
                             view.collectSuccess(response.body().getResult());
                         } else {

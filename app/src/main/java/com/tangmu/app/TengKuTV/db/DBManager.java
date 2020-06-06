@@ -69,6 +69,9 @@ public class DBManager {
         values.put(PlayHistoryDao.COLUMN_B_TYPE, 1);
         values.put(PlayHistoryDao.COLUMN_VM_TYPE, playHistoryInfo.getVm_type());
         values.put(PlayHistoryDao.COLUMN_B_UPDATE_TIME, System.currentTimeMillis());
+        values.put(PlayHistoryDao.COLUMN_IS_VIP, playHistoryInfo.getVm_is_pay());
+        values.put(PlayHistoryDao.COLUMN_UPDATE_STATUS, playHistoryInfo.getVm_update_status());
+        values.put(PlayHistoryDao.COLUMN_UPDATE_NUM, playHistoryInfo.getVm_counts());
         if (db.isOpen()) {
             db.replace(PlayHistoryDao.TABLE_NAME, null, values);
         }

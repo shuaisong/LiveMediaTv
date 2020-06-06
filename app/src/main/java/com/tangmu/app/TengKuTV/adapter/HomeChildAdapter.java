@@ -2,7 +2,6 @@ package com.tangmu.app.TengKuTV.adapter;
 
 import android.text.TextPaint;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,13 +18,11 @@ import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.bean.HomeChildBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 
 import java.util.List;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
-import me.jessyan.autosize.utils.ScreenUtils;
 
 public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, BaseViewHolder> implements View.OnFocusChangeListener {
 
@@ -70,10 +67,10 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
                 } else {
                     helper.setVisible(R.id.vip, false);
                 }
-//                if (movieBean.getVm_update_status() == 2) {
-//                    helper.setText(R.id.endTime, mContext.getResources().getString(R.string.update_done));
-//                } else
-//                    helper.setText(R.id.endTime, String.format(mContext.getResources().getString(R.string.update_status), movieBean.getCount()));
+                if (movieBean.getVm_update_status() == 2) {
+                    helper.setText(R.id.endTime, mContext.getResources().getString(R.string.update_done));
+                } else
+                    helper.setText(R.id.endTime, String.format(mContext.getResources().getString(R.string.update_status), movieBean.getCount()));
                 helper.setText(R.id.title, Util.showText(movieBean.getVm_title(), movieBean.getVm_title_z()));
                 break;
         }

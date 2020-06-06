@@ -3,6 +3,7 @@ package com.tangmu.app.TengKuTV.module.mine;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,6 +44,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import me.jessyan.autosize.utils.AutoSizeUtils;
+import me.jessyan.autosize.utils.ScreenUtils;
 
 /**
  * Created by lenovo on 2020/2/21.
@@ -113,7 +116,7 @@ public class MineFragment extends BaseFragment {
                 .params("size", 20)
                 .execute(new JsonCallback<BaseListResponse<CollectBean>>() {
                     @Override
-                    public void onSuccess(Response<BaseListResponse<CollectBean>> response) {
+                    public void onVerifySuccess(Response<BaseListResponse<CollectBean>> response) {
                         if (response.body().getStatus() == 0) {
                             showCollect(type, page, response.body().getResult());
                         }
@@ -130,14 +133,23 @@ public class MineFragment extends BaseFragment {
     private void showCollect(int type, int page, List<CollectBean> result) {
         switch (type) {
             case 1:
+                if (videoPage == 1 && result.isEmpty()) {
+                    videoCollect.setFocusable(false);
+                } else videoCollect.setFocusable(true);
                 setCollectData(videoCollectAdapter, page, result);
                 videoPage++;
                 break;
             case 3:
+                if (bookPage == 1 && result.isEmpty()) {
+                    bookCollect.setFocusable(false);
+                } else bookCollect.setFocusable(true);
                 setCollectData(bookCollectAdapter, page, result);
                 bookPage++;
                 break;
             case 4:
+                if (dubbingPage == 1 && result.isEmpty()) {
+                    dubbingCollect.setFocusable(false);
+                } else dubbingCollect.setFocusable(true);
                 setCollectData(dubbingCollectAdapter, page, result);
                 dubbingPage++;
                 break;
@@ -162,6 +174,7 @@ public class MineFragment extends BaseFragment {
     protected void initView() {
         initRecordList();
         initCollectList();
+        loginTv.requestFocus();
     }
 
     private void initCollectList() {
@@ -175,6 +188,7 @@ public class MineFragment extends BaseFragment {
                 getCollect(videoPage, 1);
             }
         }, videoCollect);
+        videoCollectAdapter.setFocusChangeListener(new MineCollectFocusChangeListener(videoCollect));
         videoCollect.setAdapter(videoCollectAdapter);
 
         bookCollectAdapter = new CollectAdapter();
@@ -187,6 +201,7 @@ public class MineFragment extends BaseFragment {
                 getCollect(bookPage, 3);
             }
         }, bookCollect);
+        bookCollectAdapter.setFocusChangeListener(new MineCollectFocusChangeListener(bookCollect));
         bookCollect.setAdapter(bookCollectAdapter);
 
         dubbingCollectAdapter = new CollectAdapter();
@@ -199,18 +214,35 @@ public class MineFragment extends BaseFragment {
                 getCollect(dubbingPage, 4);
             }
         }, dubbingCollect);
+        dubbingCollectAdapter.setFocusChangeListener(new MineCollectFocusChangeListener(dubbingCollect));
         dubbingCollect.setAdapter(dubbingCollectAdapter);
     }
 
     private void initRecordList() {
         List<PlayHistoryInfo> playHistoryInfos = PlayHistoryManager.getAll();
+        int i = AutoSizeUtils.dp2px(getContext(), 175);
+        int itemWidth = (ScreenUtils.getScreenSize(getContext())[0] - i) / 5;
         BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder> recordAdapter =
                 new BaseQuickAdapter<PlayHistoryInfo, BaseViewHolder>(R.layout.item_record, playHistoryInfos) {
                     @Override
                     protected void convert(BaseViewHolder helper, PlayHistoryInfo item) {
+                        ViewGroup.LayoutParams layoutParams = helper.itemView.getLayoutParams();
+                        layoutParams.width = itemWidth;
+                        helper.itemView.setLayoutParams(layoutParams);
+                        helper.itemView.setOnFocusChangeListener(new MineCollectFocusChangeListener(recyclerviewRecord));
                         helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()));
                         GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img()))
                                 .centerCrop().into((ImageView) helper.getView(R.id.image));
+                        if (item.getIs_vip() == 2) {
+                            helper.setVisible(R.id.isVip, true);
+                        } else {
+                            helper.setVisible(R.id.isVip, false);
+                        }
+                        if (item.getUpdate_status() == 2) {
+                            helper.setText(R.id.update_status, mContext.getResources().getString(R.string.update_done));
+                        } else if (item.getUpdate_status() == 1)
+                            helper.setText(R.id.update_status, String.format(mContext.getResources().getString(R.string.update_status), item.getUpdate_num()));
+
                     }
                 };
         recordAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -292,8 +324,7 @@ public class MineFragment extends BaseFragment {
                 .params("token", PreferenceManager.getInstance().getLogin().getToken())
                 .execute(new JsonCallback<BaseResponse<UserInfoBean>>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse<UserInfoBean>> response) {
-                        super.onSuccess(response);
+                    public void onVerifySuccess(Response<BaseResponse<UserInfoBean>> response) {
                         if (response.body().getStatus() == 0) {
                             UserInfoBean result = response.body().getResult();
                             LoginBean login = PreferenceManager.getInstance().getLogin();

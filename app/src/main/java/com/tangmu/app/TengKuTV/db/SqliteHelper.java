@@ -16,6 +16,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import com.tangmu.app.TengKuTV.CustomApp;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 
 /**
  * sqlite数据库辅助类
@@ -29,7 +30,7 @@ public class SqliteHelper extends OrmLiteSqliteOpenHelper {
     private static final String DATABASE_NAME = "TengKuTV.db";
 
     // 版本号
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static SqliteHelper mInstance;
 
@@ -70,6 +71,16 @@ public class SqliteHelper extends OrmLiteSqliteOpenHelper {
             ConnectionSource connectionSource,
             int oldVer,
             int newVer) {
+        try {
+            TableUtils.dropTable(connectionSource, PlayHistoryInfo.class, true);
+            onCreate(sqliteDatabase, connectionSource);
+        } catch (SQLException e) {
+            Log.e(LOG_TAG,
+                    "Unable to upgrade database from version " + oldVer + " to new "
+                            + newVer, e);
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 

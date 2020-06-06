@@ -23,10 +23,12 @@ import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
+import com.tangmu.app.TengKuTV.bean.LoginBean;
 import com.tangmu.app.TengKuTV.bean.MoreBookBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
+import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.TopMiddleDecoration;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -35,6 +37,8 @@ import com.tangmu.app.TengKuTV.view.TitleView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import me.jessyan.autosize.utils.AutoSizeUtils;
@@ -60,6 +64,7 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
     private CategoryBean.SecondBean secondBean;
     private int index;
     private int position;
+    private Timer timer;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -73,15 +78,45 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
         position = getIntent().getIntExtra("position", 0);
         categoryBean = categories.get(index);
         setTabView();
-        tablayout.getTabAt(index).view.requestFocus();
         bookSecondChoiceAdapter.setNewData(categoryBean.getSecond());
         secondBean = categoryBean.getSecond().get(position);
+        listView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                View viewByPosition = bookSecondChoiceAdapter.getViewByPosition(listView, position, R.id.check);
+                if (viewByPosition != null)
+                    viewByPosition.requestFocus();
+                title.findViewById(R.id.logo).setFocusable(false);
+            }
+        }, 100);
         assert categoryBean != null;
         getTypeBooks();
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        title.updateTV_Vip();
+        if (timer == null) {
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            long currentTimeMillis = System.currentTimeMillis();
+                            title.setTime(Util.convertSystemTime(currentTimeMillis));
+                        }
+                    });
+                }
+            }, 1000, 1000);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
+        if (timer != null) timer.cancel();
         OkGo.getInstance().cancelTag(this);
         super.onDestroy();
     }
@@ -146,13 +181,14 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
         bookSecondChoiceAdapter = new BaseQuickAdapter<CategoryBean.SecondBean, BaseViewHolder>(R.layout.item_book_second) {
             @Override
             protected void convert(BaseViewHolder helper, CategoryBean.SecondBean item) {
-                int index = bookSecondChoiceAdapter.getData().indexOf(item);
-                helper.setChecked(R.id.check, index == position)
+//                int index = bookSecondChoiceAdapter.getData().indexOf(item);
+                helper.itemView.setOnFocusChangeListener(BookListActivity.this);
+                helper/*.setChecked(R.id.check, index == position)*/
                         .setText(R.id.check, Util.showText(item.getVt_title(), item.getVt_title_z()));
             }
         };
         listView.setAdapter(bookSecondChoiceAdapter);
-        bookSecondChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
+  /*      bookSecondChoiceAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 int prePosition = BookListActivity.this.position;
@@ -164,7 +200,7 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
                 secondBean = bookSecondChoiceAdapter.getItem(position);
                 getTypeBooks();
             }
-        });
+        });*/
     }
 
     private void initBooks() {
@@ -264,21 +300,29 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (v instanceof TabLayout.TabView && v.hasFocus()) {
-            if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                TabLayout.Tab tabAt = tablayout.getTabAt(index);
-                if (tabAt != null) {
-                    tabAt.view.requestFocus();
+        if (hasFocus) {
+            if (v instanceof TabLayout.TabView) {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                    if (tabAt != null) {
+                        tabAt.view.requestFocus();
+                    }
+                } else {
+                    ViewGroup parent = (ViewGroup) v.getParent();
+                    int index = parent.indexOfChild(v);
+                    TabLayout.Tab tabAt = tablayout.getTabAt(index);
+                    if (tabAt != null)
+                        tabAt.select();
                 }
-            } else {
-                ViewGroup parent = (ViewGroup) v.getParent();
-                int index = parent.indexOfChild(v);
-                TabLayout.Tab tabAt = tablayout.getTabAt(index);
-                if (tabAt != null)
-                    tabAt.select();
+            } else if (v.getId() == R.id.check) {
+                page = 1;
+                swip.setRefreshing(true);
+                secondBean = bookSecondChoiceAdapter.getItem(position);
+                getTypeBooks();
             }
         }
     }
+
     class ViewHolder {
         TextView tvTabName;
         ImageView ivTab;

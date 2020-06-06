@@ -26,7 +26,7 @@ public class CollectPresenter extends RxPresenter<CollectContact.View> implement
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
-                    public void onSuccess(Response<BaseResponse> response) {
+                    public void onVerifySuccess(Response<BaseResponse> response) {
                         if (response.body().getStatus() == 0) {
                             view.unCollectSuccess();
                         } else {
@@ -53,7 +53,7 @@ public class CollectPresenter extends RxPresenter<CollectContact.View> implement
                 .params("size", 20)
                 .execute(new JsonCallback<BaseListResponse<CollectBean>>() {
                     @Override
-                    public void onSuccess(Response<BaseListResponse<CollectBean>> response) {
+                    public void onVerifySuccess(Response<BaseListResponse<CollectBean>> response) {
                         if (response.body().getStatus() == 0) {
                             view.showCollects(response.body().getResult());
                         } else {

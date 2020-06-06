@@ -37,6 +37,7 @@ import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.presenter.DubbingDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
+import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -160,6 +161,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
     public void onBackPressed() {
         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+            superPlayer.requestFocus();
         } else
             super.onBackPressed();
     }
@@ -243,6 +245,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
         initRecycler();
+        superPlayer.requestFocus();
     }
 
     private void initRecycler() {
@@ -272,6 +275,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
     }
 
     private void initRecommend() {
+        videoRecycler.addItemDecoration(new MovieItemDecoration(this));
         recommendAdapter = new BaseQuickAdapter<DubbingListBean, BaseViewHolder>(R.layout.item_dubbing_rec) {
             @Override
             protected void convert(BaseViewHolder helper, DubbingListBean item) {
@@ -376,7 +380,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
                 break;
             case R.id.collect:
                 if (dubbingBean != null && isClickLogin())
-                    if (dubbingBean.getUc_id() == 0)
+                    if (dubbingBean.getIs_collec_status() == 0)
                         presenter.collect(id);
                     else presenter.unCollect(dubbingBean.getUc_id());
                 break;
@@ -385,12 +389,14 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
 
     @Override
     public void collectSuccess(int uc_id) {
+        dubbingBean.setIs_collec_status(1);
         dubbingBean.setUc_id(uc_id);
         collect.setImageResource(R.drawable.blue_collect_selected);
     }
 
     @Override
     public void unCollectSuccess() {
+        dubbingBean.setIs_collec_status(0);
         collect.setImageResource(R.drawable.blue_collect_select);
     }
 

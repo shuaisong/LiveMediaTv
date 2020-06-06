@@ -5,12 +5,11 @@
     android:id="@+id/swip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".module.home.HomeChildFragment">
+    tools:context=".module.live.LiveFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".module.home.HomeChildFragment">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,7 +19,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="293dp"
-                android:layout_marginTop="16dp"
                 android:paddingStart="31dp"
                 android:paddingEnd="31dp">
 
@@ -152,7 +150,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
                                 android:gravity="center_vertical"
-                                android:text="@string/search"
+                                android:text="@string/collect"
                                 android:textColor="@color/white"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -170,13 +168,13 @@
                     android:layout_marginEnd="20dp"
                     android:layout_weight="1">
 
-                    <ImageView
-                        android:id="@+id/banner_img"
+                    <com.youth.banner.Banner
+                        android:id="@+id/banner"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@drawable/dp_0_view_bg_focused_selelct"
                         android:focusable="true"
-                        android:padding="@dimen/focus_width" />
+                        android:padding="2dp" />
 
                     <com.tencent.liteav.demo.play.SuperPlayerView
                         android:id="@+id/superPlayer"
@@ -184,13 +182,15 @@
                         android:layout_height="match_parent" />
 
                     <TextView
-                        android:id="@+id/bannerTitle"
+                        android:id="@+id/banner_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
-                        android:layout_margin="20dp"
+                        android:layout_margin="18dp"
+                        android:text="@string/live"
                         android:textColor="@color/white"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:visibility="invisible" />
                 </FrameLayout>
 
 
@@ -267,16 +267,16 @@
                 android:layout_marginTop="17dp"
                 android:layout_marginBottom="18dp"
                 android:text="@string/live_history"
-                android:textStyle="bold"
                 android:textColor="@color/normal_text_color"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/historyList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="23dp"
+                android:layout_marginEnd="23dp"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="5" />

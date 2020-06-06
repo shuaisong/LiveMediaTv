@@ -19,6 +19,7 @@ import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.OrderBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -153,6 +154,12 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     protected void onPause() {
         super.onPause();
         superPlayer.onPause();
+        if (videoDetailBean != null) {
+            if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+                videoDetailBean.setProgress(superPlayer.getProgress());
+            }
+            PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
+        }
     }
 
     @Override
@@ -185,6 +192,11 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                     videoDetailBean.setProgress(0);
                     startPlay();
                 }
+            }
+
+            @Override
+            public void hide() {
+
             }
         });
         superPlayer.setPlayEndCallback(new SuperPlayerView.PlayEndCallback() {
@@ -241,6 +253,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
+        superPlayer.requestFocus();
     }
 
 
@@ -324,7 +337,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     private void initRecommendList() {
-        videoRecycler.addItemDecoration(new MovieItemDecoration(AutoSizeUtils.dp2px(this, 20), AutoSizeUtils.dp2px(this, 10)));
+        videoRecycler.addItemDecoration(new MovieItemDecoration(this));
         recommendMovieAdapter = new BaseQuickAdapter<HomeChildRecommendBean.VideoBean, BaseViewHolder>(R.layout.item_movie_rec) {
             @Override
             protected void convert(BaseViewHolder helper, HomeChildRecommendBean.VideoBean item) {
@@ -395,7 +408,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        LogUtil.e(keyCode + "");
         View currentFocus = getCurrentFocus();
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
                 || keyCode == KeyEvent.KEYCODE_MENU) {
@@ -470,8 +482,6 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
             }
 
         }
-        if (currentFocus != null)
-            LogUtil.e(currentFocus.toString());
         return super.onKeyUp(keyCode, event);
     }
 
@@ -479,6 +489,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     public void onBackPressed() {
         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+            superPlayer.requestFocus();
         } else {
             if (videoDetailBean != null) {
                 if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
@@ -660,6 +671,21 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Override
+    public void showOrder(OrderBean result) {
+
+    }
+
+    @Override
+    public void showPayCode(String result) {
+
+    }
+
+    @Override
+    public void showPayResult(boolean payResult) {
+
+    }
+
+    @Override
     public void showAd(AdBean adBean) {
         this.adBean = adBean;
         presenter.getDetail(id);
@@ -723,9 +749,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 superPlayer.requestFullMode();
                 break;
             case R.id.collect:
-                if (videoDetailBean == null) {
-                    collect.setChecked(false);
-                } else {
+                if (videoDetailBean != null && isClickLogin()) {
                     if (videoDetailBean.getIs_colle_status() == 1) {
                         presenter.unCollect(videoDetailBean.getUc_id());
                     } else

@@ -111,13 +111,13 @@ public class TCNetWatcher {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         TXLivePlayer player = mLivePlayer!=null ? mLivePlayer.get() : null;
-                        String videoUrl = mPlayUrl.replace(".flv","_900.flv");
+                        String videoUrl = mPlayUrl.replace(".flv","_liuchang.flv");
                         if (player != null && !TextUtils.isEmpty(videoUrl)) {
                             int result = player.switchStream(videoUrl);
                             if (result < 0) {
                                 Toast.makeText(context,"切换高清清晰度失败，请稍候重试", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(context,"正在为您切换为高清清晰度，请稍候...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context,"正在为您切换为流畅清晰度，请稍候...", Toast.LENGTH_SHORT).show();
                             }
                         }
                         dialog.dismiss();

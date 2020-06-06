@@ -12,9 +12,9 @@
 
     <com.tangmu.app.TengKuTV.view.TitleView
         android:id="@+id/titleView"
-        android:layout_marginTop="26dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="26dp" />
 
     <View
         android:layout_width="match_parent"
@@ -166,10 +166,10 @@
                 android:id="@+id/video_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginEnd="40dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                android:layout_marginStart="33dp"
+                android:layout_marginEnd="33dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="5" />
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

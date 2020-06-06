@@ -3,6 +3,7 @@ package com.tangmu.app.TengKuTV.contact;
 import com.tangmu.app.TengKuTV.base.BaseContact;
 import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
+import com.tangmu.app.TengKuTV.bean.OrderBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 
@@ -23,6 +24,12 @@ public class VideoDetailContact {
         void showAdError(String msg);
 
         void showTVAd(List<VideoAdBean> videoAdBeans);
+
+        void showOrder(OrderBean result);
+
+        void showPayCode(String result);
+
+        void showPayResult(boolean payResult);
     }
 
     public interface Presenter {
@@ -37,5 +44,9 @@ public class VideoDetailContact {
         void getAd(int id);
 
         void getTvAd(int p_id);
+
+        void createOrder(String vm_price, int id);
+
+        void weChatPayInfo(String order_no, String price);
     }
 }

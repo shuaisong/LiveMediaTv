@@ -436,8 +436,10 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
             View viewById = mVodQualityView.findViewById(R.id.lv_quality);
             FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) viewById.getLayoutParams();
             layoutParams.setMarginEnd(AutoSizeUtils.dp2px(getContext(), 70));
+            layoutParams.bottomMargin = AutoSizeUtils.dp2px(getContext(), 12);
             layoutParams.gravity = Gravity.END;
             viewById.setLayoutParams(layoutParams);
+            mFullLayoutBottom.setVisibility(GONE);
             mTvQuality1.setVisibility(VISIBLE);
         }
         if (mHideLockViewRunnable != null) {
@@ -456,7 +458,7 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
         mSeekBarProgress.setPointList(pointParams);
         if (mHideViewRunnable != null) {
             TCControllerFullScreen.this.getHandler().removeCallbacks(mHideViewRunnable);
-            TCControllerFullScreen.this.getHandler().postDelayed(mHideViewRunnable, 7000);
+            TCControllerFullScreen.this.getHandler().postDelayed(mHideViewRunnable, 15000);
         }
     }
 
@@ -1204,6 +1206,13 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
         if (hasFocus) {
             int childAdapterPosition = imgFrames.getChildAdapterPosition(v);
             ImgFrameBean item = imgFrameAdapter.getItem(childAdapterPosition);
+            if (isNeedBuy && item != null && item.getTime() > 5 * 60) {
+                hide();
+                mControllerCallback.onSeekTo(5 * 60);
+                mControllerCallback.onPause();
+                disableGestureScroll = true;
+                return;
+            }
             imgFrames.scrollBy(getScrollAmount(v)[0], 0);
             if (item != null && mDuration != 0) {
                 mSeekBarProgress.setProgress((int) (item.getTime() * 100 / mDuration));

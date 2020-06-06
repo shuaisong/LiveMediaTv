@@ -6,6 +6,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/open_vip_tip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/open_vip_tip"
@@ -15,16 +16,18 @@
     <TextView
         android:id="@+id/open_vip"
         android:layout_width="wrap_content"
-        android:layout_height="32dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="11dp"
-        android:duplicateParentState="true"
         android:background="@drawable/vip_login_tip"
         android:focusable="true"
         android:gravity="center"
         android:minWidth="166dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:text="@string/login_vip_tip" />
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp"
+        android:text="@string/login_vip_tip"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/login_tip"

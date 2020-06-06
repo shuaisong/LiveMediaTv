@@ -2,12 +2,15 @@ package com.tangmu.app.TengKuTV.module.main;
 
 import android.content.Intent;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TableLayout;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.tabs.TabLayout;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
@@ -17,6 +20,7 @@ import com.tangmu.app.TengKuTV.contact.MainContact;
 import com.tangmu.app.TengKuTV.module.home.HomeFragment;
 import com.tangmu.app.TengKuTV.module.vip.FreeVipActivity;
 import com.tangmu.app.TengKuTV.presenter.MainPresenter;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.FreeVIPTip;
@@ -39,6 +43,7 @@ public class MainActivity extends BaseActivity implements MainContact.View {
     FrameLayout content;
     private Timer timer;
     private FreeVIPTip freeVIPTip;
+    private HomeFragment homeFragment;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -48,10 +53,10 @@ public class MainActivity extends BaseActivity implements MainContact.View {
     @Override
     protected void initData() {
         FragmentManager supportFragmentManager = getSupportFragmentManager();
-        Fragment home = supportFragmentManager.findFragmentByTag("home");
-        if (home == null) {
+        homeFragment = (HomeFragment) supportFragmentManager.findFragmentByTag("home");
+        if (homeFragment == null) {
             FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
-            HomeFragment homeFragment = new HomeFragment();
+            homeFragment = new HomeFragment();
             fragmentTransaction.
                     add(R.id.content, homeFragment, "home").commit();
         }
@@ -131,6 +136,23 @@ public class MainActivity extends BaseActivity implements MainContact.View {
                 freeVIPTip.dismiss();
             }
         }
+        View currentFocus = getCurrentFocus();
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && currentFocus != null) {
+            View view = currentFocus.focusSearch(View.FOCUS_LEFT);
+            if (view != null) {
+                if (view instanceof TabLayout.TabView && !(currentFocus instanceof TabLayout.TabView)) {
+                    return true;
+                }
+            }
+        }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onNetChange(boolean hasNet) {
+        super.onNetChange(hasNet);
+        if (hasNet && homeFragment != null && homeFragment.getCategory() == null) {
+            homeFragment.initData();
+        }
     }
 }

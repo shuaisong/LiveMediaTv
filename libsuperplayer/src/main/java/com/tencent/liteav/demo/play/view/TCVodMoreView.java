@@ -309,6 +309,8 @@ public class TCVodMoreView extends RelativeLayout implements RadioGroup.OnChecke
         void fullScale(boolean fullScale);
 
         void jumpTitleTail(boolean jumpTitleTail);
+
+        void hide();
     }
 
 }

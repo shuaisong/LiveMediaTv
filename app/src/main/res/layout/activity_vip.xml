@@ -66,8 +66,9 @@
                         android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:minWidth="560dp">
 
                             <ImageView
                                 android:layout_width="97dp"
@@ -141,8 +142,9 @@
                         android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:minWidth="560dp">
 
                             <ImageView
                                 android:layout_width="97dp"
@@ -214,8 +216,9 @@
                         android:layout_height="match_parent">
 
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:minWidth="560dp">
 
                             <ImageView
                                 android:layout_width="97dp"

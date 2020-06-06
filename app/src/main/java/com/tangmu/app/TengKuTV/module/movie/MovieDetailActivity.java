@@ -1,5 +1,6 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.OrderBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -37,6 +39,7 @@ import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.CustomPraiseView;
+import com.tangmu.app.TengKuTV.view.ShowBuyInfoDialog;
 import com.tangmu.app.TengKuTV.view.TitleView;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
@@ -108,6 +111,9 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     private AdBean adBean;
     private boolean showAd;
     private Timer timer;
+    private ShowBuyInfoDialog showBuyInfoDialog;
+    private OrderBean orderBean;
+    private Timer payTimer;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -145,6 +151,12 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     protected void onPause() {
         super.onPause();
         superPlayer.onPause();
+        if (videoDetailBean != null) {
+            if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+                videoDetailBean.setProgress(superPlayer.getProgress());
+            }
+            PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
+        }
     }
 
     @OnClick({R.id.more, R.id.full_screen, R.id.collect})
@@ -163,9 +175,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                 superPlayer.requestFullMode();
                 break;
             case R.id.collect:
-                if (videoDetailBean == null) {
-                    collect.setChecked(false);
-                } else {
+                if (videoDetailBean != null && isClickLogin()) {
                     if (videoDetailBean.getIs_colle_status() == 1) {
                         presenter.unCollect(videoDetailBean.getUc_id());
                     } else
@@ -179,6 +189,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     public void onBackPressed() {
         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
+            superPlayer.requestFocus();
         } else {
             if (videoDetailBean != null) {
                 if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
@@ -194,6 +205,8 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     protected void initView() {
         presenter.attachView(this);
         initRecommendList();
+        initPayDialog();
+
         ivAd1.setOnFocusChangeListener(this);
         ivAd2.setOnFocusChangeListener(this);
         superPlayer.setRootId(R.id.rootView);
@@ -262,6 +275,17 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
+        superPlayer.requestFocus();
+    }
+
+    private void initPayDialog() {
+        showBuyInfoDialog = new ShowBuyInfoDialog(this);
+        showBuyInfoDialog.setDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (payTimer != null) payTimer.cancel();
+            }
+        });
     }
 
     private void initRecommendList() {
@@ -354,10 +378,12 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                 String expire_time = videoDetailBean.getExpire_time();
                 if (videoDetailBean.getIs_pay_status() == 0) {//未购买
                     superPlayer.setBuyViewVisible(true);
+                    showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
                     superPlayer.setBuyClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
+                            showBuyInfoDialog.show();
+                            presenter.createOrder(videoDetailBean.getVm_price(), id);
                         }
                     });
                 } else {//已购买
@@ -369,10 +395,13 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                                 superPlayer.setBuyViewVisible(false);
                             } else {//到期
                                 superPlayer.setBuyViewVisible(true);
+                                showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
                                 superPlayer.setBuyClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
+                                        showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
+                                        showBuyInfoDialog.show();
+                                        presenter.createOrder(videoDetailBean.getVm_price(), id);
                                     }
                                 });
                             }
@@ -448,6 +477,40 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                     .centerCrop().into(ivAd1);
             GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
                     .centerCrop().into(ivAd2);
+        }
+    }
+
+    @Override
+    public void showOrder(OrderBean orderBean) {
+        this.orderBean = orderBean;
+        presenter.weChatPayInfo(orderBean.getOrder_no(), orderBean.getPrice());
+    }
+
+    @Override
+    public void showPayCode(String result) {
+        showBuyInfoDialog.setCode(result);
+        getPayResult();
+    }
+
+    @Override
+    public void showPayResult(boolean payResult) {
+        payTimer.cancel();
+        payTimer = null;
+        showBuyInfoDialog.dismiss();
+        if (payResult) {
+            openVipSuccess();
+        }
+    }
+
+    private void getPayResult() {
+        if (payTimer == null) {
+            payTimer = new Timer();
+            payTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    presenter.getWxPayResult(orderBean.getOrder_no());
+                }
+            }, 2000, 2000);
         }
     }
 
@@ -565,13 +628,8 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                             superPlayer.requestFullMode();
                             return true;
                         }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
-                        else {
-                            startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 101);
-                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
-                                EventBus.getDefault().register(MovieDetailActivity.this);
-                        }
+                        showBuyInfoDialog.show();
+                        presenter.createOrder(videoDetailBean.getVm_price(), id);
                         return true;
                     case R.id.pause_ad_view:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {

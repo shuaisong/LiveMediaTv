@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,7 +37,6 @@ import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
 import com.tangmu.app.TengKuTV.presenter.BookChildPresenter;
 import com.tangmu.app.TengKuTV.utils.BannerClickListener;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.SingleLineItemDecoration;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -89,8 +87,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
     private BannerClickListener bannerClickListener;
     private List<PlayHistoryInfo> allBook;
     private ViewPager bannerViewPager;
-    private int itemHeight;
-    private int topTitleHeight;
+    private int screenHeight;
 
     public BookChildFragment() {
     }
@@ -123,8 +120,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
      */
     @Override
     protected void initData() {
-        itemHeight = AutoSizeUtils.dp2px(getActivity(), 300);
-        topTitleHeight = AutoSizeUtils.dp2px(getActivity(), 84);
+        screenHeight = ScreenUtils.getScreenSize(getActivity())[1];
     }
 
     private void initHistory() {
@@ -238,6 +234,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
         mBookAdapter = new BaseQuickAdapter<MoreBookBean, BaseViewHolder>(R.layout.item_book) {
             @Override
             protected void convert(BaseViewHolder helper, MoreBookBean item) {
+                helper.itemView.setOnFocusChangeListener(BookChildFragment.this);
                 int b_num = item.getB_num();
                 String numStr;
                 if (b_num >= 10000) {
@@ -279,6 +276,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
             @Override
             protected void convert(BaseViewHolder helper, CategoryBean.SecondBean item) {
                 View view = helper.getView(R.id.item_category);
+                view.setOnFocusChangeListener(BookChildFragment.this);
                 ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
                 layoutParams.width = categoryItemWidth;
                 view.setLayoutParams(layoutParams);
@@ -415,10 +413,14 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
         if (hasFocus) {
-            int[] amount = getScrollAmount(v);//计算需要滑动的距离
             ViewParent parent = may_list.getParent().getParent();
-            if (parent instanceof NestedScrollView) {
-                ((NestedScrollView) parent).scrollBy(0, amount[1]);
+            if (v.getId() == R.id.item_book || v.getId() == R.id.item_may_book) {
+                int[] amount = getScrollAmount(v);//计算需要滑动的距离
+                if (parent instanceof NestedScrollView) {
+                    ((NestedScrollView) parent).scrollBy(0, amount[1]);
+                }
+            } else {
+                ((NestedScrollView) parent).scrollTo(0, 0);
             }
         }
     }
@@ -431,7 +433,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
     private int[] getScrollAmount(View view) {
         int[] out = new int[2];
         view.getLocationOnScreen(out);
-        out[1] = out[1] - itemHeight / 2 - topTitleHeight;
+        out[1] = out[1] - screenHeight / 2;
         return out;
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,7 @@ import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
 import com.tangmu.app.TengKuTV.module.search.VideoSearchActivity;
 import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.utils.AppLanguageUtils;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 
 public class TitleView extends ConstraintLayout implements View.OnClickListener {
@@ -63,10 +65,18 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
         switchL.setOnClickListener(this);
         ImageView wifi = findViewById(R.id.wifi);
         time = findViewById(R.id.time);
+        ImageView imageView = findViewById(R.id.logo);
+        imageView.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                LogUtil.e("hasFocus" + hasFocus);
+                if (!hasFocus) imageView.setFocusable(false);
+            }
+        });
         if (context instanceof BookActivity) {
-            ImageView imageView = findViewById(R.id.logo);
             imageView.setImageResource(R.mipmap.ic_book_logo);
         }
+        findViewById(R.id.setting).setOnClickListener(this);
     }
 
     @Override
@@ -97,6 +107,13 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
             case R.id.switchL:
                 if (context instanceof Activity) {
                     selectLanguage();
+                }
+                break;
+            case R.id.setting:
+                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                try {
+                    context.startActivity(intent);
+                } catch (Exception ignored) {
                 }
                 break;
         }
