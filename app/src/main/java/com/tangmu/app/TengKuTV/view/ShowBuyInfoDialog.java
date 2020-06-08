@@ -61,6 +61,7 @@ public class ShowBuyInfoDialog {
         alertDialog.show();
         WindowManager.LayoutParams attributes = alertDialog.getWindow().getAttributes();
         attributes.gravity = Gravity.CENTER;
+        attributes.width = AutoSizeUtils.dp2px(alertDialog.getContext(),609);
         alertDialog.getWindow().setAttributes(attributes);
     }
 

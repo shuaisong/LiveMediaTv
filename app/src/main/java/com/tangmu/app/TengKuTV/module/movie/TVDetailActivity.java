@@ -33,7 +33,6 @@ import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.presenter.VideoDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
@@ -179,8 +178,8 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         screenWidth = ScreenUtils.getScreenSize(this)[0];
         initRecommendList();
         initAnthologyList();
-        ivAd1.setOnFocusChangeListener(this);
-        ivAd2.setOnFocusChangeListener(this);
+//        ivAd1.setOnFocusChangeListener(this);
+//        ivAd2.setOnFocusChangeListener(this);
         superPlayer.setRootId(R.id.rootView);
         superPlayer.setOnAnthologySelect(new TCVodAnthologyView.Callback() {
             @Override
@@ -663,6 +662,8 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
         if (!videoAdBeans.isEmpty()) {
+            ivAd1.setVisibility(View.VISIBLE);
+            ivAd2.setVisibility(View.VISIBLE);
             GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
                     .centerCrop().into(ivAd1);
             GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))

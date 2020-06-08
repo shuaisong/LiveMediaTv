@@ -69,7 +69,6 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
         imageView.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                LogUtil.e("hasFocus" + hasFocus);
                 if (!hasFocus) imageView.setFocusable(false);
             }
         });

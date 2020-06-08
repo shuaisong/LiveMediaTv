@@ -207,8 +207,8 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         initRecommendList();
         initPayDialog();
 
-        ivAd1.setOnFocusChangeListener(this);
-        ivAd2.setOnFocusChangeListener(this);
+//        ivAd1.setOnFocusChangeListener(this);
+//        ivAd2.setOnFocusChangeListener(this);
         superPlayer.setRootId(R.id.rootView);
         recyclerviewAnthogy.setVisibility(View.GONE);
         recyclerviewAnthogy1.setVisibility(View.GONE);
@@ -473,6 +473,8 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
         if (!videoAdBeans.isEmpty()) {
+            ivAd1.setVisibility(View.VISIBLE);
+            ivAd2.setVisibility(View.VISIBLE);
             GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
                     .centerCrop().into(ivAd1);
             GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))

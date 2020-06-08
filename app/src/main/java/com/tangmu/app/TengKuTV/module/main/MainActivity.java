@@ -60,8 +60,8 @@ public class MainActivity extends BaseActivity implements MainContact.View {
             fragmentTransaction.
                     add(R.id.content, homeFragment, "home").commit();
         }
-        if (PreferenceManager.getInstance().getVisitor() == null)
-            presenter.getVisitor();
+//        if (PreferenceManager.getInstance().getVisitor() == null)
+//            presenter.getVisitor();
     }
 
     @Override
