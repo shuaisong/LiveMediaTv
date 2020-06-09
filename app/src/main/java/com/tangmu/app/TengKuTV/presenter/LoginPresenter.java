@@ -19,6 +19,7 @@ import com.tangmu.app.TengKuTV.bean.WxAccessToken;
 import com.tangmu.app.TengKuTV.bean.WxTicketBean;
 import com.tangmu.app.TengKuTV.contact.LoginContact;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 
@@ -77,6 +78,7 @@ public class LoginPresenter extends RxPresenter<LoginContact.View> implements Lo
                             if (jsonObject.has("errcode")) {
                                 view.showError("授权失败");
                             } else {
+//                                isAccessValid(jsonObject.getString("openid"), jsonObject.getString("access_token"));
                                 isAccessValid(jsonObject.getString("openid"), jsonObject.getString("access_token"));
                             }
                         } catch (JSONException e) {
@@ -150,7 +152,7 @@ public class LoginPresenter extends RxPresenter<LoginContact.View> implements Lo
     public void isBindMobile(@Nullable WXinfoBean wXinfoBean, @Nullable QQInfoBean qqInfoBean, int type) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.isBindMobile)
                 .params("type", type)
-                .params("openid", type == 1 ? wXinfoBean.getOpenid() : qqInfoBean.getOpenId())
+                .params("openid", type == 1 ? wXinfoBean.getUnionid() : qqInfoBean.getOpenId())
                 .execute(new JsonCallback<BaseResponse<Integer>>() {
                     @Override
                     public void onSuccess(Response<BaseResponse<Integer>> response) {
@@ -158,13 +160,13 @@ public class LoginPresenter extends RxPresenter<LoginContact.View> implements Lo
                         if (response.body().getStatus() == 0) {
                             if (response.body().getResult() == 0) {
                                 if (type == 1)
-                                    view.bindThird(wXinfoBean.getOpenid(), wXinfoBean.getHeadimgurl(), type);
+                                    view.bindThird(wXinfoBean.getUnionid(), wXinfoBean.getHeadimgurl(), type);
                                 else {
                                     view.bindThird(qqInfoBean.getOpenId(), qqInfoBean.getHeadImg(), type);
                                 }
                             } else {
                                 if (type == 1)
-                                    thirdLogin(wXinfoBean.getOpenid(), wXinfoBean.getNickname(), wXinfoBean.getHeadimgurl(), type);
+                                    thirdLogin(wXinfoBean.getUnionid(), wXinfoBean.getNickname(), wXinfoBean.getHeadimgurl(), type);
                                 else
                                     thirdLogin(qqInfoBean.getOpenId(), qqInfoBean.getNickName(), qqInfoBean.getHeadImg(), type);
                             }

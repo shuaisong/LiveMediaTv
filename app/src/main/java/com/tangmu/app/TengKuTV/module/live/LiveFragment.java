@@ -111,7 +111,6 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     private BaseQuickAdapter<LiveReplayBean, BaseViewHolder> liveHistoryAdapter;
     private List<PlayHistoryInfo> allVideo;
     private ArrayList<LiveBean> liveBeans = new ArrayList<>();
-    private int page = 1;
     private int itemHeight;
     private int topTitleHeight;
     private BannerClickListener bannerClickListener;
@@ -125,7 +124,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
         itemHeight = AutoSizeUtils.dp2px(getActivity(), 300);
         topTitleHeight = AutoSizeUtils.dp2px(getActivity(), 84);
         swipeRefreshLayout.setRefreshing(true);
-        presenter.getLiveReply(page);
+        presenter.getLiveReply();
     }
 
     @Override
@@ -163,8 +162,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
             @Override
             public void onRefresh() {
                 presenter.getTopLive();
-                page = 1;
-                presenter.getLiveReply(page);
+                presenter.getLiveReply();
             }
         });
         superPlayer.disableBottom();
@@ -230,13 +228,6 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                 }
             }
         });
-        liveHistoryAdapter.setLoadMoreView(new CustomLoadMoreView());
-        liveHistoryAdapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-            @Override
-            public void onLoadMoreRequested() {
-                presenter.getLiveReply(page);
-            }
-        }, historyList);
         historyList.setAdapter(liveHistoryAdapter);
     }
 
@@ -331,15 +322,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
 
     @Override
     public void showLiveReply(List<LiveReplayBean> liveReplayBeans) {
-        if (page == 1) {
-            liveHistoryAdapter.setNewData(liveReplayBeans);
-        } else {
-            liveHistoryAdapter.getData().addAll(liveReplayBeans);
-            if (liveReplayBeans.size() < 20) {
-                liveHistoryAdapter.loadMoreEnd();
-            } else liveHistoryAdapter.loadMoreComplete();
-        }
-        page++;
+        liveHistoryAdapter.setNewData(liveReplayBeans);
     }
 
     @Override

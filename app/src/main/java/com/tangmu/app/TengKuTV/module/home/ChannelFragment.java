@@ -48,9 +48,9 @@ public class ChannelFragment extends BaseFragment {
             @Override
             protected void convert(BaseViewHolder helper, CategoryBean item) {
                 if (channelAdapter.getData().indexOf(item) == channelAdapter.getItemCount() - 1) {
-                    GlideApp.with(ChannelFragment.this).load(R.mipmap.ic_live).into((ImageView) helper.getView(R.id.image));
-                } else if (item.getVt_pid() == -2) {
                     GlideApp.with(ChannelFragment.this).load(R.mipmap.ic_book).into((ImageView) helper.getView(R.id.image));
+                } else if (item.getVt_pid() == -2) {
+                    GlideApp.with(ChannelFragment.this).load(R.mipmap.ic_live).into((ImageView) helper.getView(R.id.image));
                 } else
                     GlideUtils.getRequest(ChannelFragment.this, Util.convertImgPath(item.getVt_icon_img()))
                             .into((ImageView) helper.getView(R.id.image));

@@ -162,6 +162,15 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
 
     }
 
+    @Override
+    public void detachView() {
+        super.detachView();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
     private void getWxPayResult(String order_num) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.payCallbacks)
                 .params("order_no", order_num)
@@ -169,6 +178,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                     @Override
                     public void onSuccess(Response<BaseResponse<Integer>> response) {
                         super.onSuccess(response);
+                        if (view == null) return;
                         if (response.body().getStatus() == 0) {
                             if (response.body().getResult() == 2) {
                                 view.showPayResult(true);
@@ -183,6 +193,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                     @Override
                     public void onError(Response<BaseResponse<Integer>> response) {
                         super.onError(response);
+                        if (view == null) return;
                         ToastUtil.showText(handleError(response.getException()));
                         if (timer != null) {
                             timer.cancel();

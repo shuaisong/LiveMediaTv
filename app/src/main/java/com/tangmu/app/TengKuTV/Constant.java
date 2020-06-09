@@ -1,8 +1,8 @@
 package com.tangmu.app.TengKuTV;
 
 public class Constant {
-    public static final String WXAPP_ID = "wx1e766239e2001e84";
-    public static final String WXAPP_SECRET = "3697ab2d55c12b59e69033c828a73f18";
+    public static final String WXAPP_ID = "wx652797a5d383e165";
+    public static final String WXAPP_SECRET = "40f3acdb32113c6063e378ba56259582";
     public static final int PLAYID = 1258540389;
     public static String Pic_IP = "https://tk-1253334841-1258540389.cos.ap-beijing.myqcloud.com/";
     public static String Video_IP = "http://1258540389.vod2.myqcloud.com/";

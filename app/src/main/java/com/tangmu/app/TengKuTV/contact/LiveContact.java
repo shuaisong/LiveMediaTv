@@ -19,7 +19,7 @@ public class LiveContact {
 
     public interface Presenter {
 
-        void getLiveReply(int page);
+        void getLiveReply();
 
         void getTopLive();
 

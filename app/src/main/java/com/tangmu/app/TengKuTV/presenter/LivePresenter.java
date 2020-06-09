@@ -20,11 +20,9 @@ public class LivePresenter extends RxPresenter<LiveContact.View> implements Live
 
 
     @Override
-    public void getLiveReply(int page) {
-        OkGo.<BaseListResponse<LiveReplayBean>>post(Constant.IP + Constant.moreReplyLive)
+    public void getLiveReply() {
+        OkGo.<BaseListResponse<LiveReplayBean>>post(Constant.IP + Constant.liveReply)
                 .tag(this)
-                .params("page", page)
-                .params("size", 20)
                 .execute(new JsonCallback<BaseListResponse<LiveReplayBean>>() {
                     @Override
                     public void onSuccess(Response<BaseListResponse<LiveReplayBean>> response) {
