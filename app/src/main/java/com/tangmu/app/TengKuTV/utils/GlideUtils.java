@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.tangmu.app.TengKuTV.CustomApp;
 
 public class GlideUtils {
@@ -30,17 +32,29 @@ public class GlideUtils {
     }
 
     public static GlideRequest<Drawable> getRequest(Context context, String url) {
-        return GlideApp.with(context).load(url).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
+        GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                .addHeader("Referer", "118.24.243.198")
+                .build());
+        return GlideApp.with(context).load(glideUrl).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
     }
     public static GlideRequest<Drawable> getRequest(Fragment context, String url) {
-        return GlideApp.with(context).load(url).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
+        GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                .addHeader("Referer", "118.24.243.198")
+                .build());
+        return GlideApp.with(context).load(glideUrl).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
     }
 
     public static GlideRequest<Drawable> getRequest(Activity context, String url) {
-        return GlideApp.with(context).load(url).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
+        GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                .addHeader("Referer", "118.24.243.198")
+                .build());
+        return GlideApp.with(context).load(glideUrl).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
     }
     public static GlideRequest<Drawable> getRequest(View context, String url) {
-        return GlideApp.with(context).load(url).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
+        GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
+                .addHeader("Referer", "118.24.243.198")
+                .build());
+        return GlideApp.with(context).load(glideUrl).diskCacheStrategy(CustomApp.canCache ? DiskCacheStrategy.ALL : DiskCacheStrategy.NONE);
     }
 
     public static void clearMemoryCache(Context context) {

@@ -52,7 +52,9 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 import com.youth.banner.loader.ImageLoader;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -176,7 +178,7 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
                 GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
-                        .placeholder(R.mipmap.img_default).into(imageView);
+                        .override(400,200).placeholder(R.drawable.default_img_banner).into(imageView);
             }
         });
         banner.setBannerTitles(null);
@@ -184,7 +186,7 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
         banner.setBannerAnimation(Transformer.Default);
         banner.isAutoPlay(true);
         //设置轮播时间
-        banner.setDelayTime(1500);
+        banner.setDelayTime(4500);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.RIGHT);
         bannerClickListener = new BannerClickListener(getActivity());
@@ -294,19 +296,19 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 CategoryBean.SecondBean item = mCategoryAdapter.getItem(position);
                 if (item == null) return;
-                HomeFragment parentFragment = (HomeFragment) getParentFragment();
+                MainActivity activity = (MainActivity) getActivity();
                 if (item.getVt_pid() == -2) {
-                    assert parentFragment != null;
-                    parentFragment.showDubbingFrament();
+                    activity.showDubbingFrament();
                     return;
                 }
-                MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    assert parentFragment != null;
                     Intent intent = new Intent(getActivity(), MovieListActivity.class);
+                    int index = activity.getIndex();
+                    ArrayList<CategoryBean> category = activity.getCategory();
                     intent.putExtra("position", position);
-                    intent.putExtra("PCategory", parentFragment.getCategory());
-                    intent.putExtra("index", parentFragment.getIndex());
+                    intent.putExtra("PCategory", category);
+                    intent.putExtra("index", index);
+
                     startActivity(intent);
                 }
             }
@@ -363,6 +365,8 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
         PlayHistoryInfo playHistoryInfo;
         switch (view.getId()) {
             case R.id.banner:
+                List<BannerBean> bannerBeans = bannerClickListener.getBannerBeans();
+                if (bannerBeans == null || bannerBeans.isEmpty()) return;
                 if (bannerClickListener != null)
                     bannerClickListener.OnBannerClick(banner.toRealPosition(bannerViewPager.getCurrentItem()));
                 break;
@@ -401,9 +405,9 @@ public class HomeChildFragment extends BaseFragment implements HomeChildContact.
                 startActivity(new Intent(getActivity(), VideoSearchActivity.class));
                 break;
             case R.id.live:
-                HomeFragment parentFragment = (HomeFragment) getParentFragment();
-                if (parentFragment != null) {
-                    parentFragment.showLiveFragment();
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.showLiveFragment();
                 }
                 break;
             case R.id.book:

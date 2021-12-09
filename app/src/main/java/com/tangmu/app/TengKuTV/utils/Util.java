@@ -1,6 +1,8 @@
 package com.tangmu.app.TengKuTV.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,9 +10,11 @@ import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.telephony.TelephonyManager;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
@@ -37,12 +41,16 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class Util {
@@ -429,6 +437,58 @@ public class Util {
             return "刚刚";
     }
 
+
+    public static String getTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+        String format1 = formatter.format(curDate);
+        return format1;
+    }
+
+    public static String addTimeYear(String time) {
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = str2Date(time);
+
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.set(Calendar.YEAR, c.get(Calendar.YEAR) + 1); //增加一年
+        Date tomorrow = c.getTime();
+        System.out.println("明年是:" + f.format(tomorrow));
+        return f.format(tomorrow);
+    }
+
+    public static Date str2Date(String str) {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        Date date = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            date = sdf.parse(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    public static boolean isDateOneBigger(String str1, String str2) {
+        boolean isBigger = false;
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date dt1 = df.parse(str1);
+            Date dt2 = df.parse(str2);
+            if (dt1.getTime() > dt2.getTime()) {
+                isBigger = true;
+            } else if (dt1.getTime() < dt2.getTime()) {
+                isBigger = false;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return isBigger;
+    }
+
     public static boolean isNotificationEnabled(Context context) {
         boolean isOpened = false;
         try {
@@ -594,5 +654,57 @@ public class Util {
         FileWriter fileWriter = new FileWriter(file, true);
         fileWriter.write("keyCode:" + keyCode + " currentFocus:" + s);
         fileWriter.close();
+    }
+
+    //获取手机的唯一标识
+    public static String getPhoneSign() {
+        StringBuilder deviceId = new StringBuilder();
+        // 渠道标志
+        deviceId.append("a");
+        try {
+            //IMEI（imei）
+            TelephonyManager tm = (TelephonyManager) CustomApp.getApp().getSystemService(Context.TELEPHONY_SERVICE);
+            @SuppressLint("MissingPermission") String imei = tm.getDeviceId();
+            if (!TextUtils.isEmpty(imei)) {
+                deviceId.append("imei");
+                deviceId.append(imei);
+                return deviceId.toString();
+            }
+            //序列号（sn）
+            @SuppressLint("MissingPermission") String sn = tm.getSimSerialNumber();
+            if (!TextUtils.isEmpty(sn)) {
+                deviceId.append("sn");
+                deviceId.append(sn);
+                return deviceId.toString();
+            }
+            //如果上面都没有， 则生成一个id：随机码
+            String uuid = getUUID();
+            if (!TextUtils.isEmpty(uuid)) {
+                deviceId.append("id");
+                deviceId.append(uuid);
+                return deviceId.toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            deviceId.append("id").append(getUUID());
+        }
+        return deviceId.toString();
+    }
+
+    /**
+     * 得到全局唯一UUID
+     */
+    private static String uuid;
+
+    private static String getUUID() {
+        SharedPreferences mShare =  CustomApp.getApp().getSharedPreferences("uuid", MODE_PRIVATE);
+        if (mShare != null) {
+            uuid = mShare.getString("uuid", "");
+        }
+        if (TextUtils.isEmpty(uuid)) {
+            uuid = UUID.randomUUID().toString();
+            mShare.edit().putString("uuid", uuid).commit();
+        }
+        return uuid;
     }
 }

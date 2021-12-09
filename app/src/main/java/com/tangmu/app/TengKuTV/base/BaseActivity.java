@@ -1,5 +1,8 @@
 package com.tangmu.app.TengKuTV.base;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -18,15 +21,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
+import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.tangmu.app.TengKuTV.CustomApp;
 import com.tangmu.app.TengKuTV.NetReceiver;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.component.AppComponent;
-import com.tangmu.app.TengKuTV.utils.AppLanguageUtils;
 import com.tangmu.app.TengKuTV.utils.CleanInputLeakUtils;
 import com.tangmu.app.TengKuTV.utils.GlideApp;
 import com.tangmu.app.TengKuTV.utils.GlideRequest;
@@ -34,8 +34,16 @@ import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
+import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.GlideCircleWithBorder;
+import com.tangmu.app.TengKuTV.view.TitleView;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.TimerTask;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import butterknife.ButterKnife;
 import me.jessyan.autosize.internal.CustomAdapt;
 
@@ -50,6 +58,7 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
     private boolean isDefaultLanguage;
     private NetReceiver netReceiver;
     private ImageView wifiImage;
+    private IntentFilter intentFilter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,14 +68,14 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);            //横屏
         setContentView(setLayoutId());
-        updateBG();
+//        updateBG();
         ButterKnife.bind(this);
         setupActivityComponent(CustomApp.getApp().getAppComponent());
         initView();
         initData();
         netReceiver = new NetReceiver();
         netReceiver.setNetChangeListener(this);
-        IntentFilter intentFilter = new IntentFilter();
+        intentFilter = new IntentFilter();
         intentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -74,10 +83,27 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         wifiImage = findViewById(R.id.wifi);
         if (wifiImage != null)
             if (checkNetAvailable()) {
+                LogUtil.e("网络正常");
                 wifiImage.setImageResource(R.mipmap.ic_wifi);
             } else {
+                LogUtil.e("网络失败");
                 wifiImage.setImageResource(R.mipmap.no_net);
             }
+    }
+
+    protected  void checkIsHijack(){
+        ActivityManager activityManager = (ActivityManager) (CustomApp.getApp().getSystemService(android.content.Context.ACTIVITY_SERVICE));
+        List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager
+                .getRunningAppProcesses();
+        if (appProcesses != null) {
+            String processName = appProcesses.get(0).processName;
+            if(!processName.equalsIgnoreCase(getPackageName())) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("警告");
+                builder.setPositiveButton("检测到窗口被劫持" , null );
+                builder.show();
+            }
+        }
     }
 
     private String getAppLanguage() {
@@ -85,12 +111,18 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
         return isDefaultLanguage ? "zh" : "bo";
     }
 
-    protected void attachBaseContext(Context paramContext) {
-        super.attachBaseContext(AppLanguageUtils.attachBaseContext(paramContext, getAppLanguage()));
-    }
+//    protected void attachBaseContext(Context paramContext) {
+//        super.attachBaseContext(AppLanguageUtils.attachBaseContext(paramContext, getAppLanguage()));
+//    }
 
     protected void updateBG() {
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.black_bg));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        checkIsHijack();
     }
 
     public boolean isFastDoubleClick() {
@@ -158,27 +190,20 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     public abstract int setLayoutId();
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isDefaultLanguage != PreferenceManager.getInstance().isDefaultLanguage())
-            recreate();
+//        if (isDefaultLanguage != PreferenceManager.getInstance().isDefaultLanguage())
+//            recreate();
     }
 
     @Override
     protected void onDestroy() {
         unregisterReceiver(netReceiver);
         CleanInputLeakUtils.getInstance().fixInputMethodManagerLeak(this);
+        Glide.get(this).clearMemory();
         super.onDestroy();
     }
 
@@ -251,5 +276,30 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
                 wifiImage.setImageResource(R.mipmap.no_net);
             }
         }
+    }
+   protected static class UpdateTimeTask extends TimerTask {
+
+        private WeakReference<TitleView> titleView;
+        private WeakReference<Activity> activity;
+        public UpdateTimeTask(Activity activity, TitleView titleView) {
+            this.titleView = new WeakReference<>(titleView);
+            this.activity = new WeakReference<>(activity);
+        }
+
+        /**
+         * The action to be performed by this timer task.
+         */
+        @Override
+        public void run() {
+            if (activity.get()==null||titleView.get()==null)return;
+            activity.get().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    long currentTimeMillis = System.currentTimeMillis();
+                    titleView.get().setTime(Util.convertSystemTime(currentTimeMillis));
+                }
+            });
+        }
+
     }
 }

@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_live_history"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
-    android:id="@+id/item_live_history"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/image"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:background="@drawable/dp_5_view_bg_focused_select"
+        android:layout_height="wrap_content"
         android:duplicateParentState="true"
-        android:padding="@dimen/focus_width" />
+        android:background="@drawable/dp_5_view_bg_focused_select"
+        android:padding="@dimen/focus_width">
+
+        <com.tangmu.app.TengKuTV.view.CornerImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:duplicateParentState="true"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

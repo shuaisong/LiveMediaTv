@@ -1,42 +1,54 @@
 package com.tangmu.app.TengKuTV.contact;
 
-import android.os.Handler;
-
 import com.tangmu.app.TengKuTV.base.BaseContact;
+import com.tangmu.app.TengKuTV.bean.BodyBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.OrderBean;
-import com.tangmu.app.TengKuTV.bean.RechargeGifBean;
-import com.tangmu.app.TengKuTV.bean.UserInfoBean;
-import com.tangmu.app.TengKuTV.bean.VipBean;
-import com.tangmu.app.TengKuTV.bean.WxBean;
+import com.tangmu.app.TengKuTV.bean.SdkmesBean;
+import com.tangmu.app.TengKuTV.bean.TVProductBean;
 
 import java.util.List;
 
 public class RechargeVipContact {
     public interface View extends BaseContact.BaseView {
-        void showVipBeans(List<VipBean> vipBeans);
         void showOrder(OrderBean orderBean);
 
-        void showPayResult(boolean isSuccess);
+        void showPayResult(boolean isSuccess,String msg);
 
-        void showRechargeBeans(List<RechargeGifBean> result);
+        void showRechargeBeans(List<TVProductBean> result);
 
-        void showUserInfo(UserInfoBean userInfoBean);
+        void showUserInfo(MiguLoginBean userInfoBean);
 
         void showPayCode(String result);
+
+        void AuthenticationFail(BodyBean productToOrderList);
+
+        void getPayResult();
+
+        void AuthenticationSuccess();
+
+        void showPhone(String accountIdentify);
+
+        void showNetError(String handleError);
+
+        void showMiguError(String msg);
     }
 
     public interface Presenter {
-        void getVipBeans();
 
 
-        void weChatPayInfo(String order_num, String price);
-
-        void createOrder(String ca_id ,int vip_type);
-
-        void weChatPay(WxBean bean);
+        void createOrder(String price, int vip_type, String productCode,String accountIdentify);
 
         void getUserInfo();
 
-        void getRecharges();
+        void miguPay(SdkmesBean sdkmesBean, String price);
+
+        void miguAuthentications(String userId, String terminalId);
+
+        void pay(int payType,String order,String price);
+
+        void payStatus(String orderNo);
+
+        void getProductList();
     }
 }

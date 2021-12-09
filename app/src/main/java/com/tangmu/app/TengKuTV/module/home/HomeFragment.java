@@ -1,16 +1,10 @@
 package com.tangmu.app.TengKuTV.module.home;
 
-import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.tangmu.app.TengKuTV.R;
@@ -32,6 +26,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 
 public class HomeFragment extends BaseFragment implements HomeContact.View, View.OnFocusChangeListener {
@@ -73,21 +69,21 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
     @Override
     public void showCategory(List<CategoryBean> categoryBeans) {
         categories = (ArrayList<CategoryBean>) categoryBeans;
-        ArrayList<BaseFragment> fragments = new ArrayList<>(4);
+        ArrayList<Class> fragments = new ArrayList<>(4);
         for (CategoryBean categoryBean : categoryBeans) {
             if (categoryBean.getVt_title().equals("VIP")) {
-                fragments.add(HomeVipFragment.newInstance(categoryBean));
+                fragments.add(HomeVipFragment.class);
                 CategoryBean livCategoryBean = new CategoryBean();
                 livCategoryBean.setVt_title("直播");
                 livCategoryBean.setVt_title_z("ཐད་གཏོང།");
                 livCategoryBean.setVt_pid(-2);
                 categoryBeans.add(categoryBeans.indexOf(categoryBean) + 1, livCategoryBean);
-                fragments.add(new LiveFragment());
+                fragments.add(LiveFragment.class);
             } else if (categoryBean.getVt_title().contains("配音")) {
                 PreferenceManager.getInstance().setDubbingId(categoryBean.getVt_id());
-                fragments.add(HomeDubbingFragment.newInstance(categoryBean));
+                fragments.add(HomeDubbingFragment.class);
             } else {
-                fragments.add(HomeChildFragment.newInstance(categoryBean));
+                fragments.add(HomeChildFragment.class);
             }
         }
         CategoryBean categoryBean = new CategoryBean();
@@ -96,13 +92,9 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
         categoryBean.setVt_title_z(getString(R.string.all_channel));
         categories.add(categoryBean);
 
-        ChannelFragment channelFragment = new ChannelFragment();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("Category", (ArrayList<CategoryBean>) categoryBeans);
-        channelFragment.setArguments(bundle);
-        fragments.add(channelFragment);
+        fragments.add(ChannelFragment.class);
         if (homePageAdapter == null) {
-            homePageAdapter = new HomePageAdapter(getChildFragmentManager(), fragments);
+            homePageAdapter = new HomePageAdapter(getChildFragmentManager(), fragments,categoryBeans);
             mViewPager.setAdapter(homePageAdapter);
         } else homePageAdapter.notifyDataSetChanged();
         tablayout.setupWithViewPager(mViewPager);
@@ -162,7 +154,7 @@ public class HomeFragment extends BaseFragment implements HomeContact.View, View
         tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-
+                int position = tab.getPosition();
                 mViewPager.setCurrentItem(tab.getPosition());
 
             }

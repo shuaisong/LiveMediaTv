@@ -10,15 +10,16 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/dp_5_view_bg_focused_select"
+        android:padding="@dimen/focus_width"
         android:duplicateParentState="true">
 
-        <ImageView
+        <com.tangmu.app.TengKuTV.view.CornerImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            android:background="@drawable/dp_5_view_bg_focused_select"
+            android:scaleType="centerCrop"
             android:duplicateParentState="true"
-            android:padding="@dimen/focus_width"
             tools:ignore="ContentDescription" />
 
         <TextView

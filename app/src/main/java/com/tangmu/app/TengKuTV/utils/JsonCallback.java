@@ -13,7 +13,6 @@ import com.tangmu.app.TengKuTV.CustomApp;
 import com.tangmu.app.TengKuTV.TokenFailException;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

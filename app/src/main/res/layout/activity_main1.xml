@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_bg"
+    android:orientation="vertical"
+    android:paddingTop="26dp"
+    tools:context=".module.main.MainActivity">
+
+    <com.tangmu.app.TengKuTV.view.TitleView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.7dp"
+        android:layout_marginTop="17dp"
+        android:focusable="false"
+        android:background="@drawable/setting_divider"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tablayout"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        app:tabIndicatorColor="#F61525"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorHeight="2dp"
+        app:tabMinWidth="105dp"
+        app:tabMode="scrollable"
+        app:tabTextColor="@color/white" />
+
+    <com.tangmu.app.TengKuTV.view.DisableScrollViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

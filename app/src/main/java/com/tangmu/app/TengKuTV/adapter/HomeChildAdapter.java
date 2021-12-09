@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.CustomApp;
@@ -59,9 +57,13 @@ public class HomeChildAdapter extends BaseMultiItemQuickAdapter<HomeChildBean, B
                 break;
             case HomeChildBean.MOVIE:
                 HomeChildRecommendBean.VideoBean movieBean = item.getMovieBean();
-                GlideUtils.getRequest(mContext, Util.convertImgPath(item.getMovieBean().getVm_img())).placeholder(R.mipmap.img_default)
-                        .transform(new CenterCrop(), new RoundedCorners(radius))
-                        .into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(mContext, Util.convertImgPath(item.getMovieBean().getVm_img())).placeholder(R.drawable.default_img)
+                        .override(250,320).into((ImageView) helper.getView(R.id.image));
+                if (movieBean.getVm_type() == 1) {
+                    helper.setBackgroundRes(R.id.vip, R.mipmap.icon_fufei);
+                } else {
+                    helper.setBackgroundRes(R.id.vip, R.mipmap.vip_tag_bg);
+                }
                 if (isVip | movieBean.getVm_is_pay() == 2) {
                     helper.setVisible(R.id.vip, true);
                 } else {

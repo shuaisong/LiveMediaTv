@@ -159,6 +159,7 @@
     <string name="new_password">新   密   码</string>
     <string name="make_sure_password">确认密码</string>
     <string name="complete">完成</string>
+    <string name="agree_tip">注册即代表您已阅读并同意</string>
     <string name="input_old_tip">请输入旧密码</string>
     <string name="input_new_tip">请输入新密码</string>
     <string name="input_make_sure_tip">请输入确认密码</string>
@@ -389,6 +390,7 @@
     <string name="login_support_tip">支持微信登录</string>
     <string name="defult_q">默认画质</string>
     <string name="version_update">版本更新</string>
+    <string name="talk_later">以后再说</string>
     <string name="scan_login_tip">使用以下App扫码登录</string>
     <string name="hot_work">热门配音作品</string>
     <string name="vip_receive">领取会员</string>
@@ -401,6 +403,11 @@
     <string name="vip_price">V I P 优 惠 价 ：</string>
     <string name="normal_price">非&#160;会&#160;员&#160;价&#160;：</string>
     <string name="expre_time">观 看 有 效 期 至：</string>
+    <string name="new_version_characteristic">新版本特性</string>
+    <string name="find">发现</string>
+    <string name="str_new">新</string>
+    <string name="version">版本</string>
+    <string name="vip_card"><![CDATA[ཐང་ཁུག་བརྙན་ལམ་ཚོགས་མིའི་བྱང་བུ།]]></string>
     <array name="full_key_array">
         <item>A</item>
         <item>B</item>

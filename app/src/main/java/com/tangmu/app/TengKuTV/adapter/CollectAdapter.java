@@ -49,10 +49,15 @@ public class CollectAdapter extends BaseQuickAdapter<CollectBean, BaseViewHolder
         helper.setText(R.id.title, Util.showText(item.getTitle(), item.getTitle_z()));
         if (item.getUc_type() == 4) {
             GlideUtils.getRequest(mContext, Util.convertVideoPath(item.getImg()))
-                    .centerCrop().into((ImageView) helper.getView(R.id.image));
+                    .centerCrop().override(167,255).into((ImageView) helper.getView(R.id.image));
         } else
             GlideUtils.getRequest(mContext, Util.convertImgPath(item.getImg()))
-                    .centerCrop().into((ImageView) helper.getView(R.id.image));
+                    .centerCrop().override(167,255).into((ImageView) helper.getView(R.id.image));
+        if (item.getVm_type() == 1) {
+            helper.setImageResource(R.id.isVip, R.mipmap.icon_fufei);
+        } else {
+            helper.setImageResource(R.id.isVip, R.mipmap.vip_tag_bg);
+        }
         if (item.getVm_is_pay() == 2) {
             helper.setVisible(R.id.isVip, true);
         } else {

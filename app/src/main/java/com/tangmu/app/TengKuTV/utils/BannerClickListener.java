@@ -21,6 +21,10 @@ public class BannerClickListener implements OnBannerListener {
         this.context = context;
     }
 
+    public List<BannerBean> getBannerBeans() {
+        return bannerBeans;
+    }
+
     public void setBannerBeans(List<BannerBean> bannerBeans) {
         this.bannerBeans = bannerBeans;
     }

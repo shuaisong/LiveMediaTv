@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/fragment_bg"
     android:background="@mipmap/splash_bg"
     tools:context=".module.SplashActivity">
 
@@ -11,13 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:visibility="invisible"/>
+        android:visibility="gone" />
 
     <com.tencent.liteav.demo.play.SuperPlayerView
         android:id="@+id/superPlayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible" />
+        android:visibility="gone" />
+
 
     <LinearLayout
         android:id="@+id/jumpTime"
@@ -62,4 +64,63 @@
             android:textSize="16sp" />
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/no_net"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@+id/ic_error_net"
+            android:layout_width="201dp"
+            android:layout_height="231dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/ic_net_error" />
+
+        <TextView
+            android:id="@+id/tv_no_net"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ic_error_net"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="您的设备无法连接到服务器"
+            android:textColor="@color/white"
+            android:textSize="33sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_no_net1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_no_net"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:gravity="center"
+            android:text="请检查您的网络设置"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_set_net"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_below="@id/tv_no_net1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/select_dp_5_blue_bg"
+            android:backgroundTint="#24ACE2"
+            android:focusable="true"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:text="打开网络设置"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+
+    </RelativeLayout>
 </FrameLayout>

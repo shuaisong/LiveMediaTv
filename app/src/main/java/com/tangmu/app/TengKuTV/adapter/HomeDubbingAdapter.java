@@ -7,8 +7,6 @@ import android.widget.ImageView;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.CustomApp;
@@ -23,11 +21,9 @@ import com.tangmu.app.TengKuTV.utils.Util;
 import java.util.List;
 
 import me.jessyan.autosize.utils.AutoSizeUtils;
-import me.jessyan.autosize.utils.ScreenUtils;
 
 public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBean, BaseViewHolder> implements View.OnFocusChangeListener {
 
-    private final int radius;
     private final int itemHeight;
     private final int topTitleHeight;
 
@@ -41,7 +37,6 @@ public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBea
         super(data);
         addItemType(HomeDubbingBean.MOVIE, R.layout.item_dubbing);
         addItemType(HomeDubbingBean.TITLE, R.layout.item_dubbing_title);
-        radius = AutoSizeUtils.dp2px(CustomApp.getApp(), 5);
         itemHeight = AutoSizeUtils.dp2px(CustomApp.getApp(), 300);
         topTitleHeight = AutoSizeUtils.dp2px(CustomApp.getApp(), 84);
     }
@@ -65,9 +60,8 @@ public class HomeDubbingAdapter extends BaseMultiItemQuickAdapter<HomeDubbingBea
                 if (movieBean.getType() == 1)//配音
                     imgUrl = Util.convertVideoPath(movieBean.getDv_img());
                 else imgUrl = Util.convertImgPath(movieBean.getDv_img());
-                GlideUtils.getRequest(mContext, imgUrl).placeholder(R.mipmap.img_default)
-                        .transform(new CenterCrop(), new RoundedCorners(radius))
-                        .into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(mContext, imgUrl).placeholder(R.drawable.default_img)
+                        .override(250,320).into((ImageView) helper.getView(R.id.image));
                 helper.setText(R.id.title, Util.showText(movieBean.getDv_title(), movieBean.getDv_title_z()));
                 break;
         }

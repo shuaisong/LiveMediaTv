@@ -3,7 +3,7 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         
     }
     dependencies {
@@ -21,14 +21,8 @@ allprojects {
             dirs project(':app').file('libs')
         }
         google()
-        jcenter()
-        maven {
-            url "https://dl.bintray.com/tencentqcloudterminal/maven"
-        }
+        mavenCentral()
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        jcenter()
-        maven { url 'https://dl.bintray.com/umsdk/release' }
-        jcenter()
         maven { url "https://jitpack.io" }
     }
 }

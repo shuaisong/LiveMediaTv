@@ -151,8 +151,8 @@ public class VideoSearchActivity extends BaseActivity implements VideoSearchCont
             protected void convert(BaseViewHolder helper, HomeChildRecommendBean.VideoBean item) {
                 helper.setText(R.id.title, Util.showText(item.getVm_title(), item.getVm_title_z()))
                         .setGone(R.id.vip, item.getVm_is_pay() == 2);
-                GlideUtils.getRequest(VideoSearchActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
-                        .centerCrop().into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(VideoSearchActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.drawable.default_img)
+                        .override(167, 255).centerCrop().into((ImageView) helper.getView(R.id.image));
                 if (item.getVm_update_status() == 2) {
                     helper.setText(R.id.update_status, getResources().getString(R.string.update_done));
                 } else if (item.getVm_update_status() == 1)

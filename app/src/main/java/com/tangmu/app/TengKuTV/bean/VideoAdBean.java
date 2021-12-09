@@ -15,6 +15,11 @@ public class VideoAdBean {
     private String ta_url;
     private int vm_type;
     private int vt_id_one;
+    private int ta_type1;
+
+    public int getTa_type1() {
+        return ta_type1;
+    }
 
     public int getVt_id_one() {
         return vt_id_one;

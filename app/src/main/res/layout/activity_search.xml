@@ -20,6 +20,7 @@
             android:layout_marginStart="53dp"
             android:layout_marginTop="68dp"
             android:layout_marginEnd="39dp"
+            android:longClickable="false"
             android:background="@android:color/transparent"
             android:drawableStart="@mipmap/ic_search_white"
             android:hint="@string/search_hint"

@@ -149,8 +149,8 @@ public class BookSearchActivity extends BaseActivity implements BookSearchContac
             @Override
             protected void convert(BaseViewHolder helper, BookSearchBean item) {
                 helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()));
-                GlideUtils.getRequest(BookSearchActivity.this, Util.convertImgPath(item.getB_img())).placeholder(R.mipmap.img_default)
-                        .centerCrop().into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(BookSearchActivity.this, Util.convertImgPath(item.getB_img())).placeholder(R.drawable.default_img)
+                       .override(85,110).centerCrop().into((ImageView) helper.getView(R.id.image));
             }
         };
         resultAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {

@@ -11,8 +11,10 @@ public class Constant {
     public static final int[] c_bgs = {R.drawable.c_bg1, R.drawable.c_bg2, R.drawable.c_bg3, R.drawable.c_bg4};
     public static String head = img;
 
-    public static final String IP = "http://tk.quan-oo.com";
-    //    public static final String IP = "https://api.ixiaoba.cn";
+//        public static final String IP = "http://tk.quan-oo.com";//测试
+//    public static final String IP = "https://api.tengkutv.com";    //正式
+        public static final String IP = "http://apitv.tengkutv.com";
+    //        public static final String IP = "https://api.ixiaoba.cn";
     //用户密码登录接口
     public static final String passwordLogin = "/Login/passwordLogin";
     //    效验短信验证码及注册接口
@@ -220,4 +222,19 @@ public class Constant {
     public static final String createOrder = "/Order/orderAdd";
     //    支付接口
     public static final String pay = "/Pay/pay";
+
+    //    用户同步信息接口
+    public static final String tvRegister = "/TvUser/tvRegister";
+    //    下单接口
+    public static final String addOrder = "/TvOrder/addOrder";
+
+    //    咪咕鉴权接口
+    public static final String authentications = "/TvOrder/authentications";
+    //    下单支付
+    public static final String payOrder = "/TvOrder/payOrder";
+    //    下单支付
+    public static final String payStatus = "/TvOrder/payStatus";
+    //    产品列表      type 1会员 2单片
+    public static final String productLists = "/TvOrder/productLists";
+
 }

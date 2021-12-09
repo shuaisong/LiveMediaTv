@@ -11,7 +11,7 @@ public class ThirdBindContact {
     }
 
     public interface Presenter {
-        void thirdLogin(String openId, String mobile, String head_img, String code, int type);
+        void thirdLogin(String openId, String mobile, String head_img, String code, String nikeName, int type);
 
         void sendVerify(String mobile);
     }

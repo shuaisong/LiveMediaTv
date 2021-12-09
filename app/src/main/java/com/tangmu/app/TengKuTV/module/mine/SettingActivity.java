@@ -9,8 +9,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.model.Progress;
@@ -20,10 +18,10 @@ import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.VersionBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.utils.InstallUtil;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
@@ -34,6 +32,7 @@ import com.tangmu.app.TengKuTV.view.LoadingDialog;
 import java.io.File;
 import java.math.BigDecimal;
 
+import androidx.annotation.Nullable;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -99,8 +98,6 @@ public class SettingActivity extends BaseActivity {
                 .params("v_type", 3)
                 .params("code", versionCode).tag(this)
                 .execute(new JsonCallback<BaseResponse<VersionBean>>() {
-
-
                     @Override
                     public void onSuccess(Response<BaseResponse<VersionBean>> response) {
                         if (response.body().getStatus() == 0) {
@@ -146,19 +143,16 @@ public class SettingActivity extends BaseActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.quality1:
-                if (!isClickLogin()) {
-                    radioQuality.check(-1);
-                    startActivity(new Intent(this, LoginActivity.class));
-                } else if (PreferenceManager.getInstance().getLogin().getU_vip_status() == 0) {
-                    startActivity(new Intent(this, VIPActivity.class));
-                }
+                MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                if (login.getTu_vip_status()!=1)
+                    startActivity(new Intent(this, MiGuActivity.class));
                 break;
-            case R.id.quality2:
-                if (!isClickLogin()) {
-                    radioQuality.check(-1);
-                    startActivity(new Intent(this, LoginActivity.class));
-                }
-                break;
+//            case R.id.quality2:
+//                if (!isClickLogin()) {
+//                    radioQuality.check(-1);
+//                    startActivity(new Intent(this, LoginActivity.class));
+//                }
+//                break;
             case R.id.clear_cache:
                 Util.deleteDir(getCacheDir(), false);
                 if (getExternalCacheDir() != null)
@@ -166,7 +160,9 @@ public class SettingActivity extends BaseActivity {
                 getCache();
                 break;
             case R.id.current_version:
-                downLoadApk(Constant.Pic_IP + versionBean.getV_url());
+                if (versionBean != null) {
+                    downLoadApk(Constant.Pic_IP + versionBean.getV_url());
+                }
                 break;
         }
     }

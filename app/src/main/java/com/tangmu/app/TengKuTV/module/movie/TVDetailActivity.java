@@ -7,19 +7,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.AdBean;
+import com.tangmu.app.TengKuTV.bean.BodyBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.OrderBean;
+import com.tangmu.app.TengKuTV.bean.TVProductBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -29,10 +27,10 @@ import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
 import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.VideoDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
@@ -57,9 +55,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -124,17 +125,23 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
 
     @Override
     protected void initData() {
+        if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
+            EventBus.getDefault().register(TVDetailActivity.this);
         id = getIntent().getIntExtra("id", 0);
         c_id = getIntent().getIntExtra("c_id", 0);
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        if (login == null || login.getU_vip_status() == 0) {
+        loadeAd();
+        presenter.getTvAd(c_id);
+        presenter.getRecommend(c_id);
+    }
+
+    private void loadeAd() {
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login.getTu_vip_status() == 0) {
             showAd = true;
             superPlayer.setShowAd(true);
             presenter.getAd(c_id);
         } else
             presenter.getDetail(id);
-        presenter.getTvAd(c_id);
-        presenter.getRecommend(c_id);
     }
 
     @Override
@@ -218,20 +225,18 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                     if (isLogin()) {
                         return false;
                     } else {
-                        startActivity(new Intent(TVDetailActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
                 if (quality.name.equals("2K") || quality.name.equals("4K")) {
                     if (isLogin()) {
-                        LoginBean login = PreferenceManager.getInstance().getLogin();
-                        if (login.getU_vip_status() == 1) {
+                        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                        if (login.getTu_vip_status() == 1) {
                             return false;
                         } else {
-                            startActivity(new Intent(TVDetailActivity.this, VIPActivity.class));
+                            startActivity(new Intent(TVDetailActivity.this, MiGuActivity.class));
                         }
                     } else {
-                        startActivity(new Intent(TVDetailActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
@@ -239,16 +244,14 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
             }
         });
         int defaultQuality = PreferenceManager.getInstance().getDefaultQuality();
-        LoginBean login = PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         PreferenceManager.getInstance().getLogin();
         if (defaultQuality > 4) {
-            if (login != null && login.getU_vip_status() == 1) {
+            if (login.getTu_vip_status() == 1) {
                 superPlayer.setDefaultQualitySet(defaultQuality);
             }
         } else if (defaultQuality > 3) {
-            if (login != null) {
-                superPlayer.setDefaultQualitySet(defaultQuality);
-            }
+            superPlayer.setDefaultQualitySet(defaultQuality);
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
@@ -357,8 +360,8 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 } else {
                     helper.setVisible(R.id.vip, false);
                 }
-                GlideUtils.getRequest(TVDetailActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
-                        .centerCrop().into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(TVDetailActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.drawable.default_img)
+                        .override(218, 280).centerCrop().into((ImageView) helper.getView(R.id.image));
             }
         };
         recommendMovieAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -388,7 +391,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && superPlayer.getAdView().getVisibility() == View.GONE) {
                 superPlayer.showProgress(keyCode);
             }
         }
@@ -398,7 +401,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && superPlayer.getAdView().getVisibility() == View.GONE) {
                 superPlayer.showProgress(keyCode);
             }
         }
@@ -411,7 +414,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
                 || keyCode == KeyEvent.KEYCODE_MENU) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
-                superPlayer.showMenu();
+                superPlayer.showTVMenu();
             }
         }
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
@@ -427,6 +430,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                 return true;
             }
             if (currentFocus != null) {
+                Intent intent;
                 switch (currentFocus.getId()) {
                     case R.id.controller_small:
                         superPlayer.requestFullMode();
@@ -436,39 +440,17 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                             superPlayer.requestFullMode();
                             return true;
                         }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 100);
-                        else {
-                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
-                                EventBus.getDefault().register(TVDetailActivity.this);
-                            startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 100);
-                        }
+                        intent = new Intent(TVDetailActivity.this, MiGuActivity.class);
+                        startActivityForResult(intent, 100);
                         return true;
                     case R.id.vipTipView:
-                        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
-                            superPlayer.requestFullMode();
-                            return true;
-                        }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 101);
-                        else {
-                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
-                                EventBus.getDefault().register(TVDetailActivity.this);
-                            startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 101);
-                        }
-                        return true;
                     case R.id.buyAntholgyView:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
                             superPlayer.requestFullMode();
                             return true;
                         }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(TVDetailActivity.this, VIPActivity.class), 101);
-                        else {
-                            startActivityForResult(new Intent(TVDetailActivity.this, LoginActivity.class), 101);
-                            if (!EventBus.getDefault().isRegistered(TVDetailActivity.this))
-                                EventBus.getDefault().register(TVDetailActivity.this);
-                        }
+                        intent = new Intent(TVDetailActivity.this, MiGuActivity.class);
+                        startActivityForResult(intent, 101);
                         return true;
                     case R.id.pause_ad_view:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
@@ -508,41 +490,26 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         }
         if (timer == null) {
             timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            long currentTimeMillis = System.currentTimeMillis();
-                            titleView.setTime(Util.convertSystemTime(currentTimeMillis));
-                        }
-                    });
-                }
-            }, 0, 1000);
+            timer.schedule(new UpdateTimeTask(this, titleView), 0, 1000);
         }
         titleView.updateTV_Vip();
     }
 
     private void startPlay() {
+        superPlayer.setStartAndEndTime(PreferenceManager.getInstance().getIsJump(), videoDetailBean.getVm_opening_time(),
+                videoDetailBean.getVm_ending_time());
         VideoBean videoBean = videoDetailBean.getVideo().get(currentPosition);
         if (videoBean.getV_is_pay() == 2) {
-            if (PreferenceManager.getInstance().getLogin() != null) {
-                if (PreferenceManager.getInstance().getLogin().getU_vip_status() == 0) {
-                    superPlayer.showLoginTip(true);
-                    superPlayer.resetPlayer();
-                } else {
-                    SuperPlayerModel model = new SuperPlayerModel();
-                    model.appId = Constant.PLAYID;// 配置 AppId
-                    model.videoId = new SuperPlayerVideoId();
-                    model.videoId.fileId = v_fileid; // 配置 FileId
-                    model.title = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
-                    superPlayer.playWithModel(model);
-                }
-            } else {
-                superPlayer.resetPlayer();
-                superPlayer.setShowAd(false);
+            if (PreferenceManager.getInstance().getLogin().getTu_vip_status() == 0) {
                 superPlayer.showLoginTip(true);
+                superPlayer.resetPlayer();
+            } else {
+                SuperPlayerModel model = new SuperPlayerModel();
+                model.appId = Constant.PLAYID;// 配置 AppId
+                model.videoId = new SuperPlayerVideoId();
+                model.videoId.fileId = v_fileid; // 配置 FileId
+                model.title = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
+                superPlayer.playWithModel(model);
             }
         } else if (showAd && adBean != null) {
             superPlayer.showLoginTip(false);
@@ -576,8 +543,9 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         anthologyAdapter.setNewData(video);
         int num = 0;
         VideoSortBean videoSortBean = null;
-        superPlayer.setStartAndEndTime(PreferenceManager.getInstance().getIsJump(), videoDetailBean.getVm_opening_time(),
-                videoDetailBean.getVm_ending_time());
+
+//        superPlayer.setStartAndEndTime(PreferenceManager.getInstance().getIsJump(), videoDetailBean.getVm_opening_time(),
+//                videoDetailBean.getVm_ending_time());
         ArrayList<VideoSortBean> videoSortBeans = new ArrayList<>();
         if (video != null && !video.isEmpty())
             for (VideoBean videoBean : video) {
@@ -654,6 +622,11 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Override
+    public void getPayResult() {
+
+    }
+
+    @Override
     public void showAdError(String msg) {
         ToastUtil.showText(msg);
         presenter.getDetail(id);
@@ -664,10 +637,18 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         if (!videoAdBeans.isEmpty()) {
             ivAd1.setVisibility(View.VISIBLE);
             ivAd2.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd2);
+
+            for (int i = 0; i < videoAdBeans.size(); i++) {
+                if (videoAdBeans.get(i).getTa_type1() == 1) {
+                    GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
+                            .centerCrop().into(ivAd1);
+                }
+                if (videoAdBeans.get(i).getTa_type1() == 2) {
+                    GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
+                            .centerCrop().into(ivAd2);
+                }
+            }
+
         }
     }
 
@@ -682,7 +663,27 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Override
-    public void showPayResult(boolean payResult) {
+    public void showPayResult(boolean payResult, String msg) {
+
+    }
+
+    @Override
+    public void AuthenticationFail(BodyBean productToOrderList) {
+
+    }
+
+    @Override
+    public void showNetError(String msg) {
+
+    }
+
+    @Override
+    public void showRechargeBeans(List<TVProductBean> result, String accountIdentify) {
+
+    }
+
+    @Override
+    public void showMiguError(String resultDesc) {
 
     }
 
@@ -695,16 +696,18 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ToastUtil.showText("openVipSuccess");
+//        ToastUtil.showText("openVipSuccess");
         if (requestCode == 100) {
-            if (PreferenceManager.getInstance().getLogin() != null && PreferenceManager.getInstance().getLogin().getU_vip_status() == 1) {
+            PreferenceManager.getInstance().getLogin();
+            if (PreferenceManager.getInstance().getLogin().getTu_vip_status() == 1) {
                 openVipSuccess();
             } else {
                 ToastUtil.showText(getString(R.string.not_open_vip));
             }
         }
         if (requestCode == 101) {
-            if (PreferenceManager.getInstance().getLogin() != null && PreferenceManager.getInstance().getLogin().getU_vip_status() == 1) {
+            PreferenceManager.getInstance().getLogin();
+            if (PreferenceManager.getInstance().getLogin().getTu_vip_status() == 1) {
                 superPlayer.showLoginTip(false);
                 openVipSuccess();
             } else {
@@ -725,8 +728,8 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onGetMessage(LoginBean message) {
-        if (message.getU_vip_status() == 1) {
+    public void onGetMessage(MiguLoginBean message) {
+        if (message.getTu_vip_status() == 1) {
             superPlayer.showLoginTip(false);
             openVipSuccess();
         } else {

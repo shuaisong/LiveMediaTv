@@ -4,7 +4,7 @@
         <layer-list>
             <item android:drawable="@mipmap/play_paused" />
             <item>
-                <shape android:shape="rectangle">
+                <shape android:shape="oval">
                     <stroke android:width="@dimen/focus_width" android:color="@color/focus_color" />
                 </shape>
             </item>

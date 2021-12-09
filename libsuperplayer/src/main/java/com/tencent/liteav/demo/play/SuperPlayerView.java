@@ -26,11 +26,13 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.tencent.liteav.basic.log.TXCLog;
 import com.tencent.liteav.demo.play.bean.TCResolutionName;
+import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.bean.VideoBean;
 import com.tencent.liteav.demo.play.controller.IControllerCallback;
 import com.tencent.liteav.demo.play.controller.TCControllerFloat;
@@ -42,14 +44,13 @@ import com.tencent.liteav.demo.play.protocol.IPlayInfoRequestCallback;
 import com.tencent.liteav.demo.play.protocol.TCPlayInfoParams;
 import com.tencent.liteav.demo.play.protocol.TCPlayInfoProtocolV2;
 import com.tencent.liteav.demo.play.protocol.TCPlayInfoProtocolV4;
+import com.tencent.liteav.demo.play.utils.SPUtils;
 import com.tencent.liteav.demo.play.utils.TCImageUtil;
 import com.tencent.liteav.demo.play.utils.TCNetWatcher;
 import com.tencent.liteav.demo.play.utils.TCUrlUtil;
 import com.tencent.liteav.demo.play.utils.TCVideoQualityUtil;
 import com.tencent.liteav.demo.play.view.AdView;
 import com.tencent.liteav.demo.play.view.BuyAntholgyView;
-import com.tencent.liteav.demo.play.view.TCDanmuView;
-import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.view.TCVodAnthologyView;
 import com.tencent.liteav.demo.play.view.TCVodQualityView;
 import com.tencent.liteav.demo.play.view.VipTipView;
@@ -69,6 +70,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import me.jessyan.autosize.utils.LogUtils;
 
 /**
  * Created by liyuejiao on 2018/7/3.
@@ -105,6 +108,8 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private ViewGroup oldParent;
     private LinearLayout newParent;
     private BuyAntholgyView buyAntholgyView;
+    private boolean isBuyViewVisible;
+    private View loading_bar;
 
     public void setVideoType(int videoType) {
         mControllerFullScreen.setVideoType(videoType);
@@ -190,13 +195,21 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         mControllerWindow.setNeedBuy(visible);
         mControllerFullScreen.setNeedBuy(visible);
         buyAntholgyView.setVisibility(visible ? VISIBLE : GONE);
+
         if (!visible) {
             mControllerWindow.setVisibility(VISIBLE);
             mControllerFullScreen.setVisibility(VISIBLE);
             mControllerFullScreen.setEnableScroll();
             mControllerWindow.setEnableScroll();
+        }else {
+            buyAntholgyView.requestFocus();
         }
     }
+
+    public void setIsBuyViewVisible(boolean visible) {
+        this.isBuyViewVisible = visible;
+    }
+
 
     public void showLoginTip(boolean showTip) {
         if (showTip) {
@@ -225,6 +238,14 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             mControllerFullScreen.showMenu();
         } else {
             mControllerFullScreen.hide();
+        }
+    }
+
+    public void showTVMenu() {
+        if (!mControllerFullScreen.isShowing()) {
+            mControllerFullScreen.showMenu();
+        } else {
+//            mControllerFullScreen.hide();
         }
     }
 
@@ -271,6 +292,10 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             mVodPlayer.setRenderMode(renderModeFullFillScreen);
     }
 
+    public void showLoading(boolean visible) {
+        loading_bar.setVisibility(visible?VISIBLE:GONE);
+    }
+
     private enum PLAYER_TYPE {
         PLAYER_TYPE_NULL,
         PLAYER_TYPE_VOD,
@@ -284,7 +309,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
     private TCControllerFullScreen mControllerFullScreen;          // 全屏模式控制view
     private TCControllerWindow mControllerWindow;              // 窗口模式控制view
     private TCControllerFloat mControllerFloat;               // 悬浮窗模式控制view
-    private TCDanmuView mDanmuView;                     // 弹幕
     private ViewGroup.LayoutParams mLayoutParamWindowMode;         // 窗口播放时SuperPlayerView的布局参数
     private ViewGroup.LayoutParams mLayoutParamFullScreenMode;     // 全屏播放时SuperPlayerView的布局参数
     private LayoutParams mVodControllerWindowParams;     // 窗口controller的布局参数
@@ -350,7 +374,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         mControllerFullScreen = (TCControllerFullScreen) mRootView.findViewById(R.id.controller_large);
         mControllerWindow = (TCControllerWindow) mRootView.findViewById(R.id.controller_small);
         mControllerFloat = (TCControllerFloat) mRootView.findViewById(R.id.controller_float);
-        mDanmuView = (TCDanmuView) mRootView.findViewById(R.id.danmaku_view);
+        loading_bar = mRootView.findViewById(R.id.loading_progress);
 
         mVodControllerWindowParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mVodControllerFullScreenParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -360,7 +384,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         mControllerFloat.setCallback(mControllerCallback);
         adView.setCallback(mControllerCallback);
         removeAllViews();
-        mRootView.removeView(mDanmuView);
+        mRootView.removeView(loading_bar);
         mRootView.removeView(mTXCloudVideoView);
         mRootView.removeView(mControllerWindow);
         mRootView.removeView(mControllerFullScreen);
@@ -371,7 +395,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         addView(vipTipView);
         mRootView.removeView(adView);
         addView(adView);
-
+        addView(loading_bar);
         if (mCurrentPlayMode == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             addView(mControllerFullScreen);
             mControllerFullScreen.hide();
@@ -423,6 +447,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             mVodPlayConfig.setCacheFolderPath(context.getFilesDir().getPath() + "/txcache");
         }
         mVodPlayConfig.setMaxCacheItems(config.maxCacheItem);
+        mVodPlayConfig.setMaxBufferSize(10);
         mVodPlayer.setConfig(mVodPlayConfig);
         mVodPlayer.setRenderMode(config.renderMode);
         mVodPlayer.setVodListener(this);
@@ -466,6 +491,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      * @param model
      */
     public void playWithModel(final SuperPlayerModel model) {
+        showLoading(true);
         mCurrentModel = model;
         if (videoBeans != null) {
             for (int i = 0; i < videoBeans.size(); i++) {
@@ -625,9 +651,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             if (ret == 0) {
                 mCurrentPlayState = SuperPlayerConst.PLAYSTATE_PLAYING;
                 mCurPlayType = PLAYER_TYPE.PLAYER_TYPE_VOD;
-                if (mDanmuView != null && mDanmuView.isPrepared() && mDanmuView.isPaused()) {
-                    mDanmuView.resume();
-                }
                 TXCLog.e(TAG, "playVodURL mCurrentPlayState:" + mCurrentPlayState);
             }
         }
@@ -716,7 +739,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             }
         }
         if (isJump && vmEndTime != 0 && adView.getVisibility() == GONE && buyAntholgyView.getVisibility() == GONE && vipTipView.getVisibility() == GONE) {
-            if (current >= vmEndTime) {
+            if (duration!=0&&current!=0&&duration-current <= vmEndTime) {
                 Bundle bundle = new Bundle();
                 bundle.putString(TXLiveConstants.EVT_DESCRIPTION, "isJump");
                 onPlayEvent(mVodPlayer, TXLiveConstants.PLAY_EVT_PLAY_END, bundle);
@@ -760,9 +783,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      * resume生命周期回调
      */
     public void onResume() {
-        if (mDanmuView != null && mDanmuView.isPrepared() && mDanmuView.isPaused()) {
-            mDanmuView.resume();
-        }
         resume();
     }
 
@@ -778,9 +798,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      * pause生命周期回调
      */
     public void onPause() {
-        if (mDanmuView != null && mDanmuView.isPrepared()) {
-            mDanmuView.pause();
-        }
         pause();
     }
 
@@ -804,10 +821,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
      * 重置播放器
      */
     public void resetPlayer() {
-        if (mDanmuView != null) {
-            mDanmuView.release();
-            mDanmuView = null;
-        }
         stopPlay();
     }
 
@@ -1140,9 +1153,6 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
         @Override
         public void onDanmuToggle(boolean isOpen) {
-            if (mDanmuView != null) {
-                mDanmuView.toggle(isOpen);
-            }
         }
 
         @Override
@@ -1339,9 +1349,10 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         }
         switch (event) {
             case TXLiveConstants.PLAY_EVT_VOD_PLAY_PREPARED://视频播放开始
-                if (adView.getVisibility() == GONE && isJump && vmStartTime != 0) {
+                if (!SPUtils.init(mContext).getBoolean("switch_picture_quality", false) && adView.getVisibility() == GONE && isJump && vmStartTime != 0) {
                     mVodPlayer.seek(vmStartTime);
                 }
+                SPUtils.init(mContext).putBoolean("switch_picture_quality", false);
                 mControllerWindow.hideBackground();
                 updatePlayState(SuperPlayerConst.PLAYSTATE_PLAYING);
                 if (mIsMultiBitrateStream) {
@@ -1372,6 +1383,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
                 }
                 break;
             case TXLiveConstants.PLAY_EVT_RCV_FIRST_I_FRAME:
+                showLoading(false);
                 if (mChangeHWAcceleration) { //切换软硬解码器后，重新seek位置
                     TXCLog.i(TAG, "seek pos:" + mSeekPos);
                     mControllerCallback.onSeekTo(mSeekPos);
@@ -1381,6 +1393,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             case TXLiveConstants.PLAY_EVT_PLAY_END:
                 if (adView.getVisibility() == VISIBLE) {
                     adView.setVisibility(GONE);
+                    if (isBuyViewVisible) {
+                        setBuyViewVisible(true);
+                    }
                     mControllerWindow.setVisibility(VISIBLE);
                     mControllerFullScreen.setVisibility(VISIBLE);
                     SuperPlayerModel superPlayerModel = new SuperPlayerModel();
@@ -1448,8 +1463,11 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             String playEventLog = "TXLivePlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION);
             TXCLog.d(TAG, playEventLog);
         }
+        String playEventLog = "TXLivePlayer onPlayEvent event: " + event + ", " + param.getString(TXLiveConstants.EVT_DESCRIPTION);
+        TXCLog.d(TAG+">>>>>>>>>>", playEventLog);
         switch (event) {
             case TXLiveConstants.PLAY_EVT_VOD_PLAY_PREPARED: //视频播放开始
+                LogUtils.e("PLAY_EVT_VOD_PLAY_PREPARED");
                 updatePlayState(SuperPlayerConst.PLAYSTATE_PLAYING);
                 break;
             case TXLiveConstants.PLAY_EVT_PLAY_BEGIN:
@@ -1542,6 +1560,10 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         return true;
     }
 
+    public AdView getAdView() {
+        return adView;
+    }
+
     /**
      * 获取当前播放模式
      *
@@ -1627,5 +1649,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
 
     public void setAdImage(Drawable bitmap) {
         mControllerFullScreen.setAdImage(bitmap);
+    }
+
+    public TCControllerFullScreen getmControllerFullScreen() {
+        return mControllerFullScreen;
     }
 }

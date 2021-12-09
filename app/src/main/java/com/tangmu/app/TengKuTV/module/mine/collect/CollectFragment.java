@@ -100,9 +100,15 @@ public class CollectFragment extends BaseFragment implements CollectContact.View
             protected void convert(BaseViewHolder helper, CollectBean item) {
                 helper.setText(R.id.title, Util.showText(item.getTitle(), item.getTitle_z()));
                 if (type == 4) {
-                    GlideUtils.getRequest(CollectFragment.this, Util.convertVideoPath(item.getImg())).centerCrop().into((ImageView) helper.getView(R.id.image));
+                    GlideUtils.getRequest(CollectFragment.this, Util.convertVideoPath(item.getImg())).centerCrop().override(167,255).into((ImageView) helper.getView(R.id.image));
                 } else
-                    GlideUtils.getRequest(CollectFragment.this, Util.convertImgPath(item.getImg())).centerCrop().into((ImageView) helper.getView(R.id.image));
+                    GlideUtils.getRequest(CollectFragment.this, Util.convertImgPath(item.getImg())).centerCrop().override(167,255).into((ImageView) helper.getView(R.id.image));
+
+                if (item.getVm_type() == 1) {
+                    helper.setImageResource(R.id.isVip, R.mipmap.icon_fufei);
+                } else {
+                    helper.setImageResource(R.id.isVip, R.mipmap.vip_tag_bg);
+                }
                 if (item.getVm_is_pay() == 2) {
                     helper.setVisible(R.id.isVip, true);
                 } else {

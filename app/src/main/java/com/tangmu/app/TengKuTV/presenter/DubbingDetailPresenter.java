@@ -53,7 +53,7 @@ public class DubbingDetailPresenter extends RxPresenter<DubbingDetailContact.Vie
     @Override
     public void collect(int id) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("audio_id", id)
                 .params("type", 4)
                 .tag(this)
@@ -79,7 +79,7 @@ public class DubbingDetailPresenter extends RxPresenter<DubbingDetailContact.Vie
     @Override
     public void unCollect(int uc_id) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("uc_id", uc_id)
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {

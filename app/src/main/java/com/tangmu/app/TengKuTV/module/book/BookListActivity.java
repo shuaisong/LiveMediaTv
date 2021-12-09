@@ -209,9 +209,9 @@ public class BookListActivity extends BaseActivity implements View.OnFocusChange
             protected void convert(BaseViewHolder helper, MoreBookBean item) {
                 helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()))
                         .setText(R.id.author, Util.showText(item.getB_title(), item.getB_title_z()));
-                GlideUtils.getRequest(BookListActivity.this, Util.convertImgPath(item.getB_img())).placeholder(R.mipmap.img_default)
+                GlideUtils.getRequest(BookListActivity.this, Util.convertImgPath(item.getB_img())).placeholder(R.drawable.default_img)
                         .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(BookListActivity.this, 5)))
-                        .into((ImageView) helper.getView(R.id.image));
+                        .override(85,110).into((ImageView) helper.getView(R.id.image));
             }
         };
         quickAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {

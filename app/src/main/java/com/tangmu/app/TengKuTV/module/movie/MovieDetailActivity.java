@@ -1,7 +1,12 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.text.TextUtils;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,17 +15,20 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.migu.sdk.api.MiguSdk;
+import com.shcmcc.tools.GetSysInfo;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.AdBean;
+import com.tangmu.app.TengKuTV.bean.BodyBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.OrderBean;
+import com.tangmu.app.TengKuTV.bean.TVProductBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -29,8 +37,7 @@ import com.tangmu.app.TengKuTV.contact.VideoDetailContact;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
 import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.VideoDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
@@ -39,6 +46,9 @@ import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.CustomPraiseView;
+import com.tangmu.app.TengKuTV.view.MiguPay1Dialog;
+import com.tangmu.app.TengKuTV.view.MiguPay2Dialog;
+import com.tangmu.app.TengKuTV.view.MiguPay3Dialog;
 import com.tangmu.app.TengKuTV.view.ShowBuyInfoDialog;
 import com.tangmu.app.TengKuTV.view.TitleView;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
@@ -52,6 +62,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,9 +77,10 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import me.jessyan.autosize.utils.AutoSizeUtils;
 
-public class MovieDetailActivity extends BaseActivity implements VideoDetailContact.View, View.OnFocusChangeListener {
+import static android.view.View.VISIBLE;
+
+public class MovieDetailActivity extends BaseActivity implements VideoDetailContact.View, View.OnFocusChangeListener, View.OnClickListener, MiguPay1Dialog.PayAgreeListener {
     @Inject
     VideoDetailPresenter presenter;
     @BindView(R.id.superPlayer)
@@ -114,6 +128,15 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     private ShowBuyInfoDialog showBuyInfoDialog;
     private OrderBean orderBean;
     private Timer payTimer;
+    private MiguPay1Dialog miguPay1Dialog;
+    private int payType;
+    private MiguPay3Dialog miguPay3Dialog;
+    private MiguPay2Dialog miguPay2Dialog;
+    private List<TVProductBean> products;
+    private String phone;
+    private long startTime;
+    private String miguResultDesc;
+    private AlertDialog miguErrorDialog;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -122,10 +145,11 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
 
     @Override
     protected void initData() {
+        MiguSdk.initializeApp(this);
         id = getIntent().getIntExtra("id", 0);
         c_id = getIntent().getIntExtra("c_id", 0);
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        if (login == null || login.getU_vip_status() == 0) {
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login.getTu_vip_status() == 0) {
             showAd = true;
             superPlayer.setShowAd(true);
             presenter.getAd(c_id);
@@ -133,16 +157,26 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             presenter.getDetail(id);
         presenter.getTvAd(c_id);
         presenter.getRecommend(c_id);
+        GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
+        presenter.miguAuthentications(getSysInfo.getEpgUserId(),getSysInfo.getDeviceId());
     }
 
     @Override
     protected void onDestroy() {
+        MiguSdk.exitApp(this);
         if (EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
         if (superPlayer != null)
             superPlayer.resetPlayer();
-        if (timer != null) timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        if (payTimer != null) {
+            payTimer.cancel();
+            payTimer = null;
+        }
         presenter.detachView();
         super.onDestroy();
     }
@@ -152,7 +186,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         super.onPause();
         superPlayer.onPause();
         if (videoDetailBean != null) {
-            if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+            if (superPlayer.findViewById(R.id.adView).getVisibility() != VISIBLE) {
                 videoDetailBean.setProgress(superPlayer.getProgress());
             }
             PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
@@ -187,12 +221,18 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
 
     @Override
     public void onBackPressed() {
-        if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+        if (miguPay1Dialog !=null&& miguPay1Dialog.isShowing()){
+            miguPay1Dialog.dismiss();
+        }else if (miguPay2Dialog !=null&& miguPay2Dialog.isShowing()){
+            miguPay2Dialog.dismiss();
+        }else if (miguPay3Dialog !=null&& miguPay3Dialog.isShowing()){
+            miguPay3Dialog.dismiss();
+        }else if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
             superPlayer.requestPlayMode(SuperPlayerConst.PLAYMODE_WINDOW);
             superPlayer.requestFocus();
         } else {
             if (videoDetailBean != null) {
-                if (superPlayer.findViewById(R.id.adView).getVisibility() != View.VISIBLE) {
+                if (superPlayer.findViewById(R.id.adView).getVisibility() != VISIBLE) {
                     videoDetailBean.setProgress(superPlayer.getProgress());
                 }
                 PlayHistoryManager.save(videoDetailBean, superPlayer.getPosition());
@@ -238,40 +278,27 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             @Override
             public boolean onQualitySelect(TCVideoQuality quality) {
                 if (quality.name.equals("HD")) {
-                    if (isLogin()) {
-                        return false;
-                    } else {
-                        startActivity(new Intent(MovieDetailActivity.this, LoginActivity.class));
-                        return true;
-                    }
+                    return false;
                 }
                 if (quality.name.equals("2K") || quality.name.equals("4K")) {
-                    if (isLogin()) {
-                        LoginBean login = PreferenceManager.getInstance().getLogin();
-                        if (login.getU_vip_status() == 1) {
-                            return false;
-                        } else {
-                            startActivity(new Intent(MovieDetailActivity.this, VIPActivity.class));
-                        }
+                    MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                    if (login.getTu_vip_status() == 1) {
+                        return false;
                     } else {
-                        startActivity(new Intent(MovieDetailActivity.this, LoginActivity.class));
-                        return true;
+                        startActivity(new Intent(MovieDetailActivity.this, MiGuActivity.class));
                     }
                 }
                 return false;
             }
         });
         int defaultQuality = PreferenceManager.getInstance().getDefaultQuality();
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         if (defaultQuality > 4) {
-            if (login != null && login.getU_vip_status() == 1) {
+            if (login.getTu_vip_status() == 1) {
                 superPlayer.setDefaultQualitySet(defaultQuality);
             }
         } else if (defaultQuality > 3) {
-            if (login != null) {
-                superPlayer.setDefaultQualitySet(defaultQuality);
-            }
+            superPlayer.setDefaultQualitySet(defaultQuality);
         } else {
             superPlayer.setDefaultQualitySet(defaultQuality);
         }
@@ -283,9 +310,13 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         showBuyInfoDialog.setDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-                if (payTimer != null) payTimer.cancel();
+                if (payTimer != null) {
+                    payTimer.cancel();
+                    payTimer = null;
+                }
             }
         });
+        showBuyInfoDialog.setOnClickListener(this);
     }
 
     private void initRecommendList() {
@@ -301,6 +332,11 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                 } else helper.setGone(R.id.ellipsis, false);
                 des.setText(desStr);
                 helper.setText(R.id.title, titleStr);
+                if (item.getVm_type() == 1) {
+                    helper.setBackgroundRes(R.id.vip, R.mipmap.icon_fufei);
+                } else {
+                    helper.setBackgroundRes(R.id.vip, R.mipmap.vip_tag_bg);
+                }
                 if (item.getVm_is_pay() == 2) {
                     helper.setVisible(R.id.vip, true);
                 } else {
@@ -310,9 +346,8 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                     helper.setText(R.id.endTime, getResources().getString(R.string.update_done));
                 } else
                     helper.setText(R.id.endTime, String.format(getResources().getString(R.string.update_status), item.getCount()));
-                GlideUtils.getRequest(MovieDetailActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
-                        .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(MovieDetailActivity.this, 5)))
-                        .into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(MovieDetailActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.drawable.default_img)
+                        .override(250,320).into((ImageView) helper.getView(R.id.image));
             }
         };
         recommendMovieAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -344,23 +379,12 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     protected void onResume() {
         super.onResume();
         if (superPlayer != null) {
-            if (superPlayer.getBuyAntholgyView().getVisibility() != View.VISIBLE)
+            if (superPlayer.getBuyAntholgyView().getVisibility() != VISIBLE)
                 superPlayer.onResume();
         }
         if (timer == null) {
             timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            long currentTimeMillis = System.currentTimeMillis();
-                            titleView.setTime(Util.convertSystemTime(currentTimeMillis));
-                        }
-                    });
-                }
-            }, 0, 1000);
+            timer.schedule(new UpdateTimeTask(this,titleView), 0, 1000);
         }
         titleView.updateTV_Vip();
     }
@@ -372,36 +396,51 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         String titleStr = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
 //            superPlayer.setWatermark(R.mipmap.logo);
         superPlayer.setIsNeedVip(videoDetailBean.getVm_is_pay() == 2);
-        if (videoDetailBean.getVm_is_pay() == 2) {
-            superPlayer.setShowAd(false);
-            if (PreferenceManager.getInstance().getLogin() != null) {
-                String expire_time = videoDetailBean.getExpire_time();
-                if (videoDetailBean.getIs_pay_status() == 0) {//未购买
-                    superPlayer.setBuyViewVisible(true);
-                    showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
+        if (showAd && adBean != null) {
+            if (videoDetailBean.getVm_is_pay() == 2) {
+                if (videoDetailBean.getIs_pay_status() == 0) {
+                    superPlayer.setIsBuyViewVisible(true);
+                    superPlayer.setInfo(Constant.PLAYID, adBean.getVa_fileid(), videoDetailBean.getV_fileid(), Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z()));
                     superPlayer.setBuyClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            if (!TextUtils.isEmpty(miguResultDesc)){
+                                initMiguReslutDialog();
+                                return;
+                            }
+                            if (products==null||products.isEmpty()){
+                                ToastUtil.showText("数据错误");
+                                return;
+                            }
+                            superPlayer.onPause();
                             showBuyInfoDialog.show();
-                            presenter.createOrder(videoDetailBean.getVm_price(), id);
                         }
                     });
-                } else {//已购买
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+
+                } else {
                     try {
+                        String expire_time = videoDetailBean.getExpire_time();
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
                         Date date = simpleDateFormat.parse(expire_time);
                         if (date != null) {
                             if (date.getTime() > System.currentTimeMillis()) {//未到期
-                                superPlayer.setBuyViewVisible(false);
+                                superPlayer.setIsBuyViewVisible(false);
                             } else {//到期
-                                superPlayer.setBuyViewVisible(true);
-                                showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
+                                superPlayer.setIsBuyViewVisible(true);
+                                superPlayer.setInfo(Constant.PLAYID, adBean.getVa_fileid(), videoDetailBean.getV_fileid(), Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z()));
                                 superPlayer.setBuyClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        showBuyInfoDialog.setPrice(videoDetailBean.getVm_price(), videoDetailBean.getVm_expire_time());
+                                        if (!TextUtils.isEmpty(miguResultDesc)){
+                                            initMiguReslutDialog();
+                                            return;
+                                        }
+                                        if (products==null||products.isEmpty()){
+                                            ToastUtil.showText("数据错误");
+                                            return;
+                                        }
+                                        superPlayer.onPause();
                                         showBuyInfoDialog.show();
-                                        presenter.createOrder(videoDetailBean.getVm_price(), id);
                                     }
                                 });
                             }
@@ -410,19 +449,71 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                         e.printStackTrace();
                     }
                 }
-                SuperPlayerModel model = new SuperPlayerModel();
-                model.appId = Constant.PLAYID;// 配置 AppId
-                model.videoId = new SuperPlayerVideoId();
-                model.videoId.fileId = videoDetailBean.getV_fileid(); // 配置 FileId
-                model.title = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
-                superPlayer.playWithModel(model);
             } else {
-                superPlayer.resetPlayer();
-                superPlayer.showLoginTip(true);
+                superPlayer.setShowAd(true);
+                superPlayer.setInfo(Constant.PLAYID, adBean.getVa_fileid(), videoDetailBean.getV_fileid(), Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z()));
+
             }
-        } else if (showAd && adBean != null) {
-            superPlayer.setShowAd(true);
-            superPlayer.setInfo(Constant.PLAYID, adBean.getVa_fileid(), videoDetailBean.getV_fileid(), Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z()));
+        } else if (videoDetailBean.getVm_is_pay() == 2) {
+            superPlayer.setShowAd(false);
+            String expire_time = videoDetailBean.getExpire_time();
+            if (videoDetailBean.getIs_pay_status() == 0) {//未购买
+                superPlayer.setBuyViewVisible(true);
+                superPlayer.setBuyClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!TextUtils.isEmpty(miguResultDesc)){
+                            initMiguReslutDialog();
+                            return;
+                        }
+                        if (products==null||products.isEmpty()){
+                            ToastUtil.showText("数据错误");
+                            return;
+                        }
+                        superPlayer.onPause();
+                        showBuyInfoDialog.show();
+                    }
+                });
+            } else {//已购买
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                try {
+                    Date date = simpleDateFormat.parse(expire_time);
+                    if (date != null) {
+                        if (date.getTime() > System.currentTimeMillis()) {//未到期
+                            superPlayer.setBuyViewVisible(false);
+                        } else {//到期
+                            superPlayer.setBuyViewVisible(true);
+                            superPlayer.setBuyClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (!TextUtils.isEmpty(miguResultDesc)){
+                                        initMiguReslutDialog();
+                                        return;
+                                    }
+                                    if (products==null||products.isEmpty()){
+                                        ToastUtil.showText("数据错误");
+                                        return;
+                                    }
+                                    superPlayer.onPause();
+                                    showBuyInfoDialog.show();
+                                }
+                            });
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+            SuperPlayerModel model = new SuperPlayerModel();
+            model.appId = Constant.PLAYID;// 配置 AppId
+            model.videoId = new SuperPlayerVideoId();
+            model.videoId.fileId = videoDetailBean.getV_fileid(); // 配置 FileId
+            model.title = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
+            superPlayer.playWithModel(model);
+//            } else {
+//                superPlayer.resetPlayer();
+//                superPlayer.showLoginTip(true);
+//            }
         } else {
             superPlayer.setShowAd(false);
             SuperPlayerModel model = new SuperPlayerModel();
@@ -432,12 +523,17 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             model.title = Util.showText(videoDetailBean.getVm_title(), videoDetailBean.getVm_title_z());
             superPlayer.playWithModel(model);
         }
+        if (videoDetailBean.getVm_type() == 1) {
+            icVip.setImageResource(R.mipmap.icon_fufei);
+        } else {
+            icVip.setImageResource(R.mipmap.vip_tag_bg);
+        }
         superPlayer.isDefaultLanguage(PreferenceManager.getInstance().isDefaultLanguage());
         title.setText(titleStr);
-        isVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? View.VISIBLE : View.GONE);//2付费显示vip
+        isVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? VISIBLE : View.GONE);//2付费显示vip
         introl.setText(Util.showText(videoDetailBean.getVm_des(), videoDetailBean.getVm_des_z()));
-        icVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? View.VISIBLE : View.GONE);//2付费显示vip
-        isVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? View.VISIBLE : View.GONE);//2付费显示vip
+        icVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? VISIBLE : View.GONE);//2付费显示vip
+        isVip.setVisibility(videoDetailBean.getVm_is_pay() == 2 ? VISIBLE : View.GONE);//2付费显示vip
         collect.setChecked(videoDetailBean.getIs_colle_status() == 1);
     }
 
@@ -473,46 +569,123 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
         if (!videoAdBeans.isEmpty()) {
-            ivAd1.setVisibility(View.VISIBLE);
-            ivAd2.setVisibility(View.VISIBLE);
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd1);
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .centerCrop().into(ivAd2);
+            ivAd1.setVisibility(VISIBLE);
+            ivAd2.setVisibility(VISIBLE);
+            for (int i = 0; i < videoAdBeans.size(); i++) {
+                if (videoAdBeans.get(i).getTa_type1() == 1) {
+                    GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
+                             .centerCrop().into(ivAd1);
+                }
+                if (videoAdBeans.get(i).getTa_type1() == 2) {
+                    GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
+                            .centerCrop().into(ivAd2);
+                }
+            }
+
         }
     }
 
     @Override
     public void showOrder(OrderBean orderBean) {
         this.orderBean = orderBean;
-        presenter.weChatPayInfo(orderBean.getOrder_no(), orderBean.getPrice());
+        presenter.pay(payType,orderBean.getOrder_no(),orderBean.getPrice());
     }
 
     @Override
     public void showPayCode(String result) {
-        showBuyInfoDialog.setCode(result);
+        byte[] decode = Base64.decode(result.getBytes(), Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
+        if (payType==1){
+            miguPay3Dialog.setImageBitmap(bitmap);
+        }else if (payType==2){
+            miguPay2Dialog.setImageBitmap(bitmap);
+        }
         getPayResult();
     }
 
     @Override
-    public void showPayResult(boolean payResult) {
-        payTimer.cancel();
-        payTimer = null;
+    public void showPayResult(boolean payResult, String msg) {
+        if (payTimer!=null){
+            payTimer.cancel();
+            payTimer = null;
+        }
+        if (miguPay2Dialog!=null&&miguPay2Dialog.isShowing()){
+            miguPay2Dialog.dismiss();
+        }
+        if (miguPay3Dialog!=null&&miguPay3Dialog.isShowing()){
+            miguPay3Dialog.dismiss();
+        }
+        if (miguPay1Dialog!=null&&miguPay1Dialog.isShowing()){
+            miguPay1Dialog.dismiss();
+        }
         showBuyInfoDialog.dismiss();
         if (payResult) {
             openVipSuccess();
+        }else {
+            ToastUtil.showText(msg);
         }
     }
 
-    private void getPayResult() {
+    @Override
+    public void AuthenticationFail(BodyBean productToOrderList) {
+//        ProductBean tvProductBean = productToOrderList.getAuthorize().getProductToOrderList().getProduct().get(0);
+//        showBuyInfoDialog.setPrice(tvProductBean.getAttributes().getPrice(),tvProductBean.getAttributes().getPrice(),"2019-9-9");
+        phone = productToOrderList.getAuthorize().getAttributes().getAccountIdentify();
+        presenter.getProductList(phone);
+    }
+    @Override
+    public void showNetError(String msg) {
+        if (miguPay1Dialog !=null&& miguPay1Dialog.isShowing()){
+            miguPay1Dialog.dismiss();
+        }else if (miguPay2Dialog !=null&& miguPay2Dialog.isShowing()){
+            miguPay2Dialog.dismiss();
+        }else if (miguPay3Dialog !=null&& miguPay3Dialog.isShowing()){
+            miguPay3Dialog.dismiss();
+        }
+        ToastUtil.showText(msg);
+        if (payTimer!=null){
+            payTimer.cancel();
+            payTimer = null;
+        }
+    }
+
+    @Override
+    public void showMiguError(String resultDesc) {
+        miguResultDesc = resultDesc;
+    }
+
+    @Override
+    public void showRechargeBeans(List<TVProductBean> result, String accountIdentify) {
+        phone = accountIdentify;
+        products = result;
+        BigDecimal bigDecimal = new BigDecimal(result.get(0).getPrice());
+        BigDecimal divide = bigDecimal.divide(new BigDecimal(100),2, RoundingMode.UP);
+        BigDecimal divide1 = bigDecimal.divide(new BigDecimal(200),2, RoundingMode.UP);
+        showBuyInfoDialog.setPrice(divide1.floatValue()+"",divide.floatValue()+"","2019-9-9");
+    }
+    @Override
+    public void getPayResult() {
         if (payTimer == null) {
             payTimer = new Timer();
-            payTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    presenter.getWxPayResult(orderBean.getOrder_no());
-                }
-            }, 2000, 2000);
+            startTime = System.currentTimeMillis();
+            payTimer.schedule(new PayTimeTask(this),4000,3000);
+//            payTimer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//                    presenter.payStatus(orderBean.getOrder_no());
+//                    if (System.currentTimeMillis()-60*1000>=startTime){
+//                        cancel();
+//                        payTimer.cancel();
+//                        payTimer = null;
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                showPayResult(false,"支付超时");
+//                            }
+//                        });
+//                    }
+//                }
+//            }, 4000, 2000);
         }
     }
 
@@ -522,9 +695,9 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         SuperPlayerModel model = new SuperPlayerModel();
         model.videoId = new SuperPlayerVideoId();
 //        model.url = Constant.Video_IP + adBean.getVa_url();
-/*        model.appId = Constant.PLAYID;
+        model.appId = Constant.PLAYID;
         model.videoId.fileId = adBean.getVa_fileid();
-        superPlayer.playWithModel(model);*/
+        superPlayer.playWithModel(model);
         presenter.getDetail(id);
     }
 
@@ -532,14 +705,14 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100) {
-            if (PreferenceManager.getInstance().getLogin() != null && PreferenceManager.getInstance().getLogin().getU_vip_status() == 1) {
+            if (PreferenceManager.getInstance().getLogin().getTu_vip_status() == 1) {
                 openVipSuccess();
             } else {
                 ToastUtil.showText(getString(R.string.not_open_vip));
             }
         }
         if (requestCode == 101) {
-            if (PreferenceManager.getInstance().getLogin() != null && PreferenceManager.getInstance().getLogin().getU_vip_status() == 1) {
+            if (PreferenceManager.getInstance().getLogin().getTu_vip_status() == 1) {
                 superPlayer.showLoginTip(false);
                 openVipSuccess();
             } else {
@@ -586,7 +759,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
             if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && currentFocus == null) {
                 if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PAUSE)
-                    if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == View.VISIBLE) {
+                    if (superPlayer.findViewById(R.id.pause_ad_view).getVisibility() == VISIBLE) {
                         superPlayer.findViewById(R.id.pause_ad_view).setVisibility(View.GONE);
                     } else
                         superPlayer.onResume();
@@ -604,34 +777,33 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                             superPlayer.requestFullMode();
                             return true;
                         }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 100);
-                        else {
-                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
-                                EventBus.getDefault().register(MovieDetailActivity.this);
-                            startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 100);
-                        }
+                        PreferenceManager.getInstance().getLogin();
+                        startActivityForResult(new Intent(MovieDetailActivity.this, MiGuActivity.class),
+                                100);
                         return true;
                     case R.id.vipTipView:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
                             superPlayer.requestFullMode();
                             return true;
                         }
-                        if (PreferenceManager.getInstance().getLogin() != null)
-                            startActivityForResult(new Intent(MovieDetailActivity.this, VIPActivity.class), 101);
-                        else {
-                            if (!EventBus.getDefault().isRegistered(MovieDetailActivity.this))
-                                EventBus.getDefault().register(MovieDetailActivity.this);
-                            startActivityForResult(new Intent(MovieDetailActivity.this, LoginActivity.class), 101);
-                        }
+                        PreferenceManager.getInstance().getLogin();
+                        startActivityForResult(new Intent(MovieDetailActivity.this, MiGuActivity.class), 101);
                         return true;
                     case R.id.buyAntholgyView:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
                             superPlayer.requestFullMode();
                             return true;
                         }
+                        if (!TextUtils.isEmpty(miguResultDesc)){
+                            initMiguReslutDialog();
+                            return true;
+                        }
+                        if (products==null||products.isEmpty()){
+                            ToastUtil.showText("数据错误");
+                            return true;
+                        }
+                        superPlayer.onPause();
                         showBuyInfoDialog.show();
-                        presenter.createOrder(videoDetailBean.getVm_price(), id);
                         return true;
                     case R.id.pause_ad_view:
                         if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_WINDOW) {
@@ -686,7 +858,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     public boolean onKeyLongPress(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && superPlayer.getAdView().getVisibility() == View.GONE) {
                 superPlayer.showProgress(keyCode);
             }
         }
@@ -696,10 +868,144 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN) {
+            if (superPlayer.getPlayMode() == SuperPlayerConst.PLAYMODE_FULLSCREEN && superPlayer.getAdView().getVisibility() == View.GONE) {
                 superPlayer.showProgress(keyCode);
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.pay1) {
+            initPay1Dialog();
+        } else if (id == R.id.pay2) {
+            initPay2Dialog();
+        } else if (id == R.id.pay3) {
+            initPay3Dialog();
+        }
+    }
+    private void initMiguReslutDialog(){
+        if (miguErrorDialog == null){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("支付错误");
+            miguErrorDialog = builder.create();
+            miguErrorDialog.setMessage(miguResultDesc);
+        }
+        miguErrorDialog.show();
+    }
+    private void initPay2Dialog() {
+        if (miguPay2Dialog ==null){
+            miguPay2Dialog = new MiguPay2Dialog(this);
+            miguPay2Dialog.setPayAgreeListener(this);
+        }
+        if (products==null||products.isEmpty()){
+            ToastUtil.showText("数据错误！");
+            return;
+        }
+        payAgree(2);
+        BigDecimal bigDecimal = new BigDecimal(products.get(0).getPrice());
+        BigDecimal divide;
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login.getTu_vip_status()==0){
+            divide = bigDecimal.divide(new BigDecimal(100),2, RoundingMode.UP);
+        }else {
+            divide = bigDecimal.divide(new BigDecimal(200),2, RoundingMode.UP);
+        }
+        miguPay2Dialog.setSinglePrice(divide.floatValue()+"");
+        miguPay2Dialog.show();
+    }
+
+    private void initPay3Dialog() {
+        if (miguPay3Dialog ==null){
+            miguPay3Dialog = new MiguPay3Dialog(this);
+            miguPay3Dialog.setPayAgreeListener(this);
+        }
+        if (products==null||products.isEmpty()){
+            ToastUtil.showText("数据错误！");
+            return;
+        }
+        payAgree(1);
+        BigDecimal bigDecimal = new BigDecimal(products.get(0).getPrice());
+        BigDecimal divide;
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login.getTu_vip_status()==0){
+            divide = bigDecimal.divide(new BigDecimal(100),2, RoundingMode.UP);
+        }else {
+            divide = bigDecimal.divide(new BigDecimal(200),2, RoundingMode.UP);
+        }
+        miguPay3Dialog.setSinglePrice(divide.floatValue()+"");
+        miguPay3Dialog.show();
+    }
+
+    private void initPay1Dialog() {
+        if (miguPay1Dialog ==null){
+            miguPay1Dialog = new MiguPay1Dialog(this);
+            miguPay1Dialog.setPayAgreeListener(this);
+        }
+        miguPay1Dialog.setPhone(phone);
+        if (products==null||products.isEmpty()){
+            ToastUtil.showText("数据错误！");
+            return;
+        }
+        BigDecimal bigDecimal = new BigDecimal(products.get(0).getPrice());
+        BigDecimal divide;
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login.getTu_vip_status()==0){
+            divide = bigDecimal.divide(new BigDecimal(100),2, RoundingMode.UP);
+        }else {
+            divide = bigDecimal.divide(new BigDecimal(200),2, RoundingMode.UP);
+        }
+        miguPay1Dialog.setSinglePrice(divide.floatValue()+"");
+        miguPay1Dialog.show();
+    }
+
+    @Override
+    public void payAgree(int type) {
+        payType = type;
+//        presenter.createOrder("2",7,"8802000338","15089020708",videoDetailBean.getV_id());
+        if (products != null && !products.isEmpty()) {
+            MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+            if (login.getTu_vip_status()==1) {
+                presenter.createOrder(products.get(0).getPrice()
+                        , Integer.parseInt(products.get(0).getUnit()), products.get(0).getProductCode()
+                        , phone,videoDetailBean.getVm_id());
+            } else {
+                int anInt = Integer.parseInt(products.get(0).getPrice());
+                presenter.createOrder(anInt/2 +""
+                        , Integer.parseInt(products.get(0).getUnit()), products.get(0).getProductCode()
+                        , phone,videoDetailBean.getVm_id());
+            }
+        }else {
+            ToastUtil.showText("数据错误！");
+        }
+    }
+    protected static class PayTimeTask extends TimerTask {
+
+        private final WeakReference<MovieDetailActivity> activity;
+        public PayTimeTask(MovieDetailActivity activity ) {
+            this.activity = new WeakReference<>(activity);
+        }
+
+        /**
+         * The action to be performed by this timer task.
+         */
+        @Override
+        public void run() {
+            if (activity.get()==null)return;
+            activity.get().presenter.payStatus(activity.get().orderBean.getOrder_no());
+                    if (System.currentTimeMillis()-60*1000 >= activity.get().startTime){
+                        cancel();
+                        activity.get().payTimer.cancel();
+                        activity.get(). payTimer = null;
+                        activity.get().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                activity.get().showPayResult(false,"支付超时");
+                            }
+                        });
+                    }
+        }
+
     }
 }

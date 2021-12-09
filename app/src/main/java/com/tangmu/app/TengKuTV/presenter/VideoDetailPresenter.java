@@ -4,22 +4,35 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.model.Response;
 import com.lzy.okgo.request.PostRequest;
+import com.migu.sdk.api.CommonInfo;
+import com.migu.sdk.api.CommonPayInfo;
+import com.migu.sdk.api.MiguSdk;
+import com.migu.sdk.api.PayCallBack;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
 import com.tangmu.app.TengKuTV.base.RxPresenter;
 import com.tangmu.app.TengKuTV.bean.AdBean;
-import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
+import com.tangmu.app.TengKuTV.bean.AuthenticationBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean.VideoBean;
+import com.tangmu.app.TengKuTV.bean.MiguPayBean;
 import com.tangmu.app.TengKuTV.bean.OrderBean;
+import com.tangmu.app.TengKuTV.bean.PayInfoBean;
+import com.tangmu.app.TengKuTV.bean.PayStatusBean;
+import com.tangmu.app.TengKuTV.bean.SdkmesBean;
+import com.tangmu.app.TengKuTV.bean.TVProductBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.bean.VideoDetailBean;
 import com.tangmu.app.TengKuTV.contact.VideoDetailContact;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
+import com.tangmu.app.TengKuTV.utils.MiGuJsonCallback;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 
 import javax.inject.Inject;
+
+import androidx.annotation.Nullable;
 
 public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> implements VideoDetailContact.Presenter {
     @Inject
@@ -71,16 +84,23 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     }
 
     @Override
-    public void createOrder(String vm_price, int id) {
-        OkGo.<BaseResponse<OrderBean>>post(Constant.IP + Constant.createOrder)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
-                .params("price", vm_price)
+    public void createOrder(String price, int vip_type, String productCode,String accountIdentify, int id) {
+        OkGo.<BaseResponse<OrderBean>>post(Constant.IP + Constant.addOrder)
+                .params("token", PreferenceManager.getInstance().getToken())
+               .params("tu_id", PreferenceManager.getInstance().getTuid())
+//                .params("product_code",  productCode)
+                .params("account_identify",  accountIdentify)
+                .params("price", price)
+                .params("vip_type", vip_type)
                 .params("type", 3).params("vm_id", id).execute(new JsonCallback<BaseResponse<OrderBean>>() {
             @Override
             protected void onVerifySuccess(Response<BaseResponse<OrderBean>> response) {
                 super.onVerifySuccess(response);
-                if (response.body().getStatus() == 0)
-                    view.showOrder(response.body().getResult());
+                if (response.body().getStatus() == 0){
+                    OrderBean result = response.body().getResult();
+                    result.setPrice(price);
+                    view.showOrder(result);
+                }
                 else view.showError(response.body().getMsg());
             }
 
@@ -95,10 +115,9 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     @Override
     public void getDetail(int vm_id) {
         PostRequest<BaseResponse<VideoDetailBean>> postRequest = OkGo.<BaseResponse<VideoDetailBean>>post(Constant.IP + Constant.videoDetail)
-                .params("vm_id", vm_id);
-        if (PreferenceManager.getInstance().getLogin() != null) {
-            postRequest.params("u_id", PreferenceManager.getInstance().getLogin().getU_id());
-        }
+                .params("vm_id", vm_id)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .params("u_id", PreferenceManager.getInstance().getTuid());
         postRequest.tag(this)
                 .execute(new JsonCallback<BaseResponse<VideoDetailBean>>() {
                     @Override
@@ -121,10 +140,10 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
 
     @Override
     public void getRecommend(int p_id) {
-        OkGo.<BaseListResponse<HomeChildRecommendBean.VideoBean>>post(Constant.IP + Constant.recommendVideo)
+        OkGo.<BaseListResponse<VideoBean>>post(Constant.IP + Constant.recommendVideo)
                 .params("p_id", p_id)
                 .tag(this)
-                .execute(new JsonCallback<BaseListResponse<HomeChildRecommendBean.VideoBean>>() {
+                .execute(new JsonCallback<BaseListResponse<VideoBean>>() {
                     @Override
                     public void onSuccess(Response<BaseListResponse<VideoBean>> response) {
                         if (response.body().getStatus() == 0) {
@@ -136,7 +155,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                     }
 
                     @Override
-                    public void onError(Response<BaseListResponse<HomeChildRecommendBean.VideoBean>> response) {
+                    public void onError(Response<BaseListResponse<VideoBean>> response) {
                         super.onError(response);
                         view.showError(handleError(response.getException()));
                     }
@@ -146,7 +165,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     @Override
     public void unCollect(int vm_id) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("uc_id", vm_id)
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
@@ -171,7 +190,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     @Override
     public void collect(int vm_id) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("audio_id", vm_id)
                 .params("type", 1)
                 .tag(this)
@@ -197,7 +216,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     public void weChatPayInfo(String order_num, String price) {
         OkGo.<BaseResponse<String>>post(Constant.IP + Constant.pay)
                 .cacheMode(CacheMode.NO_CACHE)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("order_no", order_num)
                 .params("pay_method", 5)
                 .params("price", price).tag(this)
@@ -226,7 +245,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                         super.onSuccess(response);
                         if (response.body().getStatus() == 0) {
                             if (response.body().getResult() == 2) {
-                                view.showPayResult(true);
+                                view.showPayResult(true, handleError(response.getException()));
                             }
                         }
                     }
@@ -235,7 +254,175 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                     public void onError(Response<BaseResponse<Integer>> response) {
                         super.onError(response);
                         ToastUtil.showText(handleError(response.getException()));
-                        view.showPayResult(false);
+                        view.showPayResult(false, handleError(response.getException()));
+                    }
+                });
+    }
+
+    @Override
+    public void miguPay(SdkmesBean sdkmesBean, String price) {
+        CommonInfo commonInfo = new CommonInfo();
+        commonInfo.setOrderId(sdkmesBean.getOrderId());
+        commonInfo.setcType(sdkmesBean.getCtype());
+        commonInfo.setOperCode(sdkmesBean.getOperCode());
+        commonInfo.setPayNum(sdkmesBean.getPayNum());
+        commonInfo.setStbId(sdkmesBean.getStbID());
+        LogUtil.e("OrderId:"+commonInfo.getOrderId()+"\ncType:"+commonInfo.getcType()
+                +"\nOperCode:"+commonInfo.getOperCode()+"\nOperCode:"+commonInfo.getPayNum()
+                +"\nStbId:"+commonInfo.getStbId());
+
+        CommonPayInfo commonPayInfo = new CommonPayInfo();
+        commonPayInfo.setOrderId(sdkmesBean.getOrderId());
+        // TODO: 2021/10/18
+        PayInfoBean payInfo = sdkmesBean.getPayInfos().getPayInfo();
+        commonPayInfo.setChannelId(payInfo.getChannelCode());
+        commonPayInfo.setIsMonthly(payInfo.getIsMonthly());
+        commonPayInfo.setCpId("699458");
+//        commonPayInfo.setCpId("699213");
+        commonPayInfo.setContentId("1980113901");
+        commonPayInfo.setPrice(price);
+        commonPayInfo.setSpCode(payInfo.getSpCode());
+        commonPayInfo.setServCode(payInfo.getServCode());
+        commonPayInfo.setProductId(payInfo.getProductCode());
+
+        LogUtil.e("OrderId:"+commonPayInfo.getOrderId()+"\nChannelId:"+commonPayInfo.getChannelId()
+                +"\nIsMonthly:"+commonPayInfo.getIsMonthly()+"\nCpId:"+commonPayInfo.getCpId()+
+                "\nContentId:"+commonPayInfo.getContentId()+"\nPrice"+price
+                +"\nSpCode:"+commonPayInfo.getSpCode()+"\nServCode:"+commonPayInfo.getServCode()+"\nProductId:"
+                +commonPayInfo.getProductId()
+                +"\n");
+
+        CommonPayInfo[] commonPayInfos = new CommonPayInfo[1];
+        commonPayInfos[0] = commonPayInfo;
+        MiguSdk.pay(getContext(), commonInfo, commonPayInfos, "", "", new PayCallBack.IPayCallback() {
+            @Override
+            public void onResult(int i, String s, String s1) {
+                LogUtil.d("miguPay onResult:"+i+":"+s+":"+s1);
+            }
+        });
+        view.getPayResult();
+    }
+
+    @Override
+    public void miguAuthentications(String userId, String terminalId) {
+        OkGo.<String>post(Constant.IP + Constant.authentications)
+                .cacheMode(CacheMode.NO_CACHE)
+                .params("userId", userId)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .params("terminalId", terminalId).tag(this)
+                .execute(new MiGuJsonCallback() {
+                    @Override
+                    protected void miguSuccess(@Nullable AuthenticationBean authenticationBean) {
+                        if (authenticationBean != null && authenticationBean.getStatus()==0
+                                && "0".equals(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getResult())){//鉴权成功
+                            getProductList(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getAccountIdentify());
+                        }else if (authenticationBean == null){//数据错误
+                            view.showError("服务器错误");
+                        }else if (authenticationBean.getResult().getBody().getAuthorize().getProductToOrderList()==null){
+                            view.showMiguError(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getResultDesc());
+                            view.showError(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getResultDesc());
+                        }else {
+                            getProductList(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getAccountIdentify());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+                        view.showError(handleError(response.getException()));
+                    }
+                });
+    }
+    @Override
+    public void getProductList(String accountIdentify) {
+        OkGo.<BaseListResponse<TVProductBean>>post(Constant.IP + Constant.productLists)
+                .tag(this)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .params("type", 2)//type 1会员 2单片
+                .execute(new JsonCallback<BaseListResponse<TVProductBean>>() {
+                    @Override
+                    public void onSuccess(Response<BaseListResponse<TVProductBean>> response) {
+                        super.onSuccess(response);
+                        if (response.body().getStatus() == 0) {
+                            view.showRechargeBeans(response.body().getResult(),accountIdentify);
+                        } else {
+                            ToastUtil.showText(response.body().getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<BaseListResponse<TVProductBean>> response) {
+                        super.onError(response);
+                        ToastUtil.showText(handleError(response.getException()));
+                    }
+                });
+    }
+
+    @Override
+    public void pay(int payType, String order,String price) {
+        OkGo.<BaseResponse<MiguPayBean>>post(Constant.IP + Constant.payOrder)
+                .cacheMode(CacheMode.NO_CACHE)
+                .params("order_no", order)
+                .params("price", price)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .params("pay_type", payType).tag(this)
+                .execute(new JsonCallback<BaseResponse<MiguPayBean>>() {
+                    @Override
+                    protected void onVerifySuccess(Response<BaseResponse<MiguPayBean>> response) {
+                        super.onVerifySuccess(response);
+                        if (response.body().getStatus()==0&&"0".equals(response.body().getResult().getResult())){
+                            if (payType==16){
+                                miguPay(response.body().getResult().getSdkmes(),price);
+                            }else  {
+                                view.showPayCode(response.body().getResult().getQrCodeImg());
+                            }
+                        }else {
+                            view.showError(response.body().getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<MiguPayBean>> response) {
+                        super.onError(response);
+                        view.showError(handleError(response.getException()));
+                    }
+                });
+    }
+
+    @Override
+    public void payStatus(String orderNo) {
+        OkGo.<BaseResponse<PayStatusBean>>post(Constant.IP + Constant.payStatus)
+                .cacheMode(CacheMode.NO_CACHE)
+                .params("order_no", orderNo)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .tag(this)
+                .execute(new JsonCallback<BaseResponse<PayStatusBean>>() {
+                    @Override
+                    protected void onVerifySuccess(Response<BaseResponse<PayStatusBean>> response) {
+                        super.onVerifySuccess(response);
+                        if (response.body().getStatus()==0){
+                            PayStatusBean result = response.body().getResult();
+                            if ("0".equals(result.getResult())){
+                                if ("0".equals(result.getPayResult())){//0.支付成功 1.支付失败 2.支付受理中
+                                    // 3.等待支付  (当result为0时显示该字段)4. 需要用户短信二次确认
+                                    view.showPayResult(true,"");
+                                }else if ("1".equals(result.getPayResult())){
+                                    view.showPayResult(false,result.getResultDesc());
+                                }else {
+
+                                }
+                            }else  {
+                                view.showPayResult(false,result.getResultDesc());
+                            }
+                        }else {
+                            view.showPayResult(false,response.body().getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Response<BaseResponse<PayStatusBean>> response) {
+                        super.onError(response);
+                        view.showNetError(handleError(response.getException()));
                     }
                 });
     }

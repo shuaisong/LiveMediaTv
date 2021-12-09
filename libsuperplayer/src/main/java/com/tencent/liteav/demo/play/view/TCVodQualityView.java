@@ -16,6 +16,7 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.tencent.liteav.demo.play.R;
 import com.tencent.liteav.demo.play.bean.TCVideoQuality;
 import com.tencent.liteav.demo.play.utils.AnthologyItemDecoration;
+import com.tencent.liteav.demo.play.utils.SPUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,7 @@ public class TCVodQualityView extends FrameLayout {
                             }
                         }
                         if (mCallback != null) {
+                            SPUtils.init(context).putBoolean("switch_picture_quality", true);
                             mCallback.onQualitySelect(quality);
                         }
                     }

@@ -112,7 +112,7 @@
                     android:layout_width="143.67dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="14dp"
-                    android:background="@drawable/setting_login_bg"
+                    android:background="@drawable/dp_0_setting_bg_focused_selelct"
                     android:button="@null"
                     android:checked="false"
                     android:drawableStart="@drawable/setting_check_select"

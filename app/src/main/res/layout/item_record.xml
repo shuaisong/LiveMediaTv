@@ -9,6 +9,8 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/dp_0_view_bg_focused_selelct"
+        android:padding="@dimen/focus_width"
         android:duplicateParentState="true">
 
         <ImageView
@@ -16,8 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="255dp"
             android:duplicateParentState="true"
-            android:background="@drawable/dp_0_view_bg_focused_selelct"
-            android:padding="@dimen/focus_width" />
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/isVip"

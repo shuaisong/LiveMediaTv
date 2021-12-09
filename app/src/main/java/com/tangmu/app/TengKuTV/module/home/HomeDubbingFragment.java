@@ -33,6 +33,7 @@ import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
 import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
+import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
@@ -164,7 +165,7 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
                 GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
-                        .placeholder(R.mipmap.img_default).into(imageView);
+                        .override(400,200).placeholder(R.drawable.default_img_banner).into(imageView);
             }
         });
         banner.setBannerTitles(null);
@@ -172,7 +173,7 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
         banner.setBannerAnimation(Transformer.Default);
         banner.isAutoPlay(true);
         //设置轮播时间
-        banner.setDelayTime(1500);
+        banner.setDelayTime(4500);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.RIGHT);
         bannerClickListener = new BannerClickListener(getActivity());
@@ -194,9 +195,8 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
             @Override
             protected void convert(BaseViewHolder helper, DubbingListBean item) {
                 helper.itemView.setOnFocusChangeListener(HomeDubbingFragment.this);
-                GlideUtils.getRequest(mContext, Util.convertVideoPath(item.getUw_img())).placeholder(R.mipmap.img_default)
-                        .transform(new CenterCrop(), new RoundedCorners(radius))
-                        .into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(mContext, Util.convertVideoPath(item.getUw_img())).placeholder(R.drawable.default_img)
+                        .override(250,320).into((ImageView) helper.getView(R.id.image));
                 helper.setText(R.id.title, Util.showText(item.getUw_title(), item.getUw_title_z()));
             }
         };
@@ -275,6 +275,8 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
         PlayHistoryInfo playHistoryInfo;
         switch (view.getId()) {
             case R.id.banner:
+                List<BannerBean> bannerBeans = bannerClickListener.getBannerBeans();
+                if (bannerBeans == null || bannerBeans.isEmpty()) return;
                 if (bannerClickListener != null)
                     bannerClickListener.OnBannerClick(banner.toRealPosition(bannerViewPager.getCurrentItem()));
                 break;
@@ -313,9 +315,9 @@ public class HomeDubbingFragment extends BaseFragment implements HomeDubbingCont
                 }
                 break;
             case R.id.live:
-                HomeFragment parentFragment = (HomeFragment) getParentFragment();
-                if (parentFragment != null) {
-                    parentFragment.showLiveFragment();
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.showLiveFragment();
                 }
                 break;
             case R.id.book:

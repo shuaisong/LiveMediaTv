@@ -26,7 +26,7 @@ public class LiveHistoryEvalutePresenter extends RxPresenter<LiveHistoryEvaluteC
     public void praise(int lc_id, final int position) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.liveLike)
                 .tag(this)
-                .params("token", Objects.requireNonNull(PreferenceManager.getInstance().getLogin()).getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("lc_id", lc_id)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override
@@ -51,7 +51,7 @@ public class LiveHistoryEvalutePresenter extends RxPresenter<LiveHistoryEvaluteC
     public void unPraise(int lc_id, final int position) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unliveLike)
                 .tag(this)
-                .params("token", Objects.requireNonNull(PreferenceManager.getInstance().getLogin()).getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("lc_id", lc_id)
                 .execute(new JsonCallback<BaseResponse>() {
                     @Override

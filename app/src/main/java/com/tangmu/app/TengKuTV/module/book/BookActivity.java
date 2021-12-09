@@ -7,8 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.viewpager.widget.ViewPager;
-
 import com.google.android.material.tabs.TabLayout;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Response;
@@ -16,15 +14,12 @@ import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.adapter.BookPageAdapter;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
-import com.tangmu.app.TengKuTV.base.BaseFragment;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
-import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
 import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.TitleView;
@@ -32,8 +27,8 @@ import com.tangmu.app.TengKuTV.view.TitleView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -51,7 +46,7 @@ public class BookActivity extends BaseActivity implements View.OnFocusChangeList
     @BindView(R.id.tablayout)
     TabLayout tablayout;
     private BookPageAdapter bookPageAdapter;
-    private ArrayList<BaseFragment> fragments = new ArrayList<>();
+    private ArrayList<Class> fragments = new ArrayList<>();
     private ArrayList<CategoryBean> categories = new ArrayList<>();
     private Timer timer;
 
@@ -110,11 +105,12 @@ public class BookActivity extends BaseActivity implements View.OnFocusChangeList
                             categories.clear();
                             fragments.clear();
                             categories.addAll(categoryBeans);
-                            for (CategoryBean categoryBean : categoryBeans) {
-                                fragments.add(BookChildFragment.newInstance(categoryBean));
+                            for (int i = 0; i < categoryBeans.size(); i++) {
+                                fragments.add(BookChildFragment.class);
                             }
+
                             if (bookPageAdapter == null) {
-                                bookPageAdapter = new BookPageAdapter(getSupportFragmentManager(), fragments);
+                                bookPageAdapter = new BookPageAdapter(getSupportFragmentManager(), fragments,categoryBeans);
                                 mViewPager.setAdapter(bookPageAdapter);
                             } else {
                                 bookPageAdapter.notifyDataSetChanged();
@@ -226,7 +222,7 @@ public class BookActivity extends BaseActivity implements View.OnFocusChangeList
     }
 
 
-    class ViewHolder {
+    static class ViewHolder {
         TextView tvTabName;
         ImageView ivTab;
 
@@ -243,24 +239,14 @@ public class BookActivity extends BaseActivity implements View.OnFocusChangeList
         titleView.updateTV_Vip();
         if (timer == null) {
             timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            long currentTimeMillis = System.currentTimeMillis();
-                            titleView.setTime(Util.convertSystemTime(currentTimeMillis));
-                        }
-                    });
-                }
-            }, 0, 1000);
+            timer.schedule(new UpdateTimeTask(this,titleView), 0, 1000);
         }
     }
 
     @Override
     protected void onDestroy() {
         if (timer != null) timer.cancel();
+        if (fragments!=null)fragments.clear();
         super.onDestroy();
     }
 }

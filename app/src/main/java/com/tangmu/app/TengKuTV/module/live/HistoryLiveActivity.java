@@ -1,18 +1,12 @@
 package com.tangmu.app.TengKuTV.module.live;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -23,20 +17,18 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
-import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
 import com.tangmu.app.TengKuTV.bean.LiveHistoryBean;
 import com.tangmu.app.TengKuTV.bean.LiveReplayBean;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerActivityComponent;
 import com.tangmu.app.TengKuTV.contact.LiveHistoryContact;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
 import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.LiveHistoryPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
@@ -50,12 +42,7 @@ import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerVideoId;
 import com.tencent.liteav.demo.play.SuperPlayerView;
 import com.tencent.liteav.demo.play.bean.TCVideoQuality;
-import com.tencent.liteav.demo.play.bean.VideoBean;
-import com.tencent.liteav.demo.play.bean.VideoSortBean;
-import com.tencent.liteav.demo.play.utils.AnthologyItemDecoration;
 import com.tencent.liteav.demo.play.view.TCVodQualityView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 import java.util.Timer;
@@ -63,6 +50,9 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import me.jessyan.autosize.utils.AutoSizeUtils;
@@ -202,20 +192,18 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
                     if (isLogin()) {
                         return false;
                     } else {
-                        startActivity(new Intent(HistoryLiveActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
                 if (quality.name.equals("2K") || quality.name.equals("4K")) {
                     if (isLogin()) {
-                        LoginBean login = PreferenceManager.getInstance().getLogin();
-                        if (login.getU_vip_status() == 1) {
+                        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                        if (login.getTu_vip_status() == 1 ) {
                             return false;
                         } else {
-                            startActivity(new Intent(HistoryLiveActivity.this, VIPActivity.class));
+                            startActivity(new Intent(HistoryLiveActivity.this, MiGuActivity.class));
                         }
                     } else {
-                        startActivity(new Intent(HistoryLiveActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
@@ -223,11 +211,13 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
             }
         });
         int defaultQuality = PreferenceManager.getInstance().getDefaultQuality();
-        LoginBean login = PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         PreferenceManager.getInstance().getLogin();
         if (defaultQuality > 4) {
-            if (login != null && login.getU_vip_status() == 1) {
-                superPlayer.setDefaultQualitySet(defaultQuality);
+            if (login != null) {
+                if (login.getTu_vip_status() == 1) {
+                    superPlayer.setDefaultQualitySet(defaultQuality);
+                }
             }
         } else if (defaultQuality > 3) {
             if (login != null) {
@@ -248,7 +238,7 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
                 helper.setText(R.id.title, Util.showText(item.getL_title(), item.getL_title_z()))
                         .setText(R.id.time, item.getLr_add_time());
                 GlideUtils.getRequest(HistoryLiveActivity.this, Util.convertImgPath(item.getL_img()))
-                        .centerCrop()
+                        .centerCrop().override(250,320)
                         .into((ImageView) helper.getView(R.id.image));
             }
         };
@@ -306,10 +296,10 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
             super.onBackPressed();
     }
 
-    @OnClick({R.id.fullscreen, R.id.image})
+    @OnClick({R.id.fullscreen1, R.id.image})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.fullscreen:
+            case R.id.fullscreen1:
                 superPlayer.requestFullMode();
                 break;
             case R.id.image:

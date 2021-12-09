@@ -12,6 +12,7 @@ import com.tangmu.app.TengKuTV.bean.LiveBannerBean;
 import com.tangmu.app.TengKuTV.bean.LiveDetailBean;
 import com.tangmu.app.TengKuTV.bean.LiveReplayBean;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.UserInfoBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.contact.LivingContact;
@@ -30,7 +31,7 @@ public class LivingPresenter extends RxPresenter<LivingContact.View> implements 
     @Override
     public void unCollect(int roomId) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("uc_id", roomId)
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
@@ -55,7 +56,7 @@ public class LivingPresenter extends RxPresenter<LivingContact.View> implements 
     @Override
     public void collect(int roomid) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("audio_id", roomid)
                 .params("type", 2)
                 .tag(this)
@@ -80,14 +81,9 @@ public class LivingPresenter extends RxPresenter<LivingContact.View> implements 
 
     @Override
     public void getLiveDetail(int id) {
-        PostRequest<BaseResponse<LiveDetailBean>> postRequest = OkGo.<BaseResponse<LiveDetailBean>>post(Constant.IP + Constant.liveDetail)
+         OkGo.<BaseResponse<LiveDetailBean>>post(Constant.IP + Constant.liveDetail)
                 .params("room_id", id)
-                .params("type", 1);
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        if (login != null) {
-            postRequest.params("u_id", login.getU_id());
-        }
-        postRequest.execute(new JsonCallback<BaseResponse<LiveDetailBean>>() {
+                .params("type", 1).params("u_id", PreferenceManager.getInstance().getTuid()).execute(new JsonCallback<BaseResponse<LiveDetailBean>>() {
             @Override
             public void onSuccess(Response<BaseResponse<LiveDetailBean>> response) {
                 super.onSuccess(response);

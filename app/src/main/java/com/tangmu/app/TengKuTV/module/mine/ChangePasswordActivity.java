@@ -108,7 +108,7 @@ public class ChangePasswordActivity extends BaseActivity {
         old_password = Base64.encodeToString(old_password.getBytes(), Base64.DEFAULT);
         String new_password64 = Base64.encodeToString(new_password.getBytes(), Base64.DEFAULT);
         OkGo.<BaseResponse>post(Constant.IP + Constant.savePassword)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("old_password", old_password)
                 .params("new_password", new_password64)
                 .params("confirm_password", new_password64)

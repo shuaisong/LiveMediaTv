@@ -20,6 +20,7 @@ import com.tangmu.app.TengKuTV.base.BaseResponse;
 import com.tangmu.app.TengKuTV.bean.AdBean;
 import com.tangmu.app.TengKuTV.bean.BookDetailDataBean;
 import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
@@ -73,7 +74,8 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
                     public void onSuccess(Response<BaseResponse<AdBean>> response) {
                         if (response.body().getStatus() == 0) {
                             adBean = response.body().getResult();
-                            superPlayer.setBookAd(adBean.getVa_url());
+                            if (adBean!=null)
+                                superPlayer.setBookAd(adBean.getVa_url());
                         } else {
                             showAd = false;
                         }
@@ -189,10 +191,14 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
                         if (response.body().getStatus() == 0) {
                             BookDetailDataBean result = response.body().getResult();
                             showBook(result);
-                            LoginBean login = PreferenceManager.getInstance().getLogin();
-                            if (login != null && login.getU_vip_status() == 1) {
-                                showAd = false;
-                                startPlay();
+                            MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                            if (login != null) {
+                                if (login.getTu_vip_status() == 1) {
+                                    showAd = false;
+                                    startPlay();
+                                }else {
+                                    getAd(result.getVt_id_one());
+                                }
                             } else {
                                 getAd(result.getVt_id_one());
                             }
@@ -318,7 +324,7 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
 
     private void collectBook(int b_id) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("audio_id", b_id)
                 .params("type", 3)
                 .tag(this)
@@ -345,7 +351,7 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
 
     private void unCollectBook(int uc_id) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("uc_id", uc_id)
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
@@ -371,6 +377,8 @@ public class PlayBookActivity extends BaseActivity implements View.OnFocusChange
     @Override
     protected void onDestroy() {
         OkGo.getInstance().cancelTag(this);
+        if (superPlayer != null)
+            superPlayer.resetPlayer();
         super.onDestroy();
     }
 }

@@ -94,7 +94,7 @@ public class TCControllerWindow extends RelativeLayout implements IController, V
      * 初始化view
      */
     private void initView(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.controller_window, this);
+        LayoutInflater.from(context).inflate(R.layout.controller_window1, this);
         mTvTitle = (TextView) findViewById(R.id.tv_title);
         mIcCover = (ImageView) findViewById(R.id.cover);
         mTvBookIntrol = (TextView) findViewById(R.id.book_introl);
@@ -470,6 +470,7 @@ public class TCControllerWindow extends RelativeLayout implements IController, V
 
     public void setCover(String coverImgPath) {
         GlideUtils.getRequest(getContext(), coverImgPath)
+                .override(200)
                 .circleCrop().into(mIcCover);
         mIcCover.startAnimation(rotateAnimation);
     }

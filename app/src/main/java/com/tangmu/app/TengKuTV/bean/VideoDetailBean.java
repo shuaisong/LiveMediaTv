@@ -61,6 +61,7 @@ public class VideoDetailBean {
     public void setVm_expire_time(String vm_expire_time) {
         this.vm_expire_time = vm_expire_time;
     }
+
     public String getExpire_time() {
         return expire_time;
     }
@@ -93,17 +94,27 @@ public class VideoDetailBean {
     private int vm_update_status;
     private String vm_img;
     private String vm_price;
+    private String vm_vip_price;
     private int is_colle_status;
     private int is_pay_status;
     private int uc_id;
     private List<VideoBean> video;
     private int progress;
 
+    public String getVm_vip_price() {
+        return vm_vip_price;
+    }
+
+    public void setVm_vip_price(String vm_vip_price) {
+        this.vm_vip_price = vm_vip_price;
+    }
+
     public String getV_fileid() {
         return v_fileid;
     }
 
     private String v_fileid;
+
     public int getProgress() {
         return progress;
     }

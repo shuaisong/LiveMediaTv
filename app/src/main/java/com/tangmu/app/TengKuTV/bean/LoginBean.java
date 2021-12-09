@@ -58,6 +58,8 @@ public class LoginBean implements Serializable {
     private String u_add_time;
     private int u_wxbind_status;
     private String token;
+    private String u_receive_time;
+    private int tv_vip_status;  //
 
     public int getU_id() {
         return u_id;
@@ -225,5 +227,21 @@ public class LoginBean implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getU_receive_time() {
+        return u_receive_time;
+    }
+
+    public void setU_receive_time(String u_receive_time) {
+        this.u_receive_time = u_receive_time;
+    }
+
+    public int getTv_vip_status() {
+        return tv_vip_status;
+    }
+
+    public void setTv_vip_status(int tv_vip_status) {
+        this.tv_vip_status = tv_vip_status;
     }
 }

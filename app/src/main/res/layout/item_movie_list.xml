@@ -14,6 +14,7 @@
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="255dp"
+            android:scaleType="centerCrop"
             android:background="@drawable/dp_0_view_bg_focused_selelct"
             android:duplicateParentState="true"
             android:padding="@dimen/focus_width" />

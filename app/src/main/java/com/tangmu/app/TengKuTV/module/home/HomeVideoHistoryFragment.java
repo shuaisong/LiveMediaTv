@@ -8,9 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.R;
@@ -20,7 +17,6 @@ import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
 import com.tangmu.app.TengKuTV.module.book.PlayBookActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
-import com.tangmu.app.TengKuTV.module.movie.MovieListActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -28,6 +24,8 @@ import com.tangmu.app.TengKuTV.utils.Util;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 
 public class HomeVideoHistoryFragment extends BaseFragment {
@@ -52,6 +50,11 @@ public class HomeVideoHistoryFragment extends BaseFragment {
                 GlideUtils.getRequest(mContext, Util.convertImgPath(playHistoryInfo.getB_img()))
                         .centerCrop()
                         .into((ImageView) helper.getView(R.id.image));
+                if (playHistoryInfo.getVm_type() == 1) {
+                    helper.setImageResource(R.id.isVip, R.mipmap.icon_fufei);
+                } else {
+                    helper.setImageResource(R.id.isVip, R.mipmap.vip_tag_bg);
+                }
                 if (playHistoryInfo.getIs_vip() == 2) {
                     helper.setVisible(R.id.isVip, true);
                 } else {

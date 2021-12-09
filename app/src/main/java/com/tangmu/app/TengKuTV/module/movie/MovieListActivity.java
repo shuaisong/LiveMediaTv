@@ -36,6 +36,7 @@ import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.TopMiddleDecoration;
 import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.CustomLoadMoreView;
+import com.tangmu.app.TengKuTV.view.TitleView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,6 +44,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -76,6 +79,8 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
     RecyclerView movieRecyclerView;
     @BindView(R.id.showP)
     ImageView showP;
+    @BindView(R.id.tv_title_view)
+    TitleView titleView;
     private int page = 1;
     private BaseQuickAdapter<HomeChildRecommendBean.VideoBean, BaseViewHolder> quickAdapter;
     private BaseQuickAdapter<String, BaseViewHolder> yearAdapter;
@@ -87,6 +92,7 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
     private int position;
     private int payType;
     private int selectYear;
+    private Timer timer;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -96,17 +102,6 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
     @Override
     protected void initData() {
         ArrayList<CategoryBean> categoryBeans = (ArrayList<CategoryBean>) getIntent().getSerializableExtra("PCategory");
-        categoryBeans.remove(categoryBeans.size() - 1);
-        Iterator<CategoryBean> iterator = categoryBeans.iterator();
-        while (iterator.hasNext()) {
-            CategoryBean categoryBean = iterator.next();
-            if (categoryBean.getVt_title().contains("配音")) {
-                iterator.remove();
-            }
-            if (categoryBean.getVt_pid() == -2) {
-                iterator.remove();
-            }
-        }
         index = getIntent().getIntExtra("index", 0);
         videoFirstChoiceAdapter.setNewData(categoryBeans);
         currentCategoryBean = categoryBeans.get(index);
@@ -125,7 +120,17 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                 }
             }
         }, 100);
-
+        categoryBeans.remove(categoryBeans.size() - 1);
+        Iterator<CategoryBean> iterator = categoryBeans.iterator();
+        while (iterator.hasNext()) {
+            CategoryBean categoryBean = iterator.next();
+            if (categoryBean.getVt_title().contains("配音")) {
+                iterator.remove();
+            }
+            if (categoryBean.getVt_pid() == -2) {
+                iterator.remove();
+            }
+        }
         swip.setRefreshing(true);
 //        getVideoList();
     }
@@ -218,6 +223,26 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
         initYears();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (timer == null) {
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            long currentTimeMillis = System.currentTimeMillis();
+                            titleView.setTime(Util.convertSystemTime(currentTimeMillis));
+                        }
+                    });
+                }
+            }, 0, 1000);
+        }
+        titleView.updateTV_Vip();
+    }
 
     private void initYears() {
         Calendar instance = Calendar.getInstance(Locale.CHINA);
@@ -319,8 +344,8 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
             protected void convert(BaseViewHolder helper, HomeChildRecommendBean.VideoBean item) {
                 String titleStr = Util.showText(item.getVm_title(), item.getVm_title_z());
                 helper.setText(R.id.title, titleStr).setVisible(R.id.vip, item.getVm_is_pay() == 2);
-                GlideUtils.getRequest(MovieListActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.mipmap.img_default)
-                        .centerCrop().into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(MovieListActivity.this, Util.convertImgPath(item.getVm_img())).placeholder(R.drawable.default_img)
+                        .override(250,320).centerCrop().into((ImageView) helper.getView(R.id.image));
                 if (item.getVm_update_status() == 2) {
                     helper.setText(R.id.update_status, getResources().getString(R.string.update_done));
                 } else if (item.getVm_update_status() == 1)
@@ -492,6 +517,12 @@ public class MovieListActivity extends BaseActivity implements View.OnFocusChang
                 freshVideoList();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (timer != null) timer.cancel();
+        super.onDestroy();
     }
 
     private void freshVideoList() {

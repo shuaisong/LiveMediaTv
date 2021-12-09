@@ -10,11 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.widget.NestedScrollView;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager.widget.ViewPager;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
@@ -25,17 +20,16 @@ import com.tangmu.app.TengKuTV.bean.BannerBean;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerFragmentComponent;
 import com.tangmu.app.TengKuTV.contact.HomeChildContact;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieListActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.HomeChildPresenter;
 import com.tangmu.app.TengKuTV.utils.BannerClickListener;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
@@ -53,6 +47,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -79,8 +78,6 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
     TextView nickName;
     @BindView(R.id.logined_view)
     LinearLayout loginedView;
-    @BindView(R.id.login_ti1)
-    TextView loginTi1;
     @BindView(R.id.login_ti2)
     TextView loginTi2;
     @BindView(R.id.banner)
@@ -123,7 +120,6 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
         initRecycer();
         live.setOnFocusChangeListener(this);
         book.setOnFocusChangeListener(this);
-        loginTi1.setOnFocusChangeListener(this);
         loginTi2.setOnFocusChangeListener(this);
     }
 
@@ -200,12 +196,10 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
                 CategoryBean.SecondBean item = mCategoryAdapter.getItem(position);
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    HomeFragment parentFragment = (HomeFragment) getParentFragment();
-                    assert parentFragment != null;
                     Intent intent = new Intent(getActivity(), MovieListActivity.class);
                     intent.putExtra("position", position);
-                    intent.putExtra("PCategory", parentFragment.getCategory());
-                    intent.putExtra("index", parentFragment.getIndex());
+                    intent.putExtra("PCategory", activity.getCategory());
+                    intent.putExtra("index", activity.getIndex());
                     startActivity(intent);
                 }
             }
@@ -221,7 +215,8 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
                 GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
-                        .placeholder(R.mipmap.img_default).into(imageView);
+                        .override(400, 200)
+                        .placeholder(R.drawable.default_img_banner).into(imageView);
             }
         });
         banner.setBannerTitles(null);
@@ -229,7 +224,7 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
         banner.setBannerAnimation(Transformer.Default);
         banner.isAutoPlay(true);
         //设置轮播时间
-        banner.setDelayTime(1500);
+        banner.setDelayTime(4500);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.RIGHT);
         bannerClickListener = new BannerClickListener(getActivity());
@@ -280,25 +275,22 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
 
     }
 
-    @OnClick({R.id.login_ti1, R.id.login_ti2, R.id.live, R.id.book, R.id.banner})
+    @OnClick({R.id.login_ti2, R.id.live, R.id.book, R.id.banner})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.banner:
+                List<BannerBean> bannerBeans = bannerClickListener.getBannerBeans();
+                if (bannerBeans == null || bannerBeans.isEmpty()) return;
                 if (bannerClickListener != null)
                     bannerClickListener.OnBannerClick(banner.toRealPosition(bannerViewPager.getCurrentItem()));
                 break;
-            case R.id.login_ti1:
-                startActivity(new Intent(getContext(), LoginActivity.class));
-                break;
             case R.id.login_ti2:
-                if (isClickLogin())
-                    startActivity(new Intent(getContext(), VIPActivity.class));
-                else startActivity(new Intent(getContext(), LoginActivity.class));
+                startActivity(new Intent(getContext(), MiGuActivity.class));
                 break;
             case R.id.live:
-                HomeFragment parentFragment = (HomeFragment) getParentFragment();
-                if (parentFragment != null) {
-                    parentFragment.showLiveFragment();
+                MainActivity mainActivity = (MainActivity) getActivity();
+                if (mainActivity != null) {
+                    mainActivity.showLiveFragment();
                 }
                 break;
             case R.id.book:
@@ -310,13 +302,11 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
     @Override
     public void onResume() {
         super.onResume();
-        LoginBean login = PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         if (login != null) {
-            loginTi1.setVisibility(View.INVISIBLE);
             loginedView.setVisibility(View.VISIBLE);
-            nickName.setText(login.getU_nick_name());
-            setHead(Util.convertImgPath(login.getU_img()), head);
-            if (login.getU_vip_status() == 1) {
+            nickName.setText(PreferenceManager.getInstance().getUserName());
+            if (login.getTu_vip_status() == 1) {
                 loginTi2.setVisibility(View.INVISIBLE);
             } else {
                 loginTi2.setVisibility(View.VISIBLE);
@@ -324,8 +314,7 @@ public class HomeVipFragment extends BaseFragment implements HomeChildContact.Vi
         } else {
             loginedView.setVisibility(View.GONE);
             loginTi2.setVisibility(View.VISIBLE);
-            head.setImageResource(R.mipmap.default_head);
-            loginTi1.setVisibility(View.VISIBLE);
+//            head.setImageResource(R.mipmap.default_head);
             nickName.setText("");
         }
     }

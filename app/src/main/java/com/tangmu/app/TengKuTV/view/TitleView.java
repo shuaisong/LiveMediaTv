@@ -12,24 +12,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import com.tangmu.app.TengKuTV.CustomApp;
 import com.tangmu.app.TengKuTV.R;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
-import com.tangmu.app.TengKuTV.module.LogActivity;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.mine.MineActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
 import com.tangmu.app.TengKuTV.module.search.BookSearchActivity;
 import com.tangmu.app.TengKuTV.module.search.VideoSearchActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.utils.AppLanguageUtils;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 public class TitleView extends ConstraintLayout implements View.OnClickListener {
 
@@ -97,11 +94,10 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
                     context.startActivity(new Intent(context, MineActivity.class));
                 break;
             case R.id.open_vip:
-                if (PreferenceManager.getInstance().getLogin() != null)
-                    context.startActivity(new Intent(context, VIPActivity.class));
-                else {
-                    context.startActivity(new Intent(context, LoginActivity.class));
+                MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                if (login.getTu_vip_status()==0){
                 }
+                context.startActivity(new Intent(context, MiGuActivity.class));
                 break;
             case R.id.switchL:
                 if (context instanceof Activity) {
@@ -139,13 +135,13 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
     }
 
     public void updateTV_Vip() {
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        if (login == null || login.getU_vip_status() == 0) {
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+        if (login == null || login.getTu_vip_status() == 0) {
             open_vip.setClickable(true);
             open_vip.setText(getResources().getString(R.string.open_vip));
         } else {
 //            open_vip.setClickable(false);
-            open_vip.setText(String.format(getContext().getString(R.string.hello_vip), login.getU_nick_name()));
+            open_vip.setText(String.format(getContext().getString(R.string.hello_vip), PreferenceManager.getInstance().getUserName()));
         }
     }
 }

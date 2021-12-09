@@ -48,7 +48,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContact.View> imp
     @Override
     public void unCollect(int b_id) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unCollect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("uc_id", b_id)
                 .tag(this)
                 .execute(new JsonCallback<BaseResponse>() {
@@ -73,7 +73,7 @@ public class BookDetailPresenter extends RxPresenter<BookDetailContact.View> imp
     @Override
     public void collect(int b_id) {
         OkGo.<BaseResponse<Integer>>post(Constant.IP + Constant.collect)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("audio_id", b_id)
                 .params("type", 3)
                 .tag(this)

@@ -65,6 +65,7 @@
     <string name="popular_tibetan_tv">རྒྱུག་ཆེ་བའི་བོད་སྐད་བརྙན་འཕྲིན་འཁྲབ་ཚན།</string>
     <string name="movie_channel">གློག་བརྙན་འཕྲིན་ལམ།</string>
     <string name="popular_tibetan_film">རྒྱུག་ཆེ་བའི་བོད་སྐད་ཆེད་སྒྲིག་པར་གཞི།</string>
+    <string name="agree_tip">ཐོ་འགོད་བྱས་ན་ཁྱེད་རང་གི་ཐོ་འགོད་གྲོས་ཡིག་ལ་མོས་མཐུན་བྱས་པ་མཚོན།</string>
     <string name="director">འཁྲབ་ཁྲིད་པ།</string>
     <string name="star">གཙོ་འཁྲབ་པ།</string>
     <string name="region">ས་ཁུལ།</string>
@@ -121,7 +122,7 @@
     <string name="recommend_material">འོས་སྦྱོར་བྱེད་པའི་དཔྱད་གཞི།</string>
     <string name="all_channel">འཕྲིན་ལམ་ཆ་ཚང་།</string>
     <string name="personal">མི་སྒེར་གྱི་ལྟེ་གནས།</string>
-    <string name="video_member">ཐང་ཁུག་བརྙན་ལམ་ཚོགས་མི།</string>
+    <string name="video_member"> </string>
     <string name="renewals">མུ་མཐུད་མཐུད་གྲོན་དངུལ།</string>
     <string name="member_center">ཚོགས་མིའི་ལྟེ་གནས།</string>
     <string name="vip_login_tip">ར་འཛེག་རྗེས་མཉམ་དུ་VIPཁྱད་དབང། </string>
@@ -253,7 +254,7 @@
     <string name="registerSuccess">ཐོ་འགོད་ལེགས་འགྲུབ་བྱུང་།</string>
     <string name="visitor">ཡུལ་སྐོར་བ།</string>
     <string name="login_tip">ཐོ་འཇུག་བྱས་རྗེས་ལྟད་མོ་དེ་བས་མང་བ་བལྟ་ཐུབ།</string>
-    <string name="not_open_vip">སྒོ་འབྱེད་བྱས་མེད་།ཐེང་ཁུའུ་VIP</string>
+    <string name="not_open_vip">ཐང་ཁུག་བརྙན་ལམ་VIPཉོས་མི་འདུག</string>
     <string name="update_status">གསར་སྒྱུར་བྱས་ནས་%dཚོགས།</string>
     <string name="sex1">ཕོ།</string>
     <string name="sex2">མོ།</string>
@@ -387,7 +388,7 @@
     <string name="exit_tip">གལ་སྲིད་ཕྱིར་འཐེན་བྱེད་དགོས་ན་“OK”ནོན་རོགས།</string>
     <string name="login_support_tip">འཕྲིན་ཕྲན་དང་ནས་ཐོ་འཇུག་བྱས་ཆོག</string>
     <string name="defult_q">སོར་བཞག་སྤུས་ཚད།</string>
-    <string name="version_update">དཔར་མ་གསར་སྒྱུར།</string>
+    <string name="version_update">ལམ་སེང་གསར་སྒྱུར་བྱེད།</string>
     <string name="scan_login_tip">གཤམ་གྱི་APPཡི་རྟགས་རིས་བཤེར་ནས་ཐོ་འཇུག་བྱ།</string>
     <string name="hot_work">དགའ་བསུ་ཆེན་པོ་ཐོབ་པའི་སྒྲ་སྦྱོར་བརྩམས་ཆོས།</string>
     <string name="vip_receive">领取会员</string>
@@ -399,5 +400,11 @@
     <string name="recieve_vip_tip">您有一张腾酷TV影视会员卡未绑定</string>
     <string name="vip_price"><![CDATA[V I P 优 惠 价 ：]]></string>
     <string name="normal_price"><![CDATA[非&#160;会&#160;员&#160;价&#160;：]]></string>
+    <string name="vip_card"><![CDATA[ཐང་ཁུག་བརྙན་ལམ་ཚོགས་མིའི་བྱང་བུ།]]></string>
     <string name="expre_time"><![CDATA[观 看 有 效 期 至：]]></string>
+    <string name="new_version_characteristic">དཔར་མ་གསར་པའི་ཁྱད་ཆོས།</string>
+    <string name="talk_later">以后再说</string>
+    <string name="find">དཔར་མ་</string>
+    <string name="str_new">གསར་པ་</string>
+    <string name="version">ཐོན་འདུག</string>
 </resources>

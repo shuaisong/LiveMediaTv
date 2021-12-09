@@ -2,7 +2,6 @@ package com.tangmu.app.TengKuTV.module.live;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -15,13 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager.widget.ViewPager;
 
-import com.bumptech.glide.load.resource.bitmap.CenterCrop;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseFragment;
 import com.tangmu.app.TengKuTV.bean.BannerBean;
+import com.tangmu.app.TengKuTV.bean.CategoryBean;
 import com.tangmu.app.TengKuTV.bean.LiveBean;
 import com.tangmu.app.TengKuTV.bean.LiveReplayBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -36,10 +34,10 @@ import com.tangmu.app.TengKuTV.module.search.VideoSearchActivity;
 import com.tangmu.app.TengKuTV.presenter.LivePresenter;
 import com.tangmu.app.TengKuTV.utils.BannerClickListener;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
+import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
-import com.tangmu.app.TengKuTV.view.CustomLoadMoreView;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
 import com.tencent.liteav.demo.play.SuperPlayerView;
@@ -58,7 +56,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.OnClick;
 import me.jessyan.autosize.utils.AutoSizeUtils;
-import me.jessyan.autosize.utils.ScreenUtils;
 
 /**
  * Created by lenovo on 2020/2/21.
@@ -116,6 +113,10 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     private BannerClickListener bannerClickListener;
     private ViewPager bannerViewPager;
 
+    public static LiveFragment newInstance(CategoryBean categoryBean) {
+        return new LiveFragment();
+    }
+
     /**
      * 初始化数据
      */
@@ -129,14 +130,42 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
 
     @Override
     public void onDestroy() {
+        if (superPlayer!=null) {
+            superPlayer.resetPlayer();
+        }
         presenter.detachView();
+        LogUtil.e("直播"+"onDestroy");
         super.onDestroy();
     }
 
     @Override
+    public void onStop() {
+        LogUtil.e("直播"+"onStop");
+        if (superPlayer!=null) {
+            superPlayer.resetPlayer();
+        }
+        presenter.detachView();
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (superPlayer!=null) {
+            superPlayer.resetPlayer();
+        }
+        presenter.detachView();
+        LogUtil.e("直播"+"onDestroyView");
+        super.onDestroyView();
+    }
+
+    @Override
     public void onPause() {
-        if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PLAYING) {
-            superPlayer.onPause();
+        LogUtil.e("直播"+"onPause");
+        if (superPlayer!=null) {
+            if (superPlayer.getPlayState() == SuperPlayerConst.PLAYSTATE_PLAYING) {
+                superPlayer.onPause();
+            }
+            superPlayer.resetPlayer();
         }
         super.onPause();
     }
@@ -144,6 +173,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
     @Override
     public void onResume() {
         super.onResume();
+        LogUtil.e("直播"+"onResume");
         if (!liveBeans.isEmpty()) {
             if (liveBeans.get(0).getL_live_type() == 1 && superPlayer.getPlayState() != SuperPlayerConst.PLAYSTATE_PLAYING)
                 superPlayer.onResume();
@@ -187,7 +217,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
                 GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
-                        .placeholder(R.mipmap.img_default).into(imageView);
+                        .override(400,200).placeholder(R.drawable.default_img_banner).into(imageView);
             }
         });
         banner.setBannerTitles(null);
@@ -195,7 +225,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
         banner.setBannerAnimation(Transformer.Default);
         banner.isAutoPlay(true);
         //设置轮播时间
-        banner.setDelayTime(1500);
+        banner.setDelayTime(4500);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.RIGHT);
         bannerClickListener = new BannerClickListener(getActivity());
@@ -212,8 +242,9 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                 helper.itemView.setOnFocusChangeListener(LiveFragment.this);
                 helper.setText(R.id.title, Util.showText(item.getL_title(), item.getL_title_z()))
                         .setText(R.id.time, item.getLr_add_time());
-                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getL_img())).transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(getActivity()
-                        , 5))).into((ImageView) helper.getView(R.id.image));
+                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getL_img()))
+                        .override(250,320).placeholder(R.drawable.default_img)
+                        .into((ImageView) helper.getView(R.id.image));
             }
         };
         liveHistoryAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -284,7 +315,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                 liveBean = liveBeans.get(2);
                 live2.setVisibility(View.VISIBLE);
                 GlideUtils.getRequest(this, Util.convertImgPath(liveBean.getL_img()))
-                        .centerCrop().into(ivLive2);
+                        .override(300,150).centerCrop().into(ivLive2);
                 if (liveBean.getL_live_type() == 1) {
                     liveType2.setText(getString(R.string.live));
                 } else {
@@ -295,7 +326,7 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
                 liveBean = liveBeans.get(1);
                 live1.setVisibility(View.VISIBLE);
                 GlideUtils.getRequest(this, Util.convertImgPath(liveBean.getL_img()))
-                        .centerCrop().into(ivLive1);
+                        .override(300,150).centerCrop().into(ivLive1);
                 if (liveBean.getL_live_type() == 1) {
                     liveType1.setText(getString(R.string.live));
                 } else {
@@ -338,6 +369,8 @@ public class LiveFragment extends BaseFragment implements LiveContact.View, View
         LiveBean liveBean;
         switch (view.getId()) {
             case R.id.banner:
+                List<BannerBean> bannerBeans = bannerClickListener.getBannerBeans();
+                if (bannerBeans == null || bannerBeans.isEmpty()) return;
                 if (bannerClickListener != null)
                     bannerClickListener.OnBannerClick(banner.toRealPosition(bannerViewPager.getCurrentItem()));
                 break;

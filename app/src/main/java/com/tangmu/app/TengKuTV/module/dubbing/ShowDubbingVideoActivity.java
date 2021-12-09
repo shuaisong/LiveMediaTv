@@ -9,10 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -24,16 +20,15 @@ import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.bean.DubbingAnthogyBean;
 import com.tangmu.app.TengKuTV.bean.DubbingBean;
 import com.tangmu.app.TengKuTV.bean.DubbingListBean;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.component.DaggerActivityComponent;
 import com.tangmu.app.TengKuTV.contact.DubbingDetailContact;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.DubbingDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
@@ -55,6 +50,9 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import me.jessyan.autosize.internal.CustomAdapt;
@@ -210,20 +208,18 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
                     if (isLogin()) {
                         return false;
                     } else {
-                        startActivity(new Intent(ShowDubbingVideoActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
                 if (quality.name.equals("2K") || quality.name.equals("4K")) {
                     if (isLogin()) {
-                        LoginBean login = PreferenceManager.getInstance().getLogin();
-                        if (login.getU_vip_status() == 1) {
+                        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
+                        if (login.getTu_vip_status() == 1) {
                             return false;
                         } else {
-                            startActivity(new Intent(ShowDubbingVideoActivity.this, VIPActivity.class));
+                            startActivity(new Intent(ShowDubbingVideoActivity.this, MiGuActivity.class));
                         }
                     } else {
-                        startActivity(new Intent(ShowDubbingVideoActivity.this, LoginActivity.class));
                         return true;
                     }
                 }
@@ -231,11 +227,12 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
             }
         });
         int defaultQuality = PreferenceManager.getInstance().getDefaultQuality();
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         if (defaultQuality > 4) {
-            if (login != null && login.getU_vip_status() == 1) {
-                superPlayer.setDefaultQualitySet(defaultQuality);
+            if (login != null) {
+                if (login.getTu_vip_status() == 1) {
+                    superPlayer.setDefaultQualitySet(defaultQuality);
+                }
             }
         } else if (defaultQuality > 3) {
             if (login != null) {
@@ -281,7 +278,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
             protected void convert(BaseViewHolder helper, DubbingListBean item) {
                 helper.setText(R.id.title, Util.showText(item.getUw_title(), item.getUw_title_z()));
                 GlideUtils.getRequest(ShowDubbingVideoActivity.this, Util.convertVideoPath(item.getUw_img()))
-                        .centerCrop()
+                        .centerCrop().override(250,320)
                         .into((ImageView) helper.getView(R.id.image));
             }
         };

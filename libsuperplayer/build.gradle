@@ -31,7 +31,7 @@ dependencies {
 //    腾讯播放器
 //    implementation(name: 'libsuperplayer', ext: 'aar')
     api(name: 'LiteAVSDK_Player', ext: 'aar')
-    implementation 'com.github.ctiao:DanmakuFlameMaster:0.5.3'
+//    implementation 'com.github.ctiao:DanmakuFlameMaster:0.5.3'
     api 'androidx.recyclerview:recyclerview:1.1.0'
     //列表适配框架
     api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'

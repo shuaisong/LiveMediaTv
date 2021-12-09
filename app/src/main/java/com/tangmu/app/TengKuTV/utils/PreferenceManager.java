@@ -1,33 +1,32 @@
 package com.tangmu.app.TengKuTV.utils;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import com.google.gson.Gson;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
-import com.tangmu.app.TengKuTV.bean.UserInfoBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.bean.VisitorBean;
+import com.tencent.liteav.demo.play.utils.SPUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class PreferenceManager {
     /**
      * name of preference
      */
-    private static final String PREFERENCE_NAME = "saveInfo";
+//    private static final String PREFERENCE_NAME = "saveInfo";
     private static PreferenceManager mPreferencemManager;
-    private static SharedPreferences.Editor editor;
-    private SharedPreferences mMSharedPreferences;
+    private final SPUtils spUtils;
+    //    private static SharedPreferences.Editor editor;
+//    private SharedPreferences mMSharedPreferences;
 
     private PreferenceManager(Context cxt) {
-        mMSharedPreferences = cxt.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-        editor = mMSharedPreferences.edit();
+//        mMSharedPreferences = cxt.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
+//        editor = mMSharedPreferences.edit();
+        spUtils = SPUtils.init(cxt);
     }
 
     public static synchronized void init(Context cxt) {
@@ -49,160 +48,80 @@ public class PreferenceManager {
         return mPreferencemManager;
     }
 
-    public void clear() {
-        editor.clear();
-        editor.apply();
-    }
-
-    public void putBoolean(String key, boolean value) {
-        editor.putBoolean(key, value).apply();
-    }
-
-    public void putInt(String key, int value) {
-        editor.putInt(key, value).apply();
-    }
-
-    public void putLong(String key, long value) {
-        editor.putLong(key, value).apply();
-    }
-
-    public void putString(String key, String value) {
-        editor.putString(key, value).apply();
-    }
 
     public void putVisitor(String value) {
-        putString("visitor", value);
-    }
-
-
-    public void putFloat(String key, float value) {
-        editor.putFloat(key, value).apply();
-    }
-
-    public String getString(String key, String defaultValue) {
-        return mMSharedPreferences.getString(key, defaultValue);
-    }
-
-    public boolean getBoolean(String key, boolean defaultValue) {
-        return mMSharedPreferences.getBoolean(key, defaultValue);
-    }
-
-    public int getInt(String key, int defaultValue) {
-        return mMSharedPreferences.getInt(key, defaultValue);
-    }
-
-    public long getLong(String key, long defaultValue) {
-        return mMSharedPreferences.getLong(key, defaultValue);
-    }
-
-    public float getFloat(String key, float defaultValue) {
-        return mMSharedPreferences.getFloat(key, defaultValue);
-    }
-
-
-    public void exit() {
-        editor.remove("login").apply();
+        spUtils.putString("visitor", value);
     }
 
     public void setUnreadCount(int num) {
-        putInt("unread", num);
+        spUtils.putInt("unread", num);
     }
 
     public int getUnreadCount() {
-        return getInt("unread", 0);
-    }
-
-
-    private void putSearchHistory(String key, List<String> list) {
-        editor.putStringSet(key, new HashSet<>(list)).apply();
-    }
-
-    private List<String> getSearchHistory(String key) {
-        Set<String> stringSet = mMSharedPreferences.getStringSet(key, null);
-        if (stringSet != null) {
-            return new ArrayList<>(stringSet);
-        }
-        return new ArrayList<String>();
-    }
-
-    private void removeSearchHistory(String key) {
-        editor.remove(key).apply();
+        return spUtils.getInt("unread", 0);
     }
 
     public void setBadge(int badge) {
-        putInt("badge", badge);
+        spUtils.putInt("badge", badge);
     }
 
     public int reduceBadge(int num) {
-        int badge = getInt("badge", 0);
+        int badge = spUtils.getInt("badge", 0);
         if (badge > num) {
             badge -= num;
         } else badge = 0;
-        putInt("badge", badge);
+        spUtils.putInt("badge", badge);
         return badge;
     }
 
     public void setRemember(boolean isRemember) {
-        putBoolean("remember", isRemember);
+        spUtils.putBoolean("remember", isRemember);
     }
 
     public boolean isRemember() {
-        return getBoolean("remember", true);
+        return spUtils.getBoolean("remember", true);
     }
 
     public void setPassword(String passwordStr) {
-        putString("password", passwordStr);
-    }
-
-    public void setAccount(ArrayList<String> accounts) {
-        editor.putStringSet("accounts", new HashSet<>(accounts)).apply();
-    }
-
-    public ArrayList<String> getAccounts() {
-        Set<String> accounts = mMSharedPreferences.getStringSet("accounts", new HashSet<String>());
-        return new ArrayList<String>(accounts);
+        spUtils.putString("password", passwordStr);
     }
 
     public String getPassword() {
-        return getString("password", "");
+        return spUtils.getString("password", "");
     }
 
 
     public boolean isDefaultTheme() {
-        return getBoolean("isDefault", true);
+        return spUtils.getBoolean("isDefault", true);
     }
 
     public void setTheme(boolean isDefault) {
-        putBoolean("isDefault", isDefault);
+        spUtils.putBoolean("isDefault", isDefault);
     }
 
-    public void setLogin(LoginBean login) {
+    public void setLogin(MiguLoginBean login) {
         Gson gson = new Gson();
-        String json = gson.toJson(login, LoginBean.class);
-        putString("login", json);
+        String json = gson.toJson(login, MiguLoginBean.class);
+        spUtils.putString("login", json);
     }
 
-    @Nullable
-    public LoginBean getLogin() {
+    @NonNull
+    public MiguLoginBean getLogin() {
         Gson gson = new Gson();
-        String login = getString("login", "");
-        if (TextUtils.isEmpty(login)) {
-            return null;
-        } else {
-            return gson.fromJson(login, LoginBean.class);
-        }
+        String login = spUtils.getString("login", "");
+        return gson.fromJson(login, MiguLoginBean.class);
     }
 
     public void setVisitor(VisitorBean visitor) {
         Gson gson = new Gson();
         String json = gson.toJson(visitor, VisitorBean.class);
-        putString("visitor", json);
+        spUtils.putString("visitor", json);
     }
 
     @Nullable
     public VisitorBean getVisitor() {
         Gson gson = new Gson();
-        String login = getString("visitor", "");
+        String login = spUtils.getString("visitor", "");
         if (TextUtils.isEmpty(login)) {
             return null;
         } else {
@@ -211,90 +130,108 @@ public class PreferenceManager {
     }
 
     public boolean isDefaultLanguage() {
-        return getBoolean("isDefaultLanguage", true);
+        return spUtils.getBoolean("isDefaultLanguage", true);
     }
 
     public void setDefaultLanguage(boolean isDefault) {
-        putBoolean("isDefaultLanguage", isDefault);
+        spUtils.putBoolean("isDefaultLanguage", isDefault);
     }
 
     public boolean getCanCache() {
-        return getBoolean("canCache", false);
+        return spUtils.getBoolean("canCache", false);
     }
 
     public void setCanCache(boolean canCache) {
-        putBoolean("canCache", canCache);
+        spUtils.putBoolean("canCache", canCache);
     }
 
     public List<String> getVideoSearch() {
-        return getSearchHistory("video_search");
+        return spUtils.getSearchHistory("video_search");
     }
 
     public void setVideoSearch(List<String> data) {
-        putSearchHistory("video_search", data);
+        spUtils.putSearchHistory("video_search", data);
     }
 
     public void removeVideoHistory() {
-        removeSearchHistory("video_search");
+        spUtils.removeSearchHistory("video_search");
     }
 
     public List<String> getBookSearch() {
-        return getSearchHistory("book_search");
+        return spUtils.getSearchHistory("book_search");
     }
 
     public void setBookSearch(List<String> data) {
-        putSearchHistory("book_search", data);
+        spUtils.putSearchHistory("book_search", data);
     }
 
     public void removeBookHistory() {
-        removeSearchHistory("book_search");
+        spUtils.removeSearchHistory("book_search");
     }
 
     public List<String> getLiveSearch() {
-        return getSearchHistory("live_search");
+        return spUtils.getSearchHistory("live_search");
     }
 
     public void setLiveSearch(List<String> data) {
-        putSearchHistory("live_search", data);
+        spUtils.putSearchHistory("live_search", data);
     }
 
     public void removeLiveHistory() {
-        removeSearchHistory("live_search");
+        spUtils.removeSearchHistory("live_search");
     }
 
-    public void updateLogin(UserInfoBean userInfoBean) {
-        LoginBean login = PreferenceManager.getInstance().getLogin();
-        if (login != null) {
-            login.setU_vip_status(userInfoBean.getU_vip_status());
-            if (login.getU_vip_status() == 1) {
-                login.setU_vip_expire(userInfoBean.getU_vip_expire());
-            }
-            setLogin(login);
-        }
+    public void updateLogin(MiguLoginBean userInfoBean) {
+        setLogin(userInfoBean);
     }
 
     public void setDefaultQuality(int indexOfQuality) {
-        putInt("DefaultQuality", indexOfQuality);
+        spUtils.putInt("DefaultQuality", indexOfQuality);
     }
 
     public int getDefaultQuality() {
-        return getInt("DefaultQuality", 1);
+        return spUtils.getInt("DefaultQuality", 1);
     }
 
     public void setIsJump(boolean jump) {
-        putBoolean("jump", jump);
+        spUtils.putBoolean("jump", jump);
     }
 
     public boolean getIsJump() {
-        return getBoolean("jump", true);
+        return spUtils.getBoolean("jump", true);
     }
 
     public void setDubbingId(int vt_id) {
-        putInt("DubbingId", vt_id);
+        spUtils.putInt("DubbingId", vt_id);
     }
 
     public int getDubbingId() {
         return
-                getInt("DubbingId", 0);
+                spUtils.getInt("DubbingId", 0);
+    }
+
+    public void exit() {
+        spUtils.exit();
+    }
+
+    public void setTuid(int tu_id) {
+        spUtils.putInt("tu_id",tu_id);
+    }
+    public int getTuid() {
+        return spUtils.getInt("tu_id",0);
+    }
+    public String getToken() {
+        return spUtils.getString("token","");
+    }
+    public void setToken(String epgToken) {
+        spUtils.putString("token",epgToken);
+    }
+
+    public void setUserName(String epgUserId) {
+        spUtils.putString("userName",epgUserId);
+    }
+    public String getUserName() {
+        return spUtils.getString("userName","");
     }
 }
+

@@ -2,13 +2,11 @@ package com.tangmu.app.TengKuTV.module.mine;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -19,32 +17,31 @@ import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.adapter.CollectAdapter;
 import com.tangmu.app.TengKuTV.base.BaseFragment;
 import com.tangmu.app.TengKuTV.base.BaseListResponse;
-import com.tangmu.app.TengKuTV.base.BaseResponse;
 import com.tangmu.app.TengKuTV.bean.CollectBean;
-import com.tangmu.app.TengKuTV.bean.LoginBean;
-import com.tangmu.app.TengKuTV.bean.UserInfoBean;
+import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.db.PlayHistoryInfo;
 import com.tangmu.app.TengKuTV.db.PlayHistoryManager;
 import com.tangmu.app.TengKuTV.module.book.PlayBookActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
 import com.tangmu.app.TengKuTV.module.playhistory.PlayHistoryActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
+import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
-import com.tangmu.app.TengKuTV.view.CustomLoadMoreView;
 import com.tangmu.app.TengKuTV.view.HLoadMoreView;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.OnClick;
 import me.jessyan.autosize.utils.AutoSizeUtils;
+import me.jessyan.autosize.utils.LogUtils;
 import me.jessyan.autosize.utils.ScreenUtils;
 
 /**
@@ -112,7 +109,7 @@ public class MineFragment extends BaseFragment {
                 .tag(this)
                 .params("type", type)
                 .params("page", page)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("size", 20)
                 .execute(new JsonCallback<BaseListResponse<CollectBean>>() {
                     @Override
@@ -232,7 +229,12 @@ public class MineFragment extends BaseFragment {
                         helper.itemView.setOnFocusChangeListener(new MineCollectFocusChangeListener(recyclerviewRecord));
                         helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()));
                         GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img()))
-                                .centerCrop().into((ImageView) helper.getView(R.id.image));
+                                .override(167,255).centerCrop().into((ImageView) helper.getView(R.id.image));
+                        if (item.getVm_type() == 1) {
+                            helper.setImageResource(R.id.isVip, R.mipmap.icon_fufei);
+                        } else {
+                            helper.setImageResource(R.id.isVip, R.mipmap.vip_tag_bg);
+                        }
                         if (item.getIs_vip() == 2) {
                             helper.setVisible(R.id.isVip, true);
                         } else {
@@ -295,14 +297,25 @@ public class MineFragment extends BaseFragment {
     }
 
     private void setInfo() {
-        LoginBean login = PreferenceManager.getInstance().getLogin();
+        MiguLoginBean login = PreferenceManager.getInstance().getLogin();
         if (login != null) {
             loginTv.setText(getString(R.string.tv_exit));
-            nickName.setText(login.getU_nick_name());
-            setHead(Util.convertImgPath(login.getU_img()), head);
-            if (login.getU_vip_status() == 1) {
+            nickName.setText(PreferenceManager.getInstance().getUserName());
+            if (login.getTu_vip_status() == 1) {
                 exprieTime.setVisibility(View.VISIBLE);
-                exprieTime.setText(String.format("%s%s", getString(R.string.exprie_time), login.getU_vip_expire()));
+
+                    String s = Util.addTimeYear(login.getTu_vip_expire());
+                    LogUtils.e(s);
+                    boolean dateOneBigger = Util.isDateOneBigger(s, TextUtils.isEmpty(login.getTu_vip_expire())? Util.getTime():login.getTu_vip_expire());
+                    if (dateOneBigger) {
+                        exprieTime.setText(String.format("%s%s", getString(R.string.exprie_time), s)
+                        );
+                    } else {
+                        exprieTime.setText(String.format("%s%s", getString(R.string.exprie_time),
+                                login.getTu_vip_expire())
+                        );
+                    }
+
                 openVip.setText(getString(R.string.vip_show));
             } else {
                 exprieTime.setVisibility(View.INVISIBLE);
@@ -311,7 +324,7 @@ public class MineFragment extends BaseFragment {
             getinfo();
 
         } else {
-            head.setImageResource(R.mipmap.default_head);
+//            head.setImageResource(R.mipmap.default_head);
             loginTv.setText(getString(R.string.login));
             exprieTime.setVisibility(View.INVISIBLE);
             nickName.setText(getString(R.string.login_tip));
@@ -320,44 +333,7 @@ public class MineFragment extends BaseFragment {
     }
 
     private void getinfo() {
-        OkGo.<BaseResponse<UserInfoBean>>post(Constant.IP + Constant.userMes)
-                .params("token", PreferenceManager.getInstance().getLogin().getToken())
-                .execute(new JsonCallback<BaseResponse<UserInfoBean>>() {
-                    @Override
-                    public void onVerifySuccess(Response<BaseResponse<UserInfoBean>> response) {
-                        if (response.body().getStatus() == 0) {
-                            UserInfoBean result = response.body().getResult();
-                            LoginBean login = PreferenceManager.getInstance().getLogin();
-                            login.setU_nick_name(result.getU_nick_name());
-                            login.setU_vip_expire(result.getU_vip_expire());
-                            login.setU_vip_status(result.getU_vip_status());
-                            login.setU_vip_grade(result.getU_vip_grade());
-                            PreferenceManager.getInstance().setLogin(login);
-                            nickName.setText(login.getU_nick_name());
-                            setHead(Util.convertImgPath(login.getU_img()), head);
-                            if (login.getU_vip_status() == 1) {
-                                exprieTime.setVisibility(View.VISIBLE);
-                                exprieTime.setText(String.format("%s%s", getString(R.string.exprie_time), login.getU_vip_expire()));
-                                openVip.setText(getString(R.string.vip_show));
-                                openVip.setClickable(false);
-                                openVip.setFocusable(false);
-                            } else {
-                                openVip.setFocusable(true);
-                                openVip.setClickable(true);
-                                exprieTime.setVisibility(View.INVISIBLE);
-                                openVip.setText(getString(R.string.open_video_vip));
-                            }
-                        } else {
-                            ToastUtil.showText(response.body().getMsg());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Response<BaseResponse<UserInfoBean>> response) {
-                        super.onError(response);
-                        ToastUtil.showText(handleError(response.getException()));
-                    }
-                });
+        // TODO: 2021/10/7
     }
 
     @Override
@@ -379,12 +355,10 @@ public class MineFragment extends BaseFragment {
                 startActivity(new Intent(getActivity(), PlayHistoryActivity.class));
                 break;
             case R.id.open_vip:
-                startActivityForResult(new Intent(getActivity(), VIPActivity.class), 1001);
+                if (PreferenceManager.getInstance().getLogin().getTu_vip_status()==0)
+                    startActivityForResult(new Intent(getActivity(), MiGuActivity.class), 1001);
                 break;
             case R.id.login_tv:
-                if (PreferenceManager.getInstance().getLogin() == null)
-                    startActivityForResult(new Intent(getActivity(), LoginActivity.class), 1001);
-                else {
                     PreferenceManager.getInstance().exit();
                     setInfo();
                     if (getActivity() != null)
@@ -395,7 +369,6 @@ public class MineFragment extends BaseFragment {
                     bookCollectAdapter.notifyDataSetChanged();
                     dubbingCollectAdapter.getData().clear();
                     dubbingCollectAdapter.notifyDataSetChanged();
-                }
                 break;
             case R.id.collect:
                 if (isClickLogin()) {

@@ -55,7 +55,7 @@ public class DubbingListPresenter extends RxPresenter<DubbingListContact.View> i
     public void praise(int id, final int position) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.worksLikeAdd)
                 .tag(this)
-                .params("token", Objects.requireNonNull(PreferenceManager.getInstance().getLogin()).getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("type", 1)
                 .params("uw_id", id).execute(new JsonCallback<BaseResponse>() {
             @Override
@@ -80,7 +80,7 @@ public class DubbingListPresenter extends RxPresenter<DubbingListContact.View> i
     public void unPraise(int id, final int position) {
         OkGo.<BaseResponse>post(Constant.IP + Constant.unworksLike)
                 .tag(this)
-                .params("token", Objects.requireNonNull(PreferenceManager.getInstance().getLogin()).getToken())
+                .params("token", PreferenceManager.getInstance().getToken())
                 .params("type", 1)
                 .params("uw_id", id).execute(new JsonCallback<BaseResponse>() {
             @Override

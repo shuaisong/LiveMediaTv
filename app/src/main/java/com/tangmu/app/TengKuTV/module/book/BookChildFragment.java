@@ -209,9 +209,9 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
                 helper.itemView.setOnFocusChangeListener(BookChildFragment.this);
                 helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()));
                 helper.setText(R.id.author, Util.showText(item.getB_title(), item.getB_title_z()));
-                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img())).placeholder(R.mipmap.img_default)
+                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img())).placeholder(R.drawable.default_img)
                         .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(getActivity(), 3)))
-                        .into((ImageView) helper.getView(R.id.image));
+                        .override(265,140).into((ImageView) helper.getView(R.id.image));
             }
         };
         mMayAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -247,9 +247,9 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
                 helper.setText(R.id.title, Util.showText(item.getB_title(), item.getB_title_z()))
                         .setText(R.id.num1, numStr)
                         .setText(R.id.info, Util.showText(item.getB_des(), item.getB_title_z()));
-                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img())).placeholder(R.mipmap.img_default)
+                GlideUtils.getRequest(getActivity(), Util.convertImgPath(item.getB_img())).placeholder(R.drawable.default_img)
                         .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(getActivity(), 5)))
-                        .into((ImageView) helper.getView(R.id.image));
+                        .override(100,125).into((ImageView) helper.getView(R.id.image));
             }
         };
         mBookAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
@@ -308,7 +308,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
             @Override
             public void displayImage(Context context, Object path, ImageView imageView) {
                 GlideUtils.getRequest(imageView, Util.convertImgPath(((BannerBean) path).getB_img()))
-                        .placeholder(R.mipmap.img_default).into(imageView);
+                        .override(480,160).placeholder(R.drawable.default_img_banner).into(imageView);
             }
         });
         mBanner.setBannerTitles(null);
@@ -316,7 +316,7 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
         mBanner.setBannerAnimation(Transformer.Default);
         mBanner.isAutoPlay(true);
         //设置轮播时间
-        mBanner.setDelayTime(1500);
+        mBanner.setDelayTime(4500);
         //设置指示器位置（当mBanner模式中有指示器时）
         mBanner.setIndicatorGravity(BannerConfig.RIGHT);
         bannerClickListener = new BannerClickListener(getActivity());
@@ -377,6 +377,8 @@ public class BookChildFragment extends BaseFragment implements BookChildContact.
         Intent intent = null;
         switch (view.getId()) {
             case R.id.banner:
+                List<BannerBean> bannerBeans = bannerClickListener.getBannerBeans();
+                if (bannerBeans == null || bannerBeans.isEmpty()) return;
                 if (bannerClickListener != null)
                     bannerClickListener.OnBannerClick(mBanner.toRealPosition(bannerViewPager.getCurrentItem()));
                 break;

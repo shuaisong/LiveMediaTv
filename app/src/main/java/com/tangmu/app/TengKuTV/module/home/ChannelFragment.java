@@ -1,6 +1,7 @@
 package com.tangmu.app.TengKuTV.module.home;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -14,10 +15,12 @@ import com.tangmu.app.TengKuTV.base.BaseFragment;
 import com.tangmu.app.TengKuTV.bean.CategoryBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
 import com.tangmu.app.TengKuTV.module.book.BookActivity;
+import com.tangmu.app.TengKuTV.module.main.MainActivity;
 import com.tangmu.app.TengKuTV.utils.GlideApp;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,6 +31,14 @@ public class ChannelFragment extends BaseFragment {
     @BindView(R.id.recyclerview)
     RecyclerView mRecyclerview;
     private BaseQuickAdapter<CategoryBean, BaseViewHolder> channelAdapter;
+
+    public static ChannelFragment newInstance(ArrayList<CategoryBean> categoryBeans) {
+        Bundle args = new Bundle();
+        args.putSerializable("Category", categoryBeans);
+        ChannelFragment fragment = new ChannelFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     protected void initData() {
@@ -63,10 +74,8 @@ public class ChannelFragment extends BaseFragment {
                 if (position == channelAdapter.getItemCount() - 1) {
                     startActivity(new Intent(getActivity(), BookActivity.class));
                 } else {
-                    Fragment fragment = getParentFragment();
-                    if (fragment instanceof BaseFragment) {
-                        ((HomeFragment) fragment).setFragment(position);
-                    }
+                    MainActivity mainActivity = (MainActivity) getActivity();
+                    mainActivity.setFragment(position);
                 }
             }
         });

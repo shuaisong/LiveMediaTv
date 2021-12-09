@@ -19,11 +19,8 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
-import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
-import com.tangmu.app.TengKuTV.bean.GiftBean;
-import com.tangmu.app.TengKuTV.bean.LiveBannerBean;
 import com.tangmu.app.TengKuTV.bean.LiveDetailBean;
 import com.tangmu.app.TengKuTV.bean.LiveReplayBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
@@ -32,10 +29,8 @@ import com.tangmu.app.TengKuTV.component.DaggerActivityComponent;
 import com.tangmu.app.TengKuTV.contact.LivingContact;
 import com.tangmu.app.TengKuTV.module.WebViewActivity;
 import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
-import com.tangmu.app.TengKuTV.module.login.LoginActivity;
 import com.tangmu.app.TengKuTV.module.movie.MovieDetailActivity;
 import com.tangmu.app.TengKuTV.module.movie.TVDetailActivity;
-import com.tangmu.app.TengKuTV.module.vip.VIPActivity;
 import com.tangmu.app.TengKuTV.presenter.LivingPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
@@ -46,10 +41,7 @@ import com.tangmu.app.TengKuTV.utils.Util;
 import com.tangmu.app.TengKuTV.view.TitleView;
 import com.tencent.liteav.demo.play.SuperPlayerConst;
 import com.tencent.liteav.demo.play.SuperPlayerModel;
-import com.tencent.liteav.demo.play.SuperPlayerVideoId;
 import com.tencent.liteav.demo.play.SuperPlayerView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +67,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     TextView introl;
     @BindView(R.id.line2)
     LinearLayout line2;
-    @BindView(R.id.fullscreen)
+    @BindView(R.id.fullscreen1)
     ImageView fullscreen;
     @BindView(R.id.image)
     ImageView image;
@@ -149,7 +141,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
                 helper.setText(R.id.title, Util.showText(item.getL_title(), item.getL_title_z()))
                         .setText(R.id.time, item.getLr_add_time());
                 GlideUtils.getRequest(LivingActivity.this, Util.convertImgPath(item.getL_img()))
-                        .centerCrop()
+                        .centerCrop().override(240,320)
                         .into((ImageView) helper.getView(R.id.image));
             }
         };
@@ -171,6 +163,9 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     @Override
     protected void onDestroy() {
         presenter.detachView();
+        if (superPlayer != null) {
+            superPlayer.resetPlayer();
+        }
         super.onDestroy();
     }
 
@@ -179,11 +174,12 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
         return R.layout.activity_history_live;
     }
 
-    @OnClick({R.id.fullscreen, R.id.image})
+    @OnClick({R.id.fullscreen1, R.id.image})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.fullscreen:
+            case R.id.fullscreen1:
                 superPlayer.requestFullMode();
+
                 break;
             case R.id.image:
                 if (videoAdBean != null)
@@ -262,7 +258,7 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
     @Override
     public void showTVAd(List<VideoAdBean> result) {
         if (!result.isEmpty()) {
-            image.setVisibility(View.VISIBLE);
+            image.setVisibility(View.INVISIBLE);
             videoAdBean = result.get(0);
             GlideUtils.getRequest(this, Util.convertImgPath(result.get(0).getTa_img()))
                     .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(this, 15)))
@@ -305,4 +301,6 @@ public class LivingActivity extends BaseActivity implements LivingContact.View {
             startActivity(intent);
         }
     }
+
+
 }

@@ -481,7 +481,6 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
         if (mPlayType == SuperPlayerConst.PLAYTYPE_LIVE_SHIFT) {
             mTvBackToLive.setVisibility(View.GONE);
         }
-        anthologyView.setVisibility(GONE);
         mVodQualityView.setVisibility(GONE);
         tcVodSettingMoreView.setVisibility(GONE);
     }
@@ -688,9 +687,7 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
      */
     @Override
     public void updateImageSpriteInfo(TCPlayImageSpriteInfo info) {
-        if (mTXImageSprite != null) {
-            releaseTXImageSprite();
-        }
+        releaseTXImageSprite();
         // 有缩略图的时候不显示进度
         mGestureVideoProgressLayout.setProgressVisibility(info == null || info.imageUrls == null || info.imageUrls.size() == 0);
         if (mPlayType == SuperPlayerConst.PLAYTYPE_VOD) {
@@ -699,15 +696,21 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
                 // 雪碧图ELK上报
                 TCLogReport.getInstance().uploadLogs(TCLogReport.ELK_ACTION_IMAGE_SPRITE, 0, 0);
                 mTXImageSprite.setVTTUrlAndImageUrls(info.webVttUrl, info.imageUrls);
+                for (String imageUrl : info.imageUrls) {
+                    LogUtils.e("缩略图==" + imageUrl);
+                }
                 haveImgFrame = true;
+                initImgFrames();
             } else {
                 haveImgFrame = false;
                 mTXImageSprite.setVTTUrlAndImageUrls(null, null);
             }
         }
+
     }
 
     private void releaseTXImageSprite() {
+
         if (mTXImageSprite != null) {
             mTXImageSprite.release();
             mTXImageSprite = null;
@@ -1270,5 +1273,22 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
     public void setAdImage(Drawable bitmap) {
         isSetPausedImg = true;
         pauseAdView.setAdImage(bitmap);
+    }
+
+    public PauseAdView getPauseAdView() {
+        return pauseAdView;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            event = new KeyEvent(event.getDownTime(), event.getEventTime(), event.getAction(),
+                    KeyEvent.KEYCODE_DPAD_CENTER, event.getMetaState(),
+                    event.getDeviceId(), event.getScanCode(), event.getFlags(), event.getSource());
+        }
+        if (pauseAdView.getVisibility() == VISIBLE) {
+            pauseAdView.hide();
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

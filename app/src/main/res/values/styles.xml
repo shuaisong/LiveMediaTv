@@ -19,6 +19,7 @@
         <item name="android:includeFontPadding">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="white_text">
