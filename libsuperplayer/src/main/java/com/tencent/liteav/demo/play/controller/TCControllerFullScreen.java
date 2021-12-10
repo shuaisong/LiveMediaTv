@@ -455,7 +455,7 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
                 pointParams.add(new TCPointSeekBar.PointParams(progress, Color.WHITE));
             }
         mSeekBarProgress.setPointList(pointParams);
-        if (mHideViewRunnable != null) {
+        if (mHideViewRunnable != null&&TCControllerFullScreen.this.getHandler()!=null) {
             TCControllerFullScreen.this.getHandler().removeCallbacks(mHideViewRunnable);
             TCControllerFullScreen.this.getHandler().postDelayed(mHideViewRunnable, 15000);
         }
