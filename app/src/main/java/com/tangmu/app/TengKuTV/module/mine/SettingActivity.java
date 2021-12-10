@@ -95,7 +95,7 @@ public class SettingActivity extends BaseActivity {
 
     private void getNewVersion(int versionCode) {
         OkGo.<BaseResponse<VersionBean>>post(Constant.IP + Constant.detectionNewVersion)
-                .params("v_type", 3)
+                .params("v_type", 4)
                 .params("code", versionCode).tag(this)
                 .execute(new JsonCallback<BaseResponse<VersionBean>>() {
                     @Override

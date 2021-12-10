@@ -20,9 +20,6 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tencent.liteav.demo.play.R;
@@ -49,6 +46,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import me.jessyan.autosize.utils.AutoSizeUtils;
 import me.jessyan.autosize.utils.LogUtils;
 import me.jessyan.autosize.utils.ScreenUtils;
@@ -1176,8 +1175,9 @@ public class TCControllerFullScreen extends RelativeLayout implements IControlle
             for (int i = 0; i < duration; i += 10) {
                 Bitmap thumbnail = mTXImageSprite.getThumbnail(i);
                 imgFrameAdapter.getData().add(new ImgFrameBean(i, thumbnail));
+                imgFrameAdapter.notifyItemInserted(imgFrameAdapter.getData().size() - 1);
             }
-            imgFrameAdapter.notifyDataSetChanged();
+
         }
         if (!isShowing) {
             show();

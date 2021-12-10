@@ -26,7 +26,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -447,7 +446,7 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
             mVodPlayConfig.setCacheFolderPath(context.getFilesDir().getPath() + "/txcache");
         }
         mVodPlayConfig.setMaxCacheItems(config.maxCacheItem);
-        mVodPlayConfig.setMaxBufferSize(10);
+        mVodPlayConfig.setMaxBufferSize(2);
         mVodPlayer.setConfig(mVodPlayConfig);
         mVodPlayer.setRenderMode(config.renderMode);
         mVodPlayer.setVodListener(this);
@@ -883,7 +882,9 @@ public class SuperPlayerView extends RelativeLayout implements ITXVodPlayListene
         if (buyAntholgyView.getVisibility() == VISIBLE)
             buyAntholgyView.fullScreen(isFull);
         if (isFull) {
-            oldParent.removeView(this);
+            while (getParent() != null) {
+                oldParent.removeView(this);
+            }
             newParent.addView(this);
             viewGroup.addView(newParent, 0);
             for (int i = 1; i < viewGroup.getChildCount(); i++) {
