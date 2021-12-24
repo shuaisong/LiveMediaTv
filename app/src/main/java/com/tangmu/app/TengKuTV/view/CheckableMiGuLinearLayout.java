@@ -3,6 +3,7 @@ package com.tangmu.app.TengKuTV.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -12,6 +13,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.tangmu.app.TengKuTV.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,10 +28,8 @@ import androidx.annotation.Nullable;
 public class CheckableMiGuLinearLayout extends LinearLayout implements Checkable {
     private boolean isChecked;
     private OnCheckedChangeListener mOnCheckedChangeWidgetListener;
-    private TextView textView1;
-    private TextView textView3;
-    private TextView textView2;
-    private TextView textView4;
+    private List<TextView> textViews;
+    private int color;
 
     public CheckableMiGuLinearLayout(@NonNull Context context) {
         this(context, null);
@@ -47,21 +49,23 @@ public class CheckableMiGuLinearLayout extends LinearLayout implements Checkable
         setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus != isChecked){
-                    if (!hasFocus){
+                if (hasFocus != isChecked) {
+                    if (!hasFocus) {
                         View currentFocus = ((Activity) getContext()).getCurrentFocus();
-                        if (currentFocus==null)return;
-                        if (currentFocus instanceof CheckableMiGuFrameLayout){
+                        if (currentFocus == null) return;
+                        if (currentFocus instanceof CheckableMiGuFrameLayout) {
                             setChecked(true);
-                         }else {
+                        } else {
                             setChecked(false);
                         }
-                    }else {
+                    } else {
                         setChecked(true);
                     }
                 }
             }
         });
+        color = Color.parseColor("#E4D5B3");
+        textViews = new ArrayList<>();
     }
 
     @Override
@@ -72,21 +76,32 @@ public class CheckableMiGuLinearLayout extends LinearLayout implements Checkable
         }
         return super.onTouchEvent(event);
     }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = 1056 * width /1753;
-        setMeasuredDimension(width,height);
+        int height = 1056 * width / 1753;
+        setMeasuredDimension(width, height);
     }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        textView1 = (TextView) getChildAt(0);
-        LinearLayout linearLayout = (LinearLayout) getChildAt(1);
-        textView2 = (TextView)linearLayout. getChildAt(0);
-        textView3 = (TextView) linearLayout. getChildAt(1);
-        textView4 = (TextView) getChildAt(2);
+        for (int i = 0; i < getChildCount(); i++) {
+            View childAt = getChildAt(i);
+            if (childAt instanceof TextView) {
+                textViews.add((TextView) childAt);
+            } else if (childAt instanceof LinearLayout) {
+                for (int i1 = 0; i1 < ((LinearLayout) childAt).getChildCount(); i1++) {
+                    View childAt1 = ((LinearLayout) childAt).getChildAt(i1);
+                    if (childAt1 instanceof TextView) {
+                        textViews.add((TextView) childAt1);
+                    }
+
+                }
+            }
+        }
         setChecked(isChecked);
     }
 
@@ -103,17 +118,15 @@ public class CheckableMiGuLinearLayout extends LinearLayout implements Checkable
             mOnCheckedChangeWidgetListener.onCheckedChanged(this, isChecked);
         }
         if (isChecked) {
-             setBackgroundResource(R.drawable.migu_checked1);
-             textView1.setTextColor(getResources().getColor(R.color.white));
-             textView2.setTextColor(getResources().getColor(R.color.white));
-             textView3.setTextColor(getResources().getColor(R.color.white));
-             textView4.setTextColor(getResources().getColor(R.color.white));
+            setBackgroundResource(R.drawable.migu_checked1);
+            for (TextView textView : textViews) {
+                textView.setTextColor(color);
+            }
         } else {
             setBackgroundResource(R.drawable.migu_uncheck1);
-            textView1.setTextColor(getResources().getColor(R.color.vip));
-            textView2.setTextColor(getResources().getColor(R.color.vip));
-            textView3.setTextColor(getResources().getColor(R.color.vip));
-            textView4.setTextColor(getResources().getColor(R.color.vip));
+            for (TextView textView : textViews) {
+                textView.setTextColor(getResources().getColor(R.color.white));
+            }
         }
     }
 

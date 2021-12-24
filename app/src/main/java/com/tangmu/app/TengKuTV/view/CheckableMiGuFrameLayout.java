@@ -2,13 +2,18 @@ package com.tangmu.app.TengKuTV.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Checkable;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.tangmu.app.TengKuTV.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +26,9 @@ import androidx.annotation.Nullable;
 public class CheckableMiGuFrameLayout extends FrameLayout implements Checkable {
     private boolean isChecked;
     private OnCheckedChangeListener mOnCheckedChangeWidgetListener;
+    private int color1;
+    private int color2;
+    private List<TextView> textViews;
 
     public CheckableMiGuFrameLayout(@NonNull Context context) {
         this(context, null);
@@ -38,11 +46,17 @@ public class CheckableMiGuFrameLayout extends FrameLayout implements Checkable {
         setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus != isChecked){
+                if (hasFocus != isChecked) {
                     setChecked(hasFocus);
                 }
             }
         });
+
+        color1 = Color.parseColor("#E4D5B3");
+
+        color2 = Color.WHITE;
+
+        textViews = new ArrayList<>();
     }
 
     @Override
@@ -57,6 +71,12 @@ public class CheckableMiGuFrameLayout extends FrameLayout implements Checkable {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        for (int i = 0; i < getChildCount(); i++) {
+            View childAt = getChildAt(i);
+            if (childAt instanceof TextView){
+                textViews.add((TextView) childAt);
+            }
+        }
         setChecked(isChecked);
     }
 
@@ -64,8 +84,8 @@ public class CheckableMiGuFrameLayout extends FrameLayout implements Checkable {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = 226 * width /345;
-        setMeasuredDimension(width,height);
+        int height = 226 * width / 345;
+        setMeasuredDimension(width, height);
     }
 
     /**
@@ -80,11 +100,18 @@ public class CheckableMiGuFrameLayout extends FrameLayout implements Checkable {
         if (preChecked != checked && mOnCheckedChangeWidgetListener != null) {
             mOnCheckedChangeWidgetListener.onCheckedChanged(this, isChecked);
         }
-           if (isChecked) {
-                 setBackgroundResource(R.drawable.migu_1);
-           } else {
-                 setBackgroundResource(R.drawable.migu3);
-           }
+        if (isChecked) {
+            setBackgroundResource(R.drawable.migu_pay_checked);
+        } else {
+            setBackgroundResource(R.drawable.migu_pay_uncheck);
+        }
+        for (TextView textView : textViews) {
+            if (isChecked){
+                textView.setTextColor(color1);
+            }else {
+                textView.setTextColor(color2);
+            }
+        }
     }
 
     /**

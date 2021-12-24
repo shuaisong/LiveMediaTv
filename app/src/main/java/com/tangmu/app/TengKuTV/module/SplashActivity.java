@@ -95,30 +95,30 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void getUserInfo() {
-//        GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
-//        String firmwareVersion = getSysInfo.getFirmwareVersion();
-//        String snNum = getSysInfo.getSnNum();
-//        String terminalType = getSysInfo.getTerminalType();
-//        String hardwareVersion = getSysInfo.getHardwareVersion();
-//
-//        String  epgToken = getSysInfo.getEpgToken();
-//        String epgUserId = getSysInfo.getEpgUserId();
-//        JsonObject jsonObject = new JsonObject();
-//        jsonObject.addProperty("firmwareVersion",firmwareVersion);
-//        jsonObject.addProperty("terminalType",terminalType);
-//        jsonObject.addProperty("hardwareVersion",hardwareVersion);
-//
-//        ancyUserInfo(epgToken,snNum,epgUserId,jsonObject.toString());
+        GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
+        String firmwareVersion = getSysInfo.getFirmwareVersion();
+        String snNum = getSysInfo.getSnNum();
+        String terminalType = getSysInfo.getTerminalType();
+        String hardwareVersion = getSysInfo.getHardwareVersion();
 
-        ancyUserInfo("5167bb95141133d31072abf3e35921b326wx", "006201FF0001007006BB60D21C6EB759", "0107723607936491059",
-                "{\"firmwareVersion\":\"HiSTBAndroidV5/Hi3798MV300/Hi3798MV300:4.4.2/CM201-22/004.992.062:eng/test-keys\",\"terminalType\":\"CM201-22\",\"hardwareVersion\":\"004.992.062\"}");
+        String  epgToken = getSysInfo.getEpgToken();
+        String epgUserId = getSysInfo.getEpgUserId();
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("firmwareVersion",firmwareVersion);
+        jsonObject.addProperty("terminalType",terminalType);
+        jsonObject.addProperty("hardwareVersion",hardwareVersion);
+
+        ancyUserInfo(epgToken,snNum,epgUserId,jsonObject.toString());
+
+//        ancyUserInfo("5167bb95141133d31072abf3e35921b326wx", "006201FF0001007006BB60D21C6EB759", "0107723607936491059",
+//                "{\"firmwareVersion\":\"HiSTBAndroidV5/Hi3798MV300/Hi3798MV300:4.4.2/CM201-22/004.992.062:eng/test-keys\",\"terminalType\":\"CM201-22\",\"hardwareVersion\":\"004.992.062\"}");
 
     }
 
     private void ancyUserInfo(String epgToken, String snNum, String epgUserId, String s) {
         PreferenceManager.getInstance().setToken(epgToken);
         PreferenceManager.getInstance().setUserName(epgUserId);
-        OkGo.<BaseResponse<MiguLoginBean>>post(Constant.IP + Constant.tvRegister)
+        OkGo.<BaseResponse<MiguLoginBean>>post(Constant.IP + Constant.tvRegister).retryCount(1)
                 .params("token", epgToken)
                 .params("stbid", snNum)
                 .params("user_name", epgUserId)

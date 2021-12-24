@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.util.Base64;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.migu.sdk.api.MiguSdk;
@@ -46,7 +48,9 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     RechargeVipPresenter presenter;
 
     @BindView(R.id.radio)
-    FrameLayout radio;
+    LinearLayout radio;
+    @BindView(R.id.vip_l)
+    CheckableMiGuLinearLayout checkableMiGuLinearLayout_L;
     @BindView(R.id.vip_j)
     CheckableMiGuLinearLayout checkableMiGuLinearLayout_J;
     @BindView(R.id.vip_m)
@@ -55,6 +59,10 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     CheckableMiGuLinearLayout checkableMiGuLinearLayout_Y;
     CheckableMiGuLinearLayout mCheckableMiGuLinearLayout;
 
+    @BindView(R.id.l_price)
+    TextView lPrice;
+    @BindView(R.id.m_price0)
+    TextView mPrice0;
     @BindView(R.id.m_price)
     TextView mPrice;
     @BindView(R.id.j_price)
@@ -112,6 +120,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     protected void initView() {
+        checkableMiGuLinearLayout_L.setOnCheckedChangeWidgetListener(this);
         checkableMiGuLinearLayout_M.setOnCheckedChangeWidgetListener(this);
         checkableMiGuLinearLayout_J.setOnCheckedChangeWidgetListener(this);
         checkableMiGuLinearLayout_Y.setOnCheckedChangeWidgetListener(this);
@@ -122,12 +131,13 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
         checkableMiGuFrameLayout1.setOnClickListener(this);
         checkableMiGuFrameLayout2.setOnClickListener(this);
         checkableMiGuFrameLayout3.setOnClickListener(this);
+        mPrice0.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkableMiGuLinearLayout_M.requestFocus();
+        checkableMiGuLinearLayout_L.requestFocus();
     }
 
     @Override
