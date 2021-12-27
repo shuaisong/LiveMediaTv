@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Paint;
 import android.util.Base64;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -31,6 +32,7 @@ import com.tangmu.app.TengKuTV.view.LoadingDialog;
 import com.tangmu.app.TengKuTV.view.MiguPay1Dialog;
 import com.tangmu.app.TengKuTV.view.MiguPay2Dialog;
 import com.tangmu.app.TengKuTV.view.MiguPay3Dialog;
+import com.tencent.liteav.demo.play.SuperPlayerConst;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -145,6 +147,17 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
         return R.layout.activity_mi_gu;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mCheckableMiGuLinearLayout == checkableMiGuLinearLayout_L && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            View currentFocus = getCurrentFocus();
+            if (currentFocus == checkableMiGuFrameLayout1) {
+                ToastUtil.showText("连续包月不支持微信、支付宝支付");
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     public void onCheckedChanged(CheckableMiGuFrameLayout checkableMiGuFrameLayout, boolean isChecked) {
@@ -165,6 +178,13 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
             if (mCheckableMiGuLinearLayout != null)
                 mCheckableMiGuLinearLayout.setChecked(false);
             mCheckableMiGuLinearLayout = checkableMiGuLinearLayout;
+            if (mCheckableMiGuLinearLayout == checkableMiGuLinearLayout_L) {
+                checkableMiGuFrameLayout2.setFocusable(false);
+                checkableMiGuFrameLayout3.setFocusable(false);
+            } else {
+                checkableMiGuFrameLayout2.setFocusable(true);
+                checkableMiGuFrameLayout3.setFocusable(true);
+            }
         } else {
             if (mCheckableMiGuLinearLayout == checkableMiGuLinearLayout) {
                 mCheckableMiGuLinearLayout = null;
@@ -265,7 +285,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
                 loadingDialog.show();
                 presenter.createOrder(productBean.getPrice()
                         , Integer.parseInt(productBean.getUnit()), productBean.getProductCode()
-                        , accountIdentify,productBean.getOrderContentId());
+                        , accountIdentify, productBean.getOrderContentId());
             } else {
                 ToastUtil.showText("数据错误！");
             }
@@ -277,7 +297,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     public void showOrder(OrderBean orderBean, String orderContentId) {
         this.orderBean = orderBean;
         if (loadingDialog.isShowing()) loadingDialog.dismiss();
-        presenter.pay(payType, orderBean.getOrder_no(), orderBean.getPrice(),orderContentId);
+        presenter.pay(payType, orderBean.getOrder_no(), orderBean.getPrice(), orderContentId);
     }
 
     @Override
