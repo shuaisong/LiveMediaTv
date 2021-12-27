@@ -134,6 +134,7 @@
                         android:layout_below="@id/line2"
                         android:layout_marginTop="16dp"
                         android:scaleType="centerInside"
+                        android:focusable="true"
                         android:background="@drawable/dp_0_view_bg_red_focused_selelct"
                         android:visibility="gone" />
 
@@ -248,6 +249,8 @@
                 android:layout_marginStart="40dp"
                 android:layout_marginEnd="40dp"
                 android:scaleType="centerInside"
+                android:background="@drawable/dp_0_view_bg_red_focused_selelct"
+                android:focusable="true"
                 android:visibility="gone" />
 
             <TextView

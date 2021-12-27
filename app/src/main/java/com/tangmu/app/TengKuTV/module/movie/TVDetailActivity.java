@@ -1,12 +1,15 @@
 package com.tangmu.app.TengKuTV.module.movie;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.tangmu.app.TengKuTV.Constant;
@@ -30,7 +33,6 @@ import com.tangmu.app.TengKuTV.module.dubbing.ShowDubbingVideoActivity;
 import com.tangmu.app.TengKuTV.module.vip.MiGuActivity;
 import com.tangmu.app.TengKuTV.presenter.VideoDetailPresenter;
 import com.tangmu.app.TengKuTV.utils.GlideUtils;
-import com.tangmu.app.TengKuTV.utils.LogUtil;
 import com.tangmu.app.TengKuTV.utils.MovieItemDecoration;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
@@ -58,6 +60,7 @@ import java.util.Timer;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -117,6 +120,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     private Timer timer;
 
     private BaseQuickAdapter<VideoSortBean, BaseViewHolder> anthologyAdapter1;
+    private List<VideoAdBean> videoAdBeans;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -635,25 +639,31 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
         if (!videoAdBeans.isEmpty()) {
-            ivAd1.setVisibility(View.VISIBLE);
-            ivAd2.setVisibility(View.VISIBLE);
-
+            this.videoAdBeans = videoAdBeans;
             for (int i = 0; i < videoAdBeans.size(); i++) {
                 if (videoAdBeans.get(i).getTa_type1() == 1) {
+                    ivAd1.setVisibility(View.VISIBLE);
                     GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
                             .centerCrop().into(ivAd1);
                 }
                 if (videoAdBeans.get(i).getTa_type1() == 2) {
+                    ivAd2.setVisibility(View.VISIBLE);
                     GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
                             .centerCrop().into(ivAd2);
                 }
             }
-
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            superPlayer.setAdImage(resource);
+                        }
+                    });
         }
     }
 
     @Override
-    public void showOrder(OrderBean result) {
+    public void showOrder(OrderBean result, String orderContentId) {
 
     }
 
@@ -737,9 +747,15 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         }
     }
 
-    @OnClick({R.id.more, R.id.full_screen, R.id.collect})
+    @OnClick({R.id.more, R.id.full_screen, R.id.collect, R.id.ad1, R.id.ad2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.ad1:
+                tvAdClick(videoAdBeans.get(0));
+                break;
+            case R.id.ad2:
+                tvAdClick(videoAdBeans.get(1));
+                break;
             case R.id.more:
                 if (introl.getMaxLines() == 2) {
                     more.setText(getString(R.string.fold));

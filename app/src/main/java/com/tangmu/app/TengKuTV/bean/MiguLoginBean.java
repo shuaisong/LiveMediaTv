@@ -10,7 +10,11 @@ public class MiguLoginBean {
     private int u_id;
     private int tu_vip_status;
     private String tu_vip_expire;
+    private int tu_is_month;//是否包月：1：否，2：是
 
+    public int getTu_is_month() {
+        return tu_is_month;
+    }
 
     public int getU_id() {
         return u_id;

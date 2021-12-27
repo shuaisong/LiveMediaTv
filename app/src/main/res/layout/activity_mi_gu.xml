@@ -69,15 +69,16 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/m_price0"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:text="￥0元"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/m_price0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="￥0元"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -89,12 +90,13 @@
 
 
             </com.tangmu.app.TengKuTV.view.CheckableMiGuLinearLayout>
+
             <com.tangmu.app.TengKuTV.view.CheckableMiGuLinearLayout
                 android:id="@+id/vip_m"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
-                android:focusable="true"
                 android:layout_marginStart="30dp"
+                android:focusable="true"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -142,13 +144,14 @@
 
 
             </com.tangmu.app.TengKuTV.view.CheckableMiGuLinearLayout>
+
             <com.tangmu.app.TengKuTV.view.CheckableMiGuLinearLayout
                 android:id="@+id/vip_j"
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:focusable="true"
                 android:layout_marginStart="30dp"
+                android:focusable="true"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -202,8 +205,8 @@
                 android:layout_width="240dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:focusable="true"
                 android:layout_marginStart="30dp"
+                android:focusable="true"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -281,8 +284,8 @@
                     android:layout_height="60dp"
                     android:layout_gravity="end"
                     android:padding="1.1dp"
-                    app:tint="#FF344F"
-                    android:src="@drawable/ic_triangle" />
+                    android:src="@drawable/ic_triangle"
+                    app:tint="#FF344F" />
 
                 <ImageView
                     android:layout_width="25dp"
@@ -318,13 +321,14 @@
                     android:text="立即支付>>"
                     android:textColor="@color/black_3_bg"
                     android:textSize="16sp" />
+
                 <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="10dp"
-                android:layout_gravity="end|bottom"
-                android:src="@drawable/migu"/>
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="end|bottom"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/migu" />
 
             </com.tangmu.app.TengKuTV.view.CheckableMiGuFrameLayout>
 
@@ -366,13 +370,14 @@
                     android:text="立即支付>>"
                     android:textColor="@color/black_3_bg"
                     android:textSize="16sp" />
+
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:layout_gravity="end|bottom"
                     android:layout_marginEnd="15dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_gravity="end|bottom"
-                    android:src="@drawable/weixin3"/>
+                    android:src="@drawable/weixin3" />
 
             </com.tangmu.app.TengKuTV.view.CheckableMiGuFrameLayout>
 
@@ -418,13 +423,14 @@
                     android:layout_marginStart="12dp"
                     android:textColor="@color/black_3_bg"
                     android:textSize="16sp" />
+
                 <ImageView
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:layout_gravity="end|bottom"
                     android:layout_marginEnd="15dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_gravity="end|bottom"
-                    android:src="@drawable/alipay1"/>
+                    android:src="@drawable/alipay1" />
 
             </com.tangmu.app.TengKuTV.view.CheckableMiGuFrameLayout>
         </FrameLayout>

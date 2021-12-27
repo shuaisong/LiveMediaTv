@@ -43,7 +43,7 @@ import butterknife.BindView;
 
 public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLayout.OnCheckedChangeListener,
         CheckableMiGuFrameLayout.OnCheckedChangeListener,
-        View.OnClickListener, MiguPay1Dialog.PayAgreeListener , RechargeVipContact.View {
+        View.OnClickListener, MiguPay1Dialog.PayAgreeListener, RechargeVipContact.View {
     @Inject
     RechargeVipPresenter presenter;
 
@@ -78,11 +78,11 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     CheckableMiGuFrameLayout checkableMiGuFrameLayout2;
     @BindView(R.id.pay3)
     CheckableMiGuFrameLayout checkableMiGuFrameLayout3;
-    CheckableMiGuFrameLayout  mCheckableMiGuFrameLayout;
+    CheckableMiGuFrameLayout mCheckableMiGuFrameLayout;
     private MiguPay1Dialog miguPay1Dialog;
     private MiguPay3Dialog miguPay3Dialog;
     private MiguPay2Dialog miguPay2Dialog;
-//    private BodyBean miguBodyBean;
+    //    private BodyBean miguBodyBean;
     private LoadingDialog loadingDialog;
     private int payType;
     private Timer payTimer;
@@ -99,7 +99,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     protected void onDestroy() {
-        if (payTimer!=null){
+        if (payTimer != null) {
             payTimer.cancel();
             payTimer = null;
         }
@@ -115,7 +115,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
         MiguSdk.initializeApp(this);
         loadingDialog.show();
         GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
-        presenter.miguAuthentications(getSysInfo.getEpgUserId(),getSysInfo.getDeviceId());
+        presenter.miguAuthentications(getSysInfo.getEpgUserId(), getSysInfo.getDeviceId());
     }
 
     @Override
@@ -191,62 +191,62 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     public void onBackPressed() {
-        if (miguPay1Dialog!=null&&miguPay1Dialog.isShowing()){
+        if (miguPay1Dialog != null && miguPay1Dialog.isShowing()) {
             miguPay1Dialog.dismiss();
-        }else if (miguPay2Dialog!=null&&miguPay2Dialog.isShowing()){
+        } else if (miguPay2Dialog != null && miguPay2Dialog.isShowing()) {
             miguPay2Dialog.dismiss();
-        }else if (miguPay3Dialog!=null&&miguPay3Dialog.isShowing()){
+        } else if (miguPay3Dialog != null && miguPay3Dialog.isShowing()) {
             miguPay3Dialog.dismiss();
-        }else
-        super.onBackPressed();
+        } else
+            super.onBackPressed();
     }
 
     private void initPay2Dialog() {
-        if (miguPay2Dialog ==null){
+        if (miguPay2Dialog == null) {
             miguPay2Dialog = new MiguPay2Dialog(this);
             miguPay2Dialog.setPayAgreeListener(this);
         }
         Integer tag = (Integer) mCheckableMiGuLinearLayout.getTag();
-        if (tag==null){
+        if (tag == null) {
             ToastUtil.showText("数据错误！");
             return;
         }
         payAgree(2);
         TVProductBean productBean = productBeans.get(tag);
-        miguPay2Dialog.setPrice(Integer.parseInt(productBean.getPrice())/100+"");
+        miguPay2Dialog.setPrice(Integer.parseInt(productBean.getPrice()) / 100 + "");
         miguPay2Dialog.show();
     }
 
     private void initPay3Dialog() {
-        if (miguPay3Dialog==null){
+        if (miguPay3Dialog == null) {
             miguPay3Dialog = new MiguPay3Dialog(this);
             miguPay3Dialog.setPayAgreeListener(this);
         }
         Integer tag = (Integer) mCheckableMiGuLinearLayout.getTag();
-        if (tag==null){
+        if (tag == null) {
             ToastUtil.showText("数据错误！");
             return;
         }
         payAgree(1);
         TVProductBean productBean = productBeans.get(tag);
-        miguPay3Dialog.setPrice(Integer.parseInt(productBean.getPrice())/100+"");
+        miguPay3Dialog.setPrice(Integer.parseInt(productBean.getPrice()) / 100 + "");
         miguPay3Dialog.show();
     }
 
     private void initPay1Dialog() {
-        if (miguPay1Dialog ==null){
+        if (miguPay1Dialog == null) {
             miguPay1Dialog = new MiguPay1Dialog(this);
             miguPay1Dialog.setPayAgreeListener(this);
         }
 
         Integer tag = (Integer) mCheckableMiGuLinearLayout.getTag();
-        if (tag==null){
+        if (tag == null) {
             ToastUtil.showText("数据错误！");
             return;
         }
         TVProductBean productBean = productBeans.get(tag);
         miguPay1Dialog.setPhone(accountIdentify);
-        miguPay1Dialog.setPrice(Integer.parseInt(productBean.getPrice())/100+"");
+        miguPay1Dialog.setPrice(Integer.parseInt(productBean.getPrice()) / 100 + "");
         miguPay1Dialog.show();
     }
 
@@ -254,17 +254,18 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     public void payAgree(int type) {
         payType = type;
 //        presenter.createOrder("2",7,"8802000338","15089020708");
-        if ( productBeans!=null&&!productBeans.isEmpty()) {
+        if (productBeans != null && !productBeans.isEmpty()) {
             Integer tag = (Integer) mCheckableMiGuLinearLayout.getTag();
-            if (tag==null){
+            if (tag == null) {
                 ToastUtil.showText("数据错误！");
                 return;
             }
             TVProductBean productBean = productBeans.get(tag);
-            if (productBean!=null) {
+            if (productBean != null) {
                 loadingDialog.show();
                 presenter.createOrder(productBean.getPrice()
-                        , Integer.parseInt(productBean.getUnit()), productBean.getProductCode(),accountIdentify);
+                        , Integer.parseInt(productBean.getUnit()), productBean.getProductCode()
+                        , accountIdentify,productBean.getOrderContentId());
             } else {
                 ToastUtil.showText("数据错误！");
             }
@@ -273,29 +274,29 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
 
     @Override
-    public void showOrder(OrderBean orderBean) {
+    public void showOrder(OrderBean orderBean, String orderContentId) {
         this.orderBean = orderBean;
-        if (loadingDialog.isShowing())loadingDialog.dismiss();
-        presenter.pay(payType, orderBean.getOrder_no(), orderBean.getPrice());
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
+        presenter.pay(payType, orderBean.getOrder_no(), orderBean.getPrice(),orderContentId);
     }
 
     @Override
-    public void showPayResult(boolean isSuccess,String msg) {
-        if (loadingDialog.isShowing())loadingDialog.dismiss();
-        if (payTimer!=null){
+    public void showPayResult(boolean isSuccess, String msg) {
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
+        if (payTimer != null) {
             payTimer.cancel();
             payTimer = null;
         }
-        if (isSuccess){
+        if (isSuccess) {
             AuthenticationSuccess();
-        }else {
-            if (miguPay2Dialog!=null&&miguPay2Dialog.isShowing()){
+        } else {
+            if (miguPay2Dialog != null && miguPay2Dialog.isShowing()) {
                 miguPay2Dialog.dismiss();
             }
-            if (miguPay3Dialog!=null&&miguPay3Dialog.isShowing()){
+            if (miguPay3Dialog != null && miguPay3Dialog.isShowing()) {
                 miguPay3Dialog.dismiss();
             }
-            if (miguPay1Dialog!=null&&miguPay1Dialog.isShowing()){
+            if (miguPay1Dialog != null && miguPay1Dialog.isShowing()) {
                 miguPay1Dialog.dismiss();
             }
             ToastUtil.showText(msg);
@@ -317,22 +318,26 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     public void showRechargeBeans(List<TVProductBean> result) {
-        if (loadingDialog.isShowing())loadingDialog.dismiss();
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
         productBeans = result;
 
         for (TVProductBean productBean : result) {
-            switch (productBean.getUnit()){//单位（1.天、2.连续包月、3.单月、4.年、5.季、6.固定时长、7.按次）
+            switch (productBean.getUnit()) {//单位（1.天、2.连续包月、3.单月、4.年、5.季、6.固定时长、7.按次）
                 case "2":
+                    lPrice.setText(Integer.parseInt(productBean.getPrice()) / 100 + "");
+                    checkableMiGuLinearLayout_L.setTag(result.indexOf(productBean));
+                    break;
                 case "3":
-                    mPrice.setText(Integer.parseInt(productBean.getPrice())/100+"");
+                    mPrice.setText(Integer.parseInt(productBean.getPrice()) / 100 + "");
+                    mPrice0.setText("￥" + Integer.parseInt(productBean.getPrice()) / 100 + "");
                     checkableMiGuLinearLayout_M.setTag(result.indexOf(productBean));
                     break;
                 case "5":
-                    jPrice.setText(Integer.parseInt(productBean.getPrice())/100+"");
+                    jPrice.setText(Integer.parseInt(productBean.getPrice()) / 100 + "");
                     checkableMiGuLinearLayout_J.setTag(result.indexOf(productBean));
                     break;
                 case "4":
-                    yPrice.setText(Integer.parseInt(productBean.getPrice())/100+"");
+                    yPrice.setText(Integer.parseInt(productBean.getPrice()) / 100 + "");
                     checkableMiGuLinearLayout_Y.setTag(result.indexOf(productBean));
                     break;
             }
@@ -349,13 +354,14 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
         byte[] decode = Base64.decode(result.getBytes(), Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(decode, 0, decode.length);
         loadingDialog.dismiss();
-        if (payType==1){
+        if (payType == 1) {
             miguPay3Dialog.setImageBitmap(bitmap);
-        }else if (payType==2){
+        } else if (payType == 2) {
             miguPay2Dialog.setImageBitmap(bitmap);
         }
         getPayResult();
     }
+
     @Override
     public void getPayResult() {
         if (payTimer == null) {
@@ -364,9 +370,10 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
             payTimer.schedule(new PayTimeTask(this), 4000, 3000);
         }
     }
+
     @Override
     public void showError(String msg) {
-        if (loadingDialog.isShowing()){
+        if (loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
         ToastUtil.showText(msg);
@@ -374,18 +381,18 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     public void showNetError(String msg) {
-        if (miguPay1Dialog !=null&& miguPay1Dialog.isShowing()){
+        if (miguPay1Dialog != null && miguPay1Dialog.isShowing()) {
             miguPay1Dialog.dismiss();
-        }else if (miguPay2Dialog !=null&& miguPay2Dialog.isShowing()){
+        } else if (miguPay2Dialog != null && miguPay2Dialog.isShowing()) {
             miguPay2Dialog.dismiss();
-        }else if (miguPay3Dialog !=null&& miguPay3Dialog.isShowing()){
+        } else if (miguPay3Dialog != null && miguPay3Dialog.isShowing()) {
             miguPay3Dialog.dismiss();
         }
-        if (loadingDialog.isShowing()){
+        if (loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
         ToastUtil.showText(msg);
-        if (payTimer!=null){
+        if (payTimer != null) {
             payTimer.cancel();
             payTimer = null;
         }
@@ -393,8 +400,8 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
 
     @Override
     public void showMiguError(String msg) {
-        if (loadingDialog.isShowing())loadingDialog.dismiss();
-        if (miguErrorDialog == null){
+        if (loadingDialog.isShowing()) loadingDialog.dismiss();
+        if (miguErrorDialog == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this).setTitle("支付错误");
             miguErrorDialog = builder.create();
         }
@@ -418,7 +425,7 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     }
 
     @Override
-    public void AuthenticationFail(BodyBean bodyBean){
+    public void AuthenticationFail(BodyBean bodyBean) {
 //        loadingDialog.dismiss();
 //        miguBodyBean = bodyBean;
 //        List<ProductBean> product = bodyBean.getAuthorize().getProductToOrderList().getProduct();
@@ -444,7 +451,8 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
     protected static class PayTimeTask extends TimerTask {
 
         private final WeakReference<MiGuActivity> activity;
-        public PayTimeTask(MiGuActivity activity ) {
+
+        public PayTimeTask(MiGuActivity activity) {
             this.activity = new WeakReference<>(activity);
         }
 
@@ -453,16 +461,16 @@ public class MiGuActivity extends BaseActivity implements CheckableMiGuLinearLay
          */
         @Override
         public void run() {
-            if (activity.get()==null)return;
+            if (activity.get() == null) return;
             activity.get().presenter.payStatus(activity.get().orderBean.getOrder_no());
-            if (System.currentTimeMillis()-60*1000 >= activity.get().startTime){
+            if (System.currentTimeMillis() - 60 * 1000 >= activity.get().startTime) {
                 cancel();
                 activity.get().payTimer.cancel();
-                activity.get(). payTimer = null;
+                activity.get().payTimer = null;
                 activity.get().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        activity.get().showPayResult(false,"支付超时");
+                        activity.get().showPayResult(false, "支付超时");
                     }
                 });
             }

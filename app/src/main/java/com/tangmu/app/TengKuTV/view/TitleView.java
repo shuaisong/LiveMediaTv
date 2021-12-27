@@ -95,9 +95,9 @@ public class TitleView extends ConstraintLayout implements View.OnClickListener 
                 break;
             case R.id.open_vip:
                 MiguLoginBean login = PreferenceManager.getInstance().getLogin();
-                if (login.getTu_vip_status()==0){
+                if (login.getTu_vip_status() == 0) {
+                    context.startActivity(new Intent(context, MiGuActivity.class));
                 }
-                context.startActivity(new Intent(context, MiGuActivity.class));
                 break;
             case R.id.switchL:
                 if (context instanceof Activity) {

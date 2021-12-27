@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.JsonObject;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.cache.CacheMode;
 import com.lzy.okgo.model.Response;
 import com.shcmcc.tools.GetSysInfo;
 import com.tangmu.app.TengKuTV.AppStatusService;
@@ -23,6 +24,7 @@ import com.tangmu.app.TengKuTV.Constant;
 import com.tangmu.app.TengKuTV.R;
 import com.tangmu.app.TengKuTV.base.BaseActivity;
 import com.tangmu.app.TengKuTV.base.BaseResponse;
+import com.tangmu.app.TengKuTV.bean.AuthenticationBean;
 import com.tangmu.app.TengKuTV.bean.LaunchAdBean;
 import com.tangmu.app.TengKuTV.bean.MiguLoginBean;
 import com.tangmu.app.TengKuTV.component.AppComponent;
@@ -31,6 +33,7 @@ import com.tangmu.app.TengKuTV.utils.GlideApp;
 import com.tangmu.app.TengKuTV.utils.InstallUtil;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
 import com.tangmu.app.TengKuTV.utils.LogUtil;
+import com.tangmu.app.TengKuTV.utils.MiGuJsonCallback;
 import com.tangmu.app.TengKuTV.utils.PreferenceManager;
 import com.tangmu.app.TengKuTV.utils.ToastUtil;
 import com.tangmu.app.TengKuTV.utils.Util;
@@ -95,27 +98,27 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void getUserInfo() {
-        GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
-        String firmwareVersion = getSysInfo.getFirmwareVersion();
-        String snNum = getSysInfo.getSnNum();
-        String terminalType = getSysInfo.getTerminalType();
-        String hardwareVersion = getSysInfo.getHardwareVersion();
+//        GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
+//        String firmwareVersion = getSysInfo.getFirmwareVersion();
+//        String snNum = getSysInfo.getSnNum();
+//        String terminalType = getSysInfo.getTerminalType();
+//        String hardwareVersion = getSysInfo.getHardwareVersion();
+//
+//        String  epgToken = getSysInfo.getEpgToken();
+//        String epgUserId = getSysInfo.getEpgUserId();
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("firmwareVersion",firmwareVersion);
+//        jsonObject.addProperty("terminalType",terminalType);
+//        jsonObject.addProperty("hardwareVersion",hardwareVersion);
+//
+//        ancyUserInfo(epgToken,snNum,epgUserId,jsonObject.toString());
 
-        String  epgToken = getSysInfo.getEpgToken();
-        String epgUserId = getSysInfo.getEpgUserId();
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("firmwareVersion",firmwareVersion);
-        jsonObject.addProperty("terminalType",terminalType);
-        jsonObject.addProperty("hardwareVersion",hardwareVersion);
-
-        ancyUserInfo(epgToken,snNum,epgUserId,jsonObject.toString());
-
-//        ancyUserInfo("5167bb95141133d31072abf3e35921b326wx", "006201FF0001007006BB60D21C6EB759", "0107723607936491059",
-//                "{\"firmwareVersion\":\"HiSTBAndroidV5/Hi3798MV300/Hi3798MV300:4.4.2/CM201-22/004.992.062:eng/test-keys\",\"terminalType\":\"CM201-22\",\"hardwareVersion\":\"004.992.062\"}");
+        ancyUserInfo("c1398ece0d1b6fcd644380ac58acc98826wx", "416203FF0047476000006CB881161E8C", "0105041636877504511",
+                "","{\"firmwareVersion\":\"HiSTBAndroidV5/Hi3798MV300/Hi3798MV300:4.4.2/CM201-22/004.992.062:eng/test-keys\",\"terminalType\":\"CM201-22\",\"hardwareVersion\":\"004.992.062\"}");
 
     }
 
-    private void ancyUserInfo(String epgToken, String snNum, String epgUserId, String s) {
+    private void ancyUserInfo(String epgToken, String snNum, String epgUserId, String deviceId, String s) {
         PreferenceManager.getInstance().setToken(epgToken);
         PreferenceManager.getInstance().setUserName(epgUserId);
         OkGo.<BaseResponse<MiguLoginBean>>post(Constant.IP + Constant.tvRegister).retryCount(1)
@@ -130,6 +133,9 @@ public class SplashActivity extends BaseActivity {
                         if (response.body().getStatus() == 0) {
                             PreferenceManager.getInstance().setTuid(response.body().getResult().getU_id());
                             PreferenceManager.getInstance().setLogin(response.body().getResult());
+                            if (response.body().getResult().getTu_is_month() == 2) {
+                                miguAuthentications(epgUserId, deviceId);
+                            }
                             handler = new TimeHandler(SplashActivity.this);
                             timer = new Timer();
                             HandlerTask task = new HandlerTask(SplashActivity.this);
@@ -143,6 +149,24 @@ public class SplashActivity extends BaseActivity {
                     public void onError(Response<BaseResponse<MiguLoginBean>> response) {
                         super.onError(response);
                         ToastUtil.showText(handleError(response.getException()));
+                    }
+                });
+    }
+
+    public void miguAuthentications(String userId, String terminalId) {
+        OkGo.<String>post(Constant.IP + Constant.authentications)
+                .cacheMode(CacheMode.NO_CACHE)
+                .params("userId", userId)
+                .params("token", PreferenceManager.getInstance().getToken())
+                .params("terminalId", terminalId).tag(this)
+                .execute(new MiGuJsonCallback() {
+                    @Override
+                    protected void miguSuccess(@Nullable AuthenticationBean authenticationBean) {
+                        if (authenticationBean != null && authenticationBean.getStatus() == 0
+                                && "0".equals(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getResult())) {//鉴权成功
+                        } else {
+
+                        }
                     }
                 });
     }

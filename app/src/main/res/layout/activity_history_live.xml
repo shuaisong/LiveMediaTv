@@ -116,6 +116,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginStart="20dp"
+                            android:background="@drawable/dp_0_view_bg_red_focused_selelct"
+                            android:focusable="true"
                             android:visibility="invisible" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>

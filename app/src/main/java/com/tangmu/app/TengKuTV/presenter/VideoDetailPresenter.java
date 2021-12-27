@@ -84,7 +84,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     }
 
     @Override
-    public void createOrder(String price, int vip_type, String productCode,String accountIdentify, int id) {
+    public void createOrder(String price, int vip_type, String productCode, String accountIdentify, int id, String orderContentId) {
         OkGo.<BaseResponse<OrderBean>>post(Constant.IP + Constant.addOrder)
                 .params("token", PreferenceManager.getInstance().getToken())
                .params("tu_id", PreferenceManager.getInstance().getTuid())
@@ -99,7 +99,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                 if (response.body().getStatus() == 0){
                     OrderBean result = response.body().getResult();
                     result.setPrice(price);
-                    view.showOrder(result);
+                    view.showOrder(result,orderContentId);
                 }
                 else view.showError(response.body().getMsg());
             }
@@ -260,7 +260,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     }
 
     @Override
-    public void miguPay(SdkmesBean sdkmesBean, String price) {
+    public void miguPay(SdkmesBean sdkmesBean, String price, String orderContentId) {
         CommonInfo commonInfo = new CommonInfo();
         commonInfo.setOrderId(sdkmesBean.getOrderId());
         commonInfo.setcType(sdkmesBean.getCtype());
@@ -279,7 +279,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
         commonPayInfo.setIsMonthly(payInfo.getIsMonthly());
         commonPayInfo.setCpId("699458");
 //        commonPayInfo.setCpId("699213");
-        commonPayInfo.setContentId("1980113901");
+        commonPayInfo.setContentId(orderContentId);
         commonPayInfo.setPrice(price);
         commonPayInfo.setSpCode(payInfo.getSpCode());
         commonPayInfo.setServCode(payInfo.getServCode());
@@ -359,7 +359,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
     }
 
     @Override
-    public void pay(int payType, String order,String price) {
+    public void pay(int payType, String order, String price, String orderContentId) {
         OkGo.<BaseResponse<MiguPayBean>>post(Constant.IP + Constant.payOrder)
                 .cacheMode(CacheMode.NO_CACHE)
                 .params("order_no", order)
@@ -372,7 +372,7 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                         super.onVerifySuccess(response);
                         if (response.body().getStatus()==0&&"0".equals(response.body().getResult().getResult())){
                             if (payType==16){
-                                miguPay(response.body().getResult().getSdkmes(),price);
+                                miguPay(response.body().getResult().getSdkmes(),price,orderContentId);
                             }else  {
                                 view.showPayCode(response.body().getResult().getQrCodeImg());
                             }

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class RechargeVipContact {
     public interface View extends BaseContact.BaseView {
-        void showOrder(OrderBean orderBean);
+        void showOrder(OrderBean orderBean, String orderContentId);
 
         void showPayResult(boolean isSuccess,String msg);
 
@@ -37,15 +37,15 @@ public class RechargeVipContact {
     public interface Presenter {
 
 
-        void createOrder(String price, int vip_type, String productCode,String accountIdentify);
+        void createOrder(String price, int vip_type, String productCode, String accountIdentify, String orderContentId);
 
         void getUserInfo();
 
-        void miguPay(SdkmesBean sdkmesBean, String price);
+        void miguPay(SdkmesBean sdkmesBean, String price, String orderContentId);
 
         void miguAuthentications(String userId, String terminalId);
 
-        void pay(int payType,String order,String price);
+        void pay(int payType, String order, String price, String orderContentId);
 
         void payStatus(String orderNo);
 

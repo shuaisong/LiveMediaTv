@@ -30,7 +30,7 @@ public class VideoDetailContact {
 
         void showTVAd(List<VideoAdBean> videoAdBeans);
 
-        void showOrder(OrderBean result);
+        void showOrder(OrderBean result, String orderContentId);
 
         void showPayCode(String result);
 
@@ -58,7 +58,7 @@ public class VideoDetailContact {
 
         void getTvAd(int p_id);
 
-        void createOrder(String price, int vip_type, String productCode,String accountIdentify,int id);
+        void createOrder(String price, int vip_type, String productCode, String accountIdentify, int id, String orderContentId);
 
         void weChatPayInfo(String order_no, String price);
 
@@ -66,9 +66,9 @@ public class VideoDetailContact {
 
         void getProductList(String accountIdentify);
 
-        void pay(int payType, String order, String price);
+        void pay(int payType, String order, String price, String orderContentId);
 
-        void miguPay(SdkmesBean sdkmesBean, String price);
+        void miguPay(SdkmesBean sdkmesBean, String price, String orderContentId);
 
         void payStatus(String order_no);
     }

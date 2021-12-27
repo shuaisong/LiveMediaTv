@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.view.KeyEvent;
@@ -12,9 +13,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.migu.sdk.api.MiguSdk;
@@ -137,6 +141,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     private long startTime;
     private String miguResultDesc;
     private AlertDialog miguErrorDialog;
+    private List<VideoAdBean> videoAdBeans;
 
     @Override
     protected void setupActivityComponent(AppComponent appComponent) {
@@ -193,9 +198,15 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         }
     }
 
-    @OnClick({R.id.more, R.id.full_screen, R.id.collect})
+    @OnClick({R.id.more, R.id.full_screen, R.id.collect, R.id.ad1, R.id.ad2})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.ad1:
+                tvAdClick(videoAdBeans.get(0));
+                break;
+            case R.id.ad2:
+                tvAdClick(videoAdBeans.get(1));
+                break;
             case R.id.more:
                 if (introl.getMaxLines() == 2) {
                     more.setText(getString(R.string.fold));
@@ -569,26 +580,33 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
     @Override
     public void showTVAd(List<VideoAdBean> videoAdBeans) {
         if (!videoAdBeans.isEmpty()) {
-            ivAd1.setVisibility(VISIBLE);
-            ivAd2.setVisibility(VISIBLE);
+            this.videoAdBeans = videoAdBeans;
             for (int i = 0; i < videoAdBeans.size(); i++) {
                 if (videoAdBeans.get(i).getTa_type1() == 1) {
+                    ivAd1.setVisibility(VISIBLE);
                     GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
                              .centerCrop().into(ivAd1);
                 }
                 if (videoAdBeans.get(i).getTa_type1() == 2) {
+                    ivAd2.setVisibility(VISIBLE);
                     GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(i).getTa_img()))
                             .centerCrop().into(ivAd2);
                 }
             }
-
+            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
+                    .into(new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            superPlayer.setAdImage(resource);
+                        }
+                    });
         }
     }
 
     @Override
-    public void showOrder(OrderBean orderBean) {
+    public void showOrder(OrderBean orderBean, String orderContentId) {
         this.orderBean = orderBean;
-        presenter.pay(payType,orderBean.getOrder_no(),orderBean.getPrice());
+        presenter.pay(payType,orderBean.getOrder_no(),orderBean.getPrice(),orderContentId);
     }
 
     @Override
@@ -969,12 +987,12 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             if (login.getTu_vip_status()==1) {
                 presenter.createOrder(products.get(0).getPrice()
                         , Integer.parseInt(products.get(0).getUnit()), products.get(0).getProductCode()
-                        , phone,videoDetailBean.getVm_id());
+                        , phone,videoDetailBean.getVm_id(),products.get(0).getOrderContentId());
             } else {
                 int anInt = Integer.parseInt(products.get(0).getPrice());
                 presenter.createOrder(anInt/2 +""
                         , Integer.parseInt(products.get(0).getUnit()), products.get(0).getProductCode()
-                        , phone,videoDetailBean.getVm_id());
+                        , phone,videoDetailBean.getVm_id(),products.get(0).getOrderContentId());
             }
         }else {
             ToastUtil.showText("数据错误！");

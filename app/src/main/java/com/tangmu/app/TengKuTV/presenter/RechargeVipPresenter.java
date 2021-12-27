@@ -84,7 +84,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
     }
 
     @Override
-    public void miguPay(SdkmesBean sdkmesBean, String price) {
+    public void miguPay(SdkmesBean sdkmesBean, String price, String orderContentId) {
         CommonInfo commonInfo = new CommonInfo();
         commonInfo.setOrderId(sdkmesBean.getOrderId());
         commonInfo.setcType(sdkmesBean.getCtype());
@@ -104,7 +104,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
         commonPayInfo.setCpId("699458");
 //        commonPayInfo.setCpId("699213");
 //        commonPayInfo.setContentId("1980113900");
-        commonPayInfo.setContentId("1980113901");
+        commonPayInfo.setContentId(orderContentId);
         commonPayInfo.setProductId(payInfo.getProductCode());
         commonPayInfo.setPrice(price);
         commonPayInfo.setSpCode(payInfo.getSpCode());
@@ -129,7 +129,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
 
 
     @Override
-    public void createOrder(String price, int vip_type, String productCode, String accountIdentify) {
+    public void createOrder(String price, int vip_type, String productCode, String accountIdentify, String orderContentId) {
         OkGo.<BaseResponse<OrderBean>>post(Constant.IP + Constant.addOrder)
                 .params("token", PreferenceManager.getInstance().getToken())
                 .params("tu_id", PreferenceManager.getInstance().getTuid())
@@ -144,7 +144,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                 if (response.body().getStatus() == 0) {
                     OrderBean result = response.body().getResult();
                     result.setPrice(price);
-                    view.showOrder(result);
+                    view.showOrder(result,orderContentId);
                 } else view.showError(response.body().getMsg());
             }
 
@@ -191,11 +191,12 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
     }
 
     @Override
-    public void pay(int payType, String order, String price) {
+    public void pay(int payType, String order, String price, String orderContentId) {
         OkGo.<BaseResponse<MiguPayBean>>post(Constant.IP + Constant.payOrder)
                 .cacheMode(CacheMode.NO_CACHE)
                 .params("order_no", order)
                 .params("price", price)
+                .params("content_id", orderContentId)
                 .params("token", PreferenceManager.getInstance().getToken())
                 .params("pay_type", payType).tag(this)
                 .execute(new JsonCallback<BaseResponse<MiguPayBean>>() {
@@ -204,7 +205,7 @@ public class RechargeVipPresenter extends RxPresenter<RechargeVipContact.View> i
                         super.onVerifySuccess(response);
                         if (response.body().getStatus() == 0 && "0".equals(response.body().getResult().getResult())) {
                             if (payType == 16) {
-                                miguPay(response.body().getResult().getSdkmes(), price);
+                                miguPay(response.body().getResult().getSdkmes(), price,orderContentId);
                             } else {
                                 view.showPayCode(response.body().getResult().getQrCodeImg());
                             }
