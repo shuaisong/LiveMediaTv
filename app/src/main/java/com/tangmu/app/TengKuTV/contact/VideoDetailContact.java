@@ -43,6 +43,8 @@ public class VideoDetailContact {
         void showRechargeBeans(List<TVProductBean> result, String accountIdentify);
 
         void showMiguError(String resultDesc);
+
+        void showPauseAd(String images);
     }
 
     public interface Presenter {
@@ -71,5 +73,7 @@ public class VideoDetailContact {
         void miguPay(SdkmesBean sdkmesBean, String price, String orderContentId);
 
         void payStatus(String order_no);
+
+        void getTVPauseAD(int id);
     }
 }

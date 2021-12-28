@@ -161,6 +161,7 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
         } else
             presenter.getDetail(id);
         presenter.getTvAd(c_id);
+        presenter.getTVPauseAD(c_id);
         presenter.getRecommend(c_id);
         GetSysInfo getSysInfo = GetSysInfo.getInstance("10086", "", getApplicationContext());
         presenter.miguAuthentications(getSysInfo.getEpgUserId(),getSysInfo.getDeviceId());
@@ -593,13 +594,6 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
                             .centerCrop().into(ivAd2);
                 }
             }
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
         }
     }
 
@@ -665,6 +659,17 @@ public class MovieDetailActivity extends BaseActivity implements VideoDetailCont
             payTimer.cancel();
             payTimer = null;
         }
+    }
+
+    @Override
+    public void showPauseAd(String images) {
+        GlideUtils.getRequest(this, Util.convertImgPath(images))
+                .into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        superPlayer.setAdImage(resource);
+                    }
+                });
     }
 
     @Override

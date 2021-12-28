@@ -99,6 +99,7 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
         presenter.getDetail(id);
         presenter.getRecommend();
         presenter.getTVAd();
+        presenter.getTVPauseAD(99);
     }
 
 
@@ -275,7 +276,17 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
         introl.setText(Util.showText(liveHistoryBean.getDes(), liveHistoryBean.getDes_z()));
         superPlayer.playWithModel(model);
     }
+    @Override
+    public void showPauseAd(String images) {
+        GlideUtils.getRequest(this, Util.convertImgPath(images))
+                .into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        superPlayer.setAdImage(resource);
+                    }
+                });
 
+    }
     @Override
     public void showLiveReply(List<LiveReplayBean> result) {
         recommendMovieAdapter.setNewData(result);
@@ -317,13 +328,6 @@ public class HistoryLiveActivity extends BaseActivity implements LiveHistoryCont
             GlideUtils.getRequest(this, Util.convertImgPath(result.get(0).getTa_img()))
                     .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(this, 15)))
                     .into(image);
-            GlideUtils.getRequest(this, Util.convertImgPath(result.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
         }
     }
 

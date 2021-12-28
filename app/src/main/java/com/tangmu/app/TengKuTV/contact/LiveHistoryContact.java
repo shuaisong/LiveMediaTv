@@ -16,6 +16,8 @@ public class LiveHistoryContact {
         void showLiveReply(List<LiveReplayBean> result);
 
         void showTVAd(List<VideoAdBean> result);
+
+        void showPauseAd(String images);
     }
 
     public interface Presenter {
@@ -26,5 +28,7 @@ public class LiveHistoryContact {
         void getRecommend();
 
         void getTVAd();
+
+        void getTVPauseAD(int id);
     }
 }

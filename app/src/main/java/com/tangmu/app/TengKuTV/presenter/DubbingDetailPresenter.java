@@ -10,6 +10,7 @@ import com.tangmu.app.TengKuTV.base.RxPresenter;
 import com.tangmu.app.TengKuTV.bean.DubbingBean;
 import com.tangmu.app.TengKuTV.bean.DubbingEvaluateBean;
 import com.tangmu.app.TengKuTV.bean.DubbingListBean;
+import com.tangmu.app.TengKuTV.bean.PauseADBean;
 import com.tangmu.app.TengKuTV.bean.VideoAdBean;
 import com.tangmu.app.TengKuTV.contact.DubbingDetailContact;
 import com.tangmu.app.TengKuTV.utils.JsonCallback;
@@ -164,6 +165,20 @@ public class DubbingDetailPresenter extends RxPresenter<DubbingDetailContact.Vie
                     @Override
                     public void onError(Response<BaseListResponse<VideoAdBean>> response) {
                         super.onError(response);
+                    }
+                });
+    }
+    @Override
+    public void getTVPauseAD(int id) {
+        OkGo.<BaseResponse<PauseADBean>>post(Constant.IP + Constant.getVideoStopAd)
+                .params("p_id", id)
+                .execute(new JsonCallback<BaseResponse<PauseADBean>>() {
+                    @Override
+                    public void onSuccess(Response<BaseResponse<PauseADBean>> response) {
+                        super.onSuccess(response);
+                        if (0 == response.body().getStatus()) {
+                            view.showPauseAd(response.body().getResult().getImages());
+                        }
                     }
                 });
     }

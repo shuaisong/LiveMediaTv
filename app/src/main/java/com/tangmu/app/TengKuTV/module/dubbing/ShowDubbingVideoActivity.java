@@ -112,6 +112,7 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
 //        presenter.getDubbing(page);
         presenter.getTvAd(PreferenceManager.getInstance().getDubbingId());
         presenter.getRecomend();
+        presenter.getTVPauseAD(PreferenceManager.getInstance().getDubbingId());
     }
 
     @Override
@@ -440,14 +441,18 @@ public class ShowDubbingVideoActivity extends BaseActivity implements CustomAdap
             GlideUtils.getRequest(this, Util.convertImgPath(result.get(0).getTa_img()))
                     .transform(new CenterCrop(), new RoundedCorners(AutoSizeUtils.dp2px(this, 15)))
                     .into(image);
-            GlideUtils.getRequest(this, Util.convertImgPath(result.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
         }
+    }
+    @Override
+    public void showPauseAd(String images) {
+        GlideUtils.getRequest(this, Util.convertImgPath(images))
+                .into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        superPlayer.setAdImage(resource);
+                    }
+                });
+
     }
 
     private void tvAdClick(VideoAdBean videoAdBean) {

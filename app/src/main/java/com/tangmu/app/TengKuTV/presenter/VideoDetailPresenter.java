@@ -17,6 +17,7 @@ import com.tangmu.app.TengKuTV.bean.AuthenticationBean;
 import com.tangmu.app.TengKuTV.bean.HomeChildRecommendBean.VideoBean;
 import com.tangmu.app.TengKuTV.bean.MiguPayBean;
 import com.tangmu.app.TengKuTV.bean.OrderBean;
+import com.tangmu.app.TengKuTV.bean.PauseADBean;
 import com.tangmu.app.TengKuTV.bean.PayInfoBean;
 import com.tangmu.app.TengKuTV.bean.PayStatusBean;
 import com.tangmu.app.TengKuTV.bean.SdkmesBean;
@@ -423,6 +424,20 @@ public class VideoDetailPresenter extends RxPresenter<VideoDetailContact.View> i
                     public void onError(Response<BaseResponse<PayStatusBean>> response) {
                         super.onError(response);
                         view.showNetError(handleError(response.getException()));
+                    }
+                });
+    }
+    @Override
+    public void getTVPauseAD(int id) {
+        OkGo.<BaseResponse<PauseADBean>>post(Constant.IP + Constant.getVideoStopAd)
+                .params("p_id", id)
+                .execute(new JsonCallback<BaseResponse<PauseADBean>>() {
+                    @Override
+                    public void onSuccess(Response<BaseResponse<PauseADBean>> response) {
+                        super.onSuccess(response);
+                        if (0 == response.body().getStatus()) {
+                            view.showPauseAd(response.body().getResult().getImages());
+                        }
                     }
                 });
     }

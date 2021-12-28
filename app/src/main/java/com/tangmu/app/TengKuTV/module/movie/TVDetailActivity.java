@@ -136,6 +136,7 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
         loadeAd();
         presenter.getTvAd(c_id);
         presenter.getRecommend(c_id);
+        presenter.getTVPauseAD(c_id);
     }
 
     private void loadeAd() {
@@ -652,14 +653,19 @@ public class TVDetailActivity extends BaseActivity implements VideoDetailContact
                             .centerCrop().into(ivAd2);
                 }
             }
-            GlideUtils.getRequest(this, Util.convertImgPath(videoAdBeans.get(0).getTa_img()))
-                    .into(new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                            superPlayer.setAdImage(resource);
-                        }
-                    });
         }
+    }
+
+    @Override
+    public void showPauseAd(String images) {
+        GlideUtils.getRequest(this, Util.convertImgPath(images))
+                .into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        superPlayer.setAdImage(resource);
+                    }
+                });
+
     }
 
     @Override

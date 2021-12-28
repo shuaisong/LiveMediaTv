@@ -236,5 +236,5 @@ public class Constant {
     public static final String payStatus = "/TvOrder/payStatus";
     //    产品列表      type 1会员 2单片
     public static final String productLists = "/TvOrder/productLists";
-
+    public static final String getVideoStopAd =  "/Configuration/getVideoStopAd";
 }

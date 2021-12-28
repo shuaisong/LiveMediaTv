@@ -21,6 +21,8 @@ public class DubbingDetailContact {
         void showRecmend(List<DubbingListBean> result);
 
         void showTVAd(List<VideoAdBean> result);
+
+        void showPauseAd(String images);
     }
 
     public interface Presenter {
@@ -35,5 +37,7 @@ public class DubbingDetailContact {
         void getRecomend();
 
         void getTvAd(int p_id);
+
+        void getTVPauseAD(int id);
     }
 }
