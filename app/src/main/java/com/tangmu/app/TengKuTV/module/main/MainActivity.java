@@ -87,10 +87,6 @@ public class MainActivity extends BaseActivity implements HomeContact.View, View
     }
 
     @Override
-    public void onBackPressed() {
-    }
-
-    @Override
     protected void onDestroy() {
         if (timer != null) timer.cancel();
         presenter.detachView();

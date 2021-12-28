@@ -163,11 +163,7 @@ public class SplashActivity extends BaseActivity {
                 .execute(new MiGuJsonCallback() {
                     @Override
                     protected void miguSuccess(@Nullable AuthenticationBean authenticationBean) {
-                        if (authenticationBean != null && authenticationBean.getStatus() == 0
-                                && "0".equals(authenticationBean.getResult().getBody().getAuthorize().getAttributes().getResult())) {//鉴权成功
-                        } else {
 
-                        }
                     }
                 });
     }
